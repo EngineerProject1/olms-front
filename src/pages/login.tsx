@@ -1,19 +1,29 @@
 import React from "react";
-import { Avatar, Button, Checkbox, Form, Input, Layout,message } from 'antd'
+import { Avatar, Button, Checkbox, Form, Input, Layout, message } from 'antd'
 import { Footer } from "antd/es/layout/layout";
 import { GithubOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Typography } from 'antd';
+import axios from "../tools/axios"
+import { messageApi } from "../app";
 
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
 
 export function Login(props: any) {
     const marginX = 20;
-    const [messageApi, contextHolder] = message.useMessage();
 
     const onFinish = (values: any) => {
-        messageApi.success("成功登录")
-        console.log('Success:', values);
+        axios.post("/login", values).then((response) => {
+            let data=response.data;
+            if (data.code == 200) {
+                messageApi.success("成功登录");
+                sessionStorage.setItem("token",data.data.token);
+                console.log(response)
+            }
+        }).catch((error) => {
+
+        })
+
     };
     const onFinishFailed = (errorInfo: any) => {
         console.log('Failed:', errorInfo);
@@ -21,10 +31,9 @@ export function Login(props: any) {
     function openGithub() {
         window.open("https://github.com/EngineerProject1/olms-front");
     }
-    
+
     return (
         <Layout style={{ width: "100vw", height: "100vh", background: "#F0F2F5" }}>
-            {contextHolder}
             <Content
                 style={{
                     margin: 0,
