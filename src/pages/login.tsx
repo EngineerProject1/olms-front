@@ -3,8 +3,8 @@ import { Avatar, Button, Checkbox, Form, Input, Layout, message } from 'antd'
 import { Footer } from "antd/es/layout/layout";
 import { GithubOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Typography } from 'antd';
-import axios from "../tools/axios"
-import { messageApi } from "../app";
+import axios from "tools/axios"
+import { messageApi } from "app";
 
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
@@ -33,7 +33,7 @@ export function Login(props: any) {
     }
 
     return (
-        <Layout style={{ width: "100vw", height: "100vh", background: "#F0F2F5" }}>
+        <Layout style={{ width: "100%", height: "100%", background: "#F0F2F5" }}>
             <Content
                 style={{
                     margin: 0,

@@ -1,5 +1,6 @@
 import { createBrowserRouter, Link } from "react-router-dom";
-import { Login } from "../pages/login";
+import Admin from "pages/admin";
+import { Login } from "pages/login";
 
 export const rootRouter = createBrowserRouter([
     {
@@ -12,4 +13,8 @@ export const rootRouter = createBrowserRouter([
       path: "/login",
       element: <Login />,
     },
+    {
+      path: "/admin",
+      element:<Admin />
+    }
 ]);
