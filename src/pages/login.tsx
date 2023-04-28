@@ -20,10 +20,7 @@ export function Login(props: any) {
                 sessionStorage.setItem("token",data.data.token);
                 console.log(response)
             }
-        }).catch((error) => {
-
-        })
-
+        });
     };
     const onFinishFailed = (errorInfo: any) => {
         console.log('Failed:', errorInfo);

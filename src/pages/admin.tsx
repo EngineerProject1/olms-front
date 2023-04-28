@@ -1,36 +1,33 @@
-import React from 'react';
-import { BellOutlined, LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Badge, MenuProps, Typography } from 'antd';
+import React, { useState } from 'react';
+import { BellOutlined, LaptopOutlined, MenuFoldOutlined, MenuUnfoldOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
+import { Avatar, Badge, Button, Divider, MenuProps, Typography } from 'antd';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import { adminMenu } from 'components/sidebarMenus';
 
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
 const headerColor = "#ffffff";
 
-const items2: MenuProps['items'] = [UserOutlined, LaptopOutlined, NotificationOutlined].map(
-  (icon, index) => {
-    const key:string = String(index + 1);
-
-    return {
-      key: `sub${key}`,
-      icon: React.createElement(icon),
-      label: `subnav ${key}`,
-
-      children: new Array(4).fill(null).map((_, j) => {
-        const subKey:number = index * 4 + j + 1;
-        return {
-          key: subKey,
-          label: `option${subKey}`,
-        };
-      }),
-    };
-  },
-);
+function MenuTrigger(props:{collapsed:boolean,toggleCollapsed:React.MouseEventHandler<HTMLAnchorElement> & React.MouseEventHandler<HTMLButtonElement>}){
+  return(
+    <div style={{width:"100%",height:"100%",backgroundColor:headerColor,display:"flex",alignItems:"center",boxShadow:"inset 0px 1px 0px #F0F0F0"}}>
+      <Button type="text" style={{marginLeft:16}} onClick={props.toggleCollapsed} >
+        {props.collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+      </Button>
+    </div>
+  );
+}
 
 export default function Admin(props: any) {
+  const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+
+  function toggleCollapsed(){
+    setCollapsed(!collapsed);
+  }
+
   return (
     <Layout style={{width:"100%",height:"100%"}}>
       <Header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -49,13 +46,15 @@ export default function Admin(props: any) {
         </div>
       </Header>
       <Layout>
-        <Sider width={200} style={{ background: colorBgContainer,overflowY:"auto" }}>
+        <Sider trigger={React.createElement(MenuTrigger,{collapsed,toggleCollapsed})} collapsible collapsed={collapsed} width={200} style={{ background: colorBgContainer,overflowY:"auto" }}>
           <Menu
             mode="inline"
             defaultSelectedKeys={['1']}
             defaultOpenKeys={['sub1']}
             style={{ height: '100%', borderRight: 0 }}
-            items={items2}
+            items={adminMenu}
+            inlineCollapsed={collapsed}
+            // items={items2}
           />
         </Sider>
         <Layout style={{ padding: '0 24px 24px' }}>
