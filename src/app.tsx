@@ -5,11 +5,11 @@ import { message } from 'antd';
 import axios from "./tools/axios";
 import { MessageInstance } from "antd/es/message/interface";
 
-let messageApi:MessageInstance;
+let messageApi: MessageInstance;
 
 export default function App(props: any) {
     const [messageApi2, contextHolder] = message.useMessage();
-    messageApi=messageApi2
+    messageApi = messageApi2
 
     return (
         <>
@@ -18,4 +18,4 @@ export default function App(props: any) {
         </>
     );
 }
-export {messageApi};
+export { messageApi };

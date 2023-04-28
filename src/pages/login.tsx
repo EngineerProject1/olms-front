@@ -14,10 +14,10 @@ export function Login(props: any) {
 
     const onFinish = (values: any) => {
         axios.post("/login", values).then((response) => {
-            let data=response.data;
+            let data = response.data;
             if (data.code == 200) {
                 messageApi.success("成功登录");
-                sessionStorage.setItem("token",data.data.token);
+                sessionStorage.setItem("token", data.data.token);
                 console.log(response)
             }
         });
