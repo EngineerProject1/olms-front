@@ -1,16 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Avatar, Button, Checkbox, Form, Input, Layout, message } from 'antd'
 import { Footer } from "antd/es/layout/layout";
 import { GithubOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Typography } from 'antd';
 import axios from "tools/axios"
-import { messageApi } from "app";
+import { GlobalContext } from "app";
 
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
 
 export function Login(props: any) {
     const marginX = 20;
+    const messageApi = useContext(GlobalContext).messageApi;
 
     const onFinish = (values: any) => {
         axios.post("/login", values).then((response) => {

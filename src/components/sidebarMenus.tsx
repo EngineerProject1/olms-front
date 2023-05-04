@@ -5,11 +5,11 @@ import React from "react";
 
 type MenuItem = [string, React.FunctionComponent<any>, string, [string, String][]?];
 const adminMenuItems: MenuItem[] = [
-    ["a", DashboardOutlined, "公告管理"],
-    ["b", BarsOutlined, "实验室管理"],
-    ["c", CheckCircleOutlined, "预约管理", [["c1", "审核预约"], ["c2", "预约记录"]]],
-    ["d", HighlightOutlined, "设备管理"],
-    ["e", UserOutlined, "用户管理", [["e1", "学生管理"], ["e2", "教师管理"], ["e3", "考勤管理"]]]
+    ["announcement", DashboardOutlined, "公告管理"],
+    ["laboratory", BarsOutlined, "实验室管理"],
+    ["appointment", CheckCircleOutlined, "预约管理", [["auditAppointment", "审核预约"], ["appointmentRecord", "预约记录"]]],
+    ["device", HighlightOutlined, "设备管理"],
+    ["user", UserOutlined, "用户管理", [["stuentUser", "学生管理"], ["teacherUser", "教师管理"], ["attendance", "考勤管理"]]]
 ];
 
 function MenuItemsToMenuProps(menuItems: MenuItem[]): MenuProps["items"] {

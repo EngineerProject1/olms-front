@@ -3,6 +3,7 @@ import { BellOutlined, LaptopOutlined, MenuFoldOutlined, MenuUnfoldOutlined, Not
 import { Avatar, Badge, Button, Divider, MenuProps, Typography } from 'antd';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
 import { adminMenu } from 'components/sidebarMenus';
+import { Outlet } from 'react-router-dom';
 
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
@@ -54,7 +55,6 @@ export default function Admin(props: any) {
             style={{ height: '100%', borderRight: 0 }}
             items={adminMenu}
             inlineCollapsed={collapsed}
-          // items={items2}
           />
         </Sider>
         <Layout style={{ padding: '0 24px 24px' }}>
@@ -71,7 +71,7 @@ export default function Admin(props: any) {
               background: colorBgContainer,
             }}
           >
-            Content
+            <Outlet />
           </Content>
         </Layout>
       </Layout>
