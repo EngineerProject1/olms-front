@@ -9,7 +9,7 @@ const adminMenuItems: MenuItem[] = [
     ["laboratory", BarsOutlined, "实验室管理"],
     ["appointment", CheckCircleOutlined, "预约管理", [["auditAppointment", "审核预约"], ["appointmentRecord", "预约记录"]]],
     ["device", HighlightOutlined, "设备管理"],
-    ["user", UserOutlined, "用户管理", [["stuentUser", "学生管理"], ["teacherUser", "教师管理"], ["attendance", "考勤管理"]]]
+    ["user", UserOutlined, "用户管理", [["studentUser", "学生管理"], ["teacherUser", "教师管理"], ["attendance", "考勤管理"]]]
 ];
 
 function MenuItemsToMenuProps(menuItems: MenuItem[]): MenuProps["items"] {

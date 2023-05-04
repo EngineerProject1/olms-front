@@ -9,15 +9,15 @@ export const GlobalContext = React.createContext<{
     setRouter: React.Dispatch<any>,
     messageApi: MessageInstance,
 }>(null as any);
-let responseInterceptor = false;
+let hasResponseInterceptor = false;
 
 export default function App(props: any) {
     const [messageApi, contextHolder] = message.useMessage();
     const [router, setRouter] = useState(adminRouter);
-    if (responseInterceptor) {
+    if (hasResponseInterceptor) {
         axios.interceptors.response.clear();
     }
-    responseInterceptor = true;
+    hasResponseInterceptor = true;
     axios.interceptors.response.use((response) => {
         let data = response.data
         if (data.code != 200) {

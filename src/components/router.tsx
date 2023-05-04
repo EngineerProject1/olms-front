@@ -24,7 +24,7 @@ export const adminRouter = createBrowserRouter([
       },
       {
         path: "laboratory",
-        element: <></>
+        element: <>laboratory</>
       },
       {
         path: "appointment",
@@ -35,13 +35,13 @@ export const adminRouter = createBrowserRouter([
           },
           {
             path: "appointmentRecord",
-            element: <></>,
+            element: <>appointmentRecord</>,
           }
         ],
       },
       {
         path: "device",
-        element: <></>
+        element: <>device</>
       },
       {
         path: "user",
@@ -52,14 +52,18 @@ export const adminRouter = createBrowserRouter([
           },
           {
             path: "attendance",
-            element: <></>,
+            element: <>attendance</>,
           },
           {
             path: "teacherUser",
-            element: <></>
+            element: <>teacherUser</>
           }
         ],
       }
     ]
   },
+  {
+    path: "*",
+    element: <div>404</div>
+  }
 ]);

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { BellOutlined, LaptopOutlined, MenuFoldOutlined, MenuUnfoldOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Badge, Button, Divider, MenuProps, Typography } from 'antd';
+import { MenuFoldOutlined, MenuUnfoldOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
+import { Avatar, Badge, Button, MenuProps, Typography } from 'antd';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
 import { adminMenu } from 'components/sidebarMenus';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
@@ -19,24 +19,41 @@ function MenuTrigger(props: { collapsed: boolean, toggleCollapsed: React.MouseEv
   );
 }
 
-export default function Admin(props: any) {
+export default function Main(props: any) {
   const [collapsed, setCollapsed] = useState(false);
+  const [openKeys, setOpenKeys] = useState(['sub1']);
+  const navigate = useNavigate();
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  function toggleCollapsed() {
+  const toggleCollapsed = () => {
     setCollapsed(!collapsed);
   }
+  const onOpenChange: MenuProps['onOpenChange'] = (keys) => {
+    setOpenKeys([keys[keys.length - 1]]);
+  };
+  const onSelect = (info: { keyPath: string[] }) => {
+    let result = "";
+    for (let item of info.keyPath.reverse()) {
+      result += `/${item}`;
+    }
+    navigate(result);
+  }
 
+  const urlSegement = location.pathname.split("/").filter((value) => value);
+  let breadCrumbItems = [{ title: "Home" }];
+  for (let item of urlSegement) {
+    breadCrumbItems.push({ title: item })
+  }
   return (
     <Layout style={{ width: "100%", height: "100%" }}>
-      <Header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ display: "flex", alignItems: "center" }}>
+      <Header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingInline: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", marginLeft: 28 }}>
           <img src="/logo.svg" style={{ width: 35, height: 35, marginRight: 8 }} />
           <Title level={2} style={{ marginBottom: 0, color: headerColor }}>OLMS</Title>
         </div>
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", marginRight: 80 }}>
           {/* <Badge count={50} overflowCount={100} size="small" dot={true} >
             <BellOutlined style={{ fontSize: 20, color: headerColor }} />
           </Badge> */}
@@ -50,19 +67,17 @@ export default function Admin(props: any) {
         <Sider trigger={React.createElement(MenuTrigger, { collapsed, toggleCollapsed })} collapsible collapsed={collapsed} width={200} style={{ background: colorBgContainer, overflowY: "auto" }}>
           <Menu
             mode="inline"
-            defaultSelectedKeys={['1']}
-            defaultOpenKeys={['sub1']}
+            defaultSelectedKeys={['announcement']}
             style={{ height: '100%', borderRight: 0 }}
             items={adminMenu}
             inlineCollapsed={collapsed}
+            openKeys={openKeys}
+            onOpenChange={onOpenChange}
+            onSelect={onSelect}
           />
         </Sider>
         <Layout style={{ padding: '0 24px 24px' }}>
-          <Breadcrumb style={{ margin: '16px 0' }}>
-            <Breadcrumb.Item>Home</Breadcrumb.Item>
-            <Breadcrumb.Item>List</Breadcrumb.Item>
-            <Breadcrumb.Item>App</Breadcrumb.Item>
-          </Breadcrumb>
+          <Breadcrumb style={{ margin: '16px 0' }} items={breadCrumbItems} />
           <Content
             style={{
               padding: 24,
