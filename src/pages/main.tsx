@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { MenuFoldOutlined, MenuUnfoldOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
+import { HomeOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Avatar, Badge, Button, MenuProps, Typography } from 'antd';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
-import { adminMenu } from 'components/sidebarMenus';
 import { Outlet, useNavigate } from 'react-router-dom';
 
 const { Header, Content, Sider } = Layout;
@@ -19,7 +18,7 @@ function MenuTrigger(props: { collapsed: boolean, toggleCollapsed: React.MouseEv
   );
 }
 
-export default function Main(props: any) {
+export default function Main(props: { menu: MenuProps["items"] }) {
   const [collapsed, setCollapsed] = useState(false);
   const [openKeys, setOpenKeys] = useState(['sub1']);
   const navigate = useNavigate();
@@ -42,9 +41,19 @@ export default function Main(props: any) {
   }
 
   const urlSegement = location.pathname.split("/").filter((value) => value);
-  let breadCrumbItems = [{ title: "Home" }];
-  for (let item of urlSegement) {
-    breadCrumbItems.push({ title: item })
+  let breadCrumbItems = [{ title: <HomeOutlined /> }];
+  console.log(props.menu)
+  let item: string;
+  let i = 0;
+  let menu = props.menu!!;
+  item = urlSegement[i];
+  while (item != undefined) {
+    item = urlSegement[i];
+    const result: any = menu.find((value) => value!!.key == item);
+    breadCrumbItems.push({ title: result.label });
+    i++;
+    item = urlSegement[i];
+    menu = result.children;
   }
   return (
     <Layout style={{ width: "100%", height: "100%" }}>
@@ -64,12 +73,12 @@ export default function Main(props: any) {
         </div>
       </Header>
       <Layout>
-        <Sider trigger={React.createElement(MenuTrigger, { collapsed, toggleCollapsed })} collapsible collapsed={collapsed} width={200} style={{ background: colorBgContainer, overflowY: "auto" }}>
+        <Sider trigger={React.createElement(MenuTrigger, { collapsed, toggleCollapsed })} collapsible collapsed={collapsed} width={200} style={{ background: colorBgContainer, overflowY: "auto", userSelect: "none" }}>
           <Menu
             mode="inline"
             defaultSelectedKeys={['announcement']}
             style={{ height: '100%', borderRight: 0 }}
-            items={adminMenu}
+            items={props.menu}
             inlineCollapsed={collapsed}
             openKeys={openKeys}
             onOpenChange={onOpenChange}

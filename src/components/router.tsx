@@ -1,11 +1,12 @@
 import { createBrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
 import Main from "pages/main";
 import { Login } from "pages/login";
+import { adminMenu } from "./sidebarMenus";
 
 export const defaultRouter = createBrowserRouter([
   {
     path: "/",
-    element: <Main />
+    element: <>None</>
   },
   {
     path: "/login",
@@ -16,7 +17,7 @@ export const defaultRouter = createBrowserRouter([
 export const adminRouter = createBrowserRouter([
   {
     path: "/",
-    element: <Main />,
+    element: <Main menu={adminMenu} />,
     children: [
       {
         path: "announcement",

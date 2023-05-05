@@ -1,6 +1,6 @@
 import { BarsOutlined, CheckCircleOutlined, DashboardOutlined, HighlightOutlined, UserOutlined } from "@ant-design/icons";
-import { MenuItemProps, MenuProps } from "antd";
-import { ItemType, MenuItemGroupType, MenuItemType } from "antd/es/menu/hooks/useItems";
+import { MenuProps } from "antd";
+import { ItemType } from "antd/es/menu/hooks/useItems";
 import React from "react";
 
 type MenuItem = [string, React.FunctionComponent<any>, string, [string, String][]?];
