@@ -1,9 +1,9 @@
-import axiosRaw from "axios";
+import axiosRaw from 'axios'
 
-const axios = axiosRaw.create({ baseURL: "http://127.0.0.1:8090/api" });
+const axios = axiosRaw.create({ baseURL: 'http://127.0.0.1:8090/api' })
 axios.interceptors.request.use((request) => {
-    request.headers["token"] = sessionStorage.getItem("token");
-    return request;
-});
+  request.headers['token'] = sessionStorage.getItem('token')
+  return request
+})
 
-export default axios;
+export default axios

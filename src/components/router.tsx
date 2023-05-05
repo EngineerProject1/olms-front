@@ -1,70 +1,76 @@
-import { createBrowserRouter, Link, Outlet, Route, Routes } from "react-router-dom";
-import Main from "pages/main";
-import { Login } from "pages/login";
-import { adminMenu } from "./sidebarMenus";
+import {
+  createBrowserRouter,
+  Link,
+  Outlet,
+  Route,
+  Routes,
+} from 'react-router-dom'
+import Main from 'pages/main'
+import { Login } from 'pages/login'
+import { adminMenu } from './sidebarMenus'
 
 export const defaultRouter = createBrowserRouter([
   {
-    path: "/",
-    element: <>None</>
+    path: '/',
+    element: <>None</>,
   },
   {
-    path: "/login",
+    path: '/login',
     element: <Login />,
-  }
-]);
+  },
+])
 
 export const adminRouter = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <Main menu={adminMenu} />,
     children: [
       {
-        path: "announcement",
+        path: 'announcement',
         element: <div>announcement</div>,
       },
       {
-        path: "laboratory",
-        element: <>laboratory</>
+        path: 'laboratory',
+        element: <>laboratory</>,
       },
       {
-        path: "appointment",
+        path: 'appointment',
         children: [
           {
-            path: "auditAppointment",
+            path: 'auditAppointment',
             element: <div>auditAppointment</div>,
           },
           {
-            path: "appointmentRecord",
+            path: 'appointmentRecord',
             element: <>appointmentRecord</>,
-          }
+          },
         ],
       },
       {
-        path: "device",
-        element: <>device</>
+        path: 'device',
+        element: <>device</>,
       },
       {
-        path: "user",
+        path: 'user',
         children: [
           {
-            path: "studentUser",
+            path: 'studentUser',
             element: <div>studentUser</div>,
           },
           {
-            path: "attendance",
+            path: 'attendance',
             element: <>attendance</>,
           },
           {
-            path: "teacherUser",
-            element: <>teacherUser</>
-          }
+            path: 'teacherUser',
+            element: <>teacherUser</>,
+          },
         ],
-      }
-    ]
+      },
+    ],
   },
   {
-    path: "*",
-    element: <div>404</div>
-  }
-]);
+    path: '*',
+    element: <div>404</div>,
+  },
+])
