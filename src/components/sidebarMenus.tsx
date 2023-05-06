@@ -3,6 +3,10 @@ import {
   CheckCircleOutlined,
   DashboardOutlined,
   HighlightOutlined,
+  SaveOutlined,
+  SolutionOutlined,
+  TableOutlined,
+  ToolOutlined,
   UserOutlined,
 } from '@ant-design/icons'
 import { MenuProps } from 'antd'
@@ -40,6 +44,26 @@ const adminMenuItems: MenuItem[] = [
   ],
 ]
 
+const teacherMenuItems: MenuItem[] = [
+  [
+    'appointment',
+    CheckCircleOutlined,
+    '预约管理',
+    [
+      ['appointmentInfo', '预约信息'],
+      ['labAppointment', '预约实验室'],
+    ],
+  ],
+  ['deviceBorrow', ToolOutlined, '设备借用'],
+  ['attendance', SolutionOutlined, '考勤管理'],
+]
+
+const studentMenuItems: MenuItem[] = [
+  ['labAppointment', SaveOutlined, '预约实验室'],
+  ['checkRecord', TableOutlined, '查看考勤记录'],
+  ['deviceBorrow', ToolOutlined, '设备借用'],
+]
+
 function MenuItemsToMenuProps(menuItems: MenuItem[]): MenuProps['items'] {
   let result: MenuProps['items'] = []
   for (let menuItem of menuItems) {
@@ -63,3 +87,9 @@ function MenuItemsToMenuProps(menuItems: MenuItem[]): MenuProps['items'] {
 
 export const adminMenu: MenuProps['items'] =
   MenuItemsToMenuProps(adminMenuItems)
+
+export const teacherMenu: MenuProps['items'] =
+  MenuItemsToMenuProps(teacherMenuItems)
+
+export const studentMenu: MenuProps['items'] =
+  MenuItemsToMenuProps(studentMenuItems)
