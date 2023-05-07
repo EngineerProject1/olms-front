@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { RouterProvider } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { NavigateFunction, RouterProvider, useNavigate } from 'react-router-dom'
 import { adminRouter, defaultRouter } from 'components/router'
 import { message } from 'antd'
 import axios from 'tools/axios'
@@ -13,7 +13,7 @@ let hasResponseInterceptor = false
 
 export default function App(props: any) {
   const [messageApi, contextHolder] = message.useMessage()
-  const [router, setRouter] = useState(adminRouter)
+  const [router, setRouter] = useState(defaultRouter)
   if (hasResponseInterceptor) {
     axios.interceptors.response.clear()
   }

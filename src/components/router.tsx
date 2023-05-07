@@ -1,13 +1,8 @@
-import {
-  createBrowserRouter,
-  Link,
-  Outlet,
-  Route,
-  Routes,
-} from 'react-router-dom'
+import { createBrowserRouter, useNavigate } from 'react-router-dom'
 import Main from 'pages/main'
 import { Login } from 'pages/login'
 import { adminMenu, teacherMenu, studentMenu } from './sidebarMenus'
+import { useEffect } from 'react'
 
 export const defaultRouter = createBrowserRouter([
   {
@@ -17,6 +12,10 @@ export const defaultRouter = createBrowserRouter([
   {
     path: '/login',
     element: <Login />,
+  },
+  {
+    path: '*',
+    element: <Redirect />,
   },
 ])
 
@@ -71,7 +70,7 @@ export const adminRouter = createBrowserRouter([
   },
   {
     path: '*',
-    element: <div>404</div>,
+    element: <Redirect />,
   },
 ])
 
@@ -105,7 +104,7 @@ export const teacherRouter = createBrowserRouter([
   },
   {
     path: '*',
-    element: <div>404</div>,
+    element: <Redirect />,
   },
 ])
 
@@ -130,6 +129,14 @@ export const studentRouter = createBrowserRouter([
   },
   {
     path: '*',
-    element: <div>404</div>,
+    element: <Redirect />,
   },
 ])
+
+function Redirect() {
+  const navigate = useNavigate()
+  useEffect(() => {
+    navigate('/')
+  }, [])
+  return <></>
+}

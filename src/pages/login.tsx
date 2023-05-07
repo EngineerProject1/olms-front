@@ -1,30 +1,82 @@
-import React, { useContext } from 'react'
-import { Avatar, Button, Checkbox, Form, Input, Layout, message } from 'antd'
+import React, { useContext, useRef, useState } from 'react'
+import { Avatar, Button, Form, Input, Layout, Modal } from 'antd'
 import { Footer } from 'antd/es/layout/layout'
-import { GithubOutlined, LockOutlined, UserOutlined } from '@ant-design/icons'
+import {
+  BookOutlined,
+  CrownOutlined,
+  GithubOutlined,
+  LockOutlined,
+  UserOutlined,
+} from '@ant-design/icons'
 import { Typography } from 'antd'
 import axios from 'tools/axios'
 import { GlobalContext } from 'app'
+import { adminRouter, teacherRouter, studentRouter } from 'components/router'
 
 const { Header, Content, Sider } = Layout
 const { Title, Text } = Typography
 
 export function Login(props: any) {
   const marginX = 20
-  const messageApi = useContext(GlobalContext).messageApi
+  const { messageApi, setRouter } = useContext(GlobalContext)
+  const [modalOpen, setModalOpen] = useState(false)
+  const characterButtons = useRef<React.ReactNode[]>([])
 
+  function CharacterButton(props: {
+    router: any
+    Icon: React.FC<{ style?: React.CSSProperties }>
+    name: string
+  }) {
+    return (
+      <Button
+        style={{
+          width: 120,
+          height: 120,
+          marginLeft: 10,
+          marginRight: 10,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        onClick={() => {
+          setRouter(props.router)
+        }}>
+        <props.Icon style={{ fontSize: 90 }} />
+        <div>{props.name}</div>
+      </Button>
+    )
+  }
+  const characterButtonItems = {
+    admin: (
+      <CharacterButton
+        router={adminRouter}
+        Icon={CrownOutlined}
+        name="管理员"
+      />
+    ),
+    teacher: (
+      <CharacterButton router={teacherRouter} Icon={BookOutlined} name="教师" />
+    ),
+    student: (
+      <CharacterButton router={studentRouter} Icon={UserOutlined} name="学生" />
+    ),
+  }
   const onFinish = (values: any) => {
     axios.post('/login', values).then((response) => {
       let data = response.data
       if (data.code == 200) {
         messageApi.success('成功登录')
         sessionStorage.setItem('token', data.data.token)
-        console.log(response)
+        characterButtons.current = data.data.roles.map(
+          (item: string) => characterButtonItems[item as keyof {}]
+        )
+        setModalOpen(true)
       }
     })
   }
   const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo)
+    messageApi.error(`Failed:${errorInfo}`)
   }
   function openGithub() {
     window.open('https://github.com/EngineerProject1/olms-front')
@@ -32,6 +84,22 @@ export function Login(props: any) {
 
   return (
     <Layout style={{ width: '100%', height: '100%', background: '#F0F2F5' }}>
+      <Modal
+        title="请选择要登录的角色"
+        centered
+        open={modalOpen}
+        footer={null}
+        closable={false}>
+        <div
+          style={{
+            height: 180,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          {characterButtons.current}
+        </div>
+      </Modal>
       <Content
         style={{
           margin: 0,
