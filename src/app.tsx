@@ -11,8 +11,14 @@ export const GlobalContext = React.createContext<{
 }>(null as any)
 
 export default function App(props: any) {
+  let targetRouter = defaultRouter
+  const tmp = localStorage.getItem('role')
+  if (tmp != null) {
+    targetRouter = roleToRouter[tmp as keyof {}]
+  }
+
   const [messageApi, contextHolder] = message.useMessage()
-  const [router, setRouter] = useState(defaultRouter)
+  const [router, setRouter] = useState(targetRouter)
   useEffect(() => {
     axios.interceptors.response.use((response) => {
       let data = response.data
@@ -33,10 +39,6 @@ export default function App(props: any) {
         const data = response.data
         console.log(data)
       })
-    }
-    const tmp = localStorage.getItem('role')
-    if (tmp != null) {
-      setRouter(roleToRouter[tmp as keyof {}])
     }
     return () => {
       axios.interceptors.response.clear()

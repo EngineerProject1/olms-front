@@ -38,8 +38,27 @@ function MenuTrigger(props: {
 }
 
 export default function Main(props: { menu: MenuProps['items'] }) {
+  const urlSegement = location.pathname.split('/').filter((value) => value)
+  const defaultSelectedKey = [urlSegement[urlSegement.length - 1]]
+  let defaultOpenkeys: string[] = []
+  let breadCrumbItems = [{ title: <HomeOutlined /> }]
+  let item: string
+  let i = 0
+  let menu = props.menu!!
+  item = urlSegement[i]
+  while (item != undefined) {
+    item = urlSegement[i]
+    const result: any = menu.find((value) => value!!.key == item)
+    defaultOpenkeys.push(item)
+    breadCrumbItems.push({ title: result.label })
+    i++
+    item = urlSegement[i]
+    menu = result.children
+  }
+  defaultOpenkeys.pop()
+
   const [collapsed, setCollapsed] = useState(false)
-  const [openKeys, setOpenKeys] = useState([''])
+  const [openKeys, setOpenKeys] = useState(defaultOpenkeys)
   const navigate = useNavigate()
   const {
     token: { colorBgContainer },
@@ -59,20 +78,6 @@ export default function Main(props: { menu: MenuProps['items'] }) {
     navigate(result)
   }
 
-  const urlSegement = location.pathname.split('/').filter((value) => value)
-  let breadCrumbItems = [{ title: <HomeOutlined /> }]
-  let item: string
-  let i = 0
-  let menu = props.menu!!
-  item = urlSegement[i]
-  while (item != undefined) {
-    item = urlSegement[i]
-    const result: any = menu.find((value) => value!!.key == item)
-    breadCrumbItems.push({ title: result.label })
-    i++
-    item = urlSegement[i]
-    menu = result.children
-  }
   return (
     <Layout style={{ width: '100%', height: '100%' }}>
       <Header
@@ -117,7 +122,7 @@ export default function Main(props: { menu: MenuProps['items'] }) {
           }}>
           <Menu
             mode="inline"
-            defaultSelectedKeys={['announcement']}
+            defaultSelectedKeys={defaultSelectedKey}
             style={{ height: '100%', borderRight: 0 }}
             items={props.menu}
             inlineCollapsed={collapsed}
