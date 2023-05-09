@@ -16,7 +16,7 @@ export const defaultRouter = createBrowserRouter([
   },
   {
     path: '*',
-    element: <Redirect />,
+    element: <Redirect target="" />,
   },
 ])
 
@@ -25,6 +25,10 @@ export const adminRouter = createBrowserRouter([
     path: '/',
     element: <Main menu={adminMenu} />,
     children: [
+      {
+        index: true,
+        element: <Redirect target="announcement" />,
+      },
       {
         path: 'announcement',
         element: <Announcement />,
@@ -71,7 +75,7 @@ export const adminRouter = createBrowserRouter([
   },
   {
     path: '*',
-    element: <Redirect />,
+    element: <Redirect target="announcement" />,
   },
 ])
 
@@ -80,6 +84,10 @@ export const teacherRouter = createBrowserRouter([
     path: '/',
     element: <Main menu={teacherMenu} />,
     children: [
+      {
+        index: true,
+        element: <Redirect target="appointment" />,
+      },
       {
         path: 'appointment',
         children: [
@@ -105,7 +113,7 @@ export const teacherRouter = createBrowserRouter([
   },
   {
     path: '*',
-    element: <Redirect />,
+    element: <Redirect target="appointment" />,
   },
 ])
 
@@ -114,6 +122,10 @@ export const studentRouter = createBrowserRouter([
     path: '/',
     element: <Main menu={studentMenu} />,
     children: [
+      {
+        index: true,
+        element: <Redirect target="labAppointment" />,
+      },
       {
         path: 'labAppointment',
         element: <div>labAppointment</div>,
@@ -130,14 +142,20 @@ export const studentRouter = createBrowserRouter([
   },
   {
     path: '*',
-    element: <Redirect />,
+    element: <Redirect target="labAppointment" />,
   },
 ])
 
-function Redirect() {
+export const roleToRouter = {
+  admin: adminRouter,
+  teacher: teacherRouter,
+  student: studentRouter,
+}
+
+function Redirect(props: { target: string }) {
   const navigate = useNavigate()
   useEffect(() => {
-    navigate('/')
+    navigate(props.target)
   }, [])
   return <></>
 }

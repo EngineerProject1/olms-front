@@ -8,7 +8,7 @@ import { Avatar, Badge, Button, MenuProps, Typography } from 'antd'
 import { Breadcrumb, Layout, Menu, theme } from 'antd'
 import { Outlet, useNavigate } from 'react-router-dom'
 
-const { Header, Content, Sider } = Layout
+const { Header, Sider } = Layout
 const { Title, Text } = Typography
 const headerColor = '#ffffff'
 
@@ -126,17 +126,21 @@ export default function Main(props: { menu: MenuProps['items'] }) {
             onSelect={onSelect}
           />
         </Sider>
-        <Layout style={{ padding: '0 24px 24px' }}>
+        <Layout
+          style={{
+            padding: '0 24px 24px',
+            overflowY: 'auto',
+            overflowX: 'hidden',
+          }}>
           <Breadcrumb style={{ margin: '16px 0' }} items={breadCrumbItems} />
-          <Content
+          <div
             style={{
-              padding: 24,
+              padding: '24px 24px 0px 24px',
               margin: 0,
-              minHeight: 280,
               background: colorBgContainer,
             }}>
             <Outlet />
-          </Content>
+          </div>
         </Layout>
       </Layout>
     </Layout>

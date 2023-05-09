@@ -11,7 +11,12 @@ import {
 import { Typography } from 'antd'
 import axios from 'tools/axios'
 import { GlobalContext } from 'app'
-import { adminRouter, teacherRouter, studentRouter } from 'components/router'
+import {
+  adminRouter,
+  teacherRouter,
+  studentRouter,
+  roleToRouter,
+} from 'components/router'
 
 const { Header, Content, Sider } = Layout
 const { Title, Text } = Typography
@@ -23,6 +28,7 @@ export function Login(props: any) {
   const characterButtons = useRef<React.ReactNode[]>([])
 
   function CharacterButton(props: {
+    role: string
     router: any
     Icon: React.FC<{ style?: React.CSSProperties }>
     name: string
@@ -40,6 +46,7 @@ export function Login(props: any) {
           alignItems: 'center',
         }}
         onClick={() => {
+          localStorage.setItem('role', props.role)
           setRouter(props.router)
         }}>
         <props.Icon style={{ fontSize: 90 }} />
@@ -50,28 +57,45 @@ export function Login(props: any) {
   const characterButtonItems = {
     admin: (
       <CharacterButton
+        role="admin"
         router={adminRouter}
         Icon={CrownOutlined}
         name="管理员"
       />
     ),
     teacher: (
-      <CharacterButton router={teacherRouter} Icon={BookOutlined} name="教师" />
+      <CharacterButton
+        role="teacher"
+        router={teacherRouter}
+        Icon={BookOutlined}
+        name="教师"
+      />
     ),
     student: (
-      <CharacterButton router={studentRouter} Icon={UserOutlined} name="学生" />
+      <CharacterButton
+        role="student"
+        router={studentRouter}
+        Icon={UserOutlined}
+        name="学生"
+      />
     ),
   }
   const onFinish = (values: any) => {
     axios.post('/login', values).then((response) => {
-      let data = response.data
-      if (data.code == 200) {
-        messageApi.success('成功登录')
-        sessionStorage.setItem('token', data.data.token)
-        characterButtons.current = data.data.roles.map(
+      const data = response.data
+      messageApi.success('成功登录')
+      localStorage.setItem('token', data.data.token)
+      const roles = data.data.roles
+      if (roles.length > 1) {
+        characterButtons.current = roles.map(
           (item: string) => characterButtonItems[item as keyof {}]
         )
         setModalOpen(true)
+      } else {
+        const role = roles[0]
+        const router = roleToRouter[role as keyof {}]
+        localStorage.setItem('role', role)
+        setRouter(router)
       }
     })
   }
