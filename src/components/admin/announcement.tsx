@@ -1,5 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Button, Input, Popconfirm, Table, Space, Radio } from 'antd'
+import {
+  Button,
+  Input,
+  Popconfirm,
+  Table,
+  Space,
+  Pagination,
+  ConfigProvider,
+} from 'antd'
 import axios from 'tools/axios'
 
 interface DataType {
@@ -12,25 +20,52 @@ interface DataType {
 // 搜索框
 const { Search } = Input
 const onSearch = (value: string) => console.log(value)
-
 const Announcement: React.FC = () => {
   const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>(
     'checkbox'
   )
-
+  const [loading, setLoading] = useState(true)
   // 公告信息列表
   const [list, setList] = useState<any>([])
   // 公告分页参数管理
-  const [params, setParams] = useState({
+  const [params, setParams] = useState<any>({
     page: 1,
-    pageSize: 8,
+    pageSize: 5,
+    total: 50,
+    pages: 1,
   })
+  //加载分页page参数
+  useEffect(() => {
+    const loadPage = async () => {
+      const res = await axios.get('/notice', {
+        params: {
+          page: params.page,
+          pageSize: params.pageSize,
+        },
+      })
+      const data = res.data.data
+      setParams({
+        ...params,
+        pageSize: data.size,
+        total: data.total,
+        pages: data.pages,
+      })
+    }
+    loadPage()
+  }, [])
   // 拉取公告列表信息
   useEffect(() => {
     const loadList = async () => {
-      const res = await axios.get('/notice', { params })
+      const res = await axios.get('/notice', {
+        params: {
+          page: params.page,
+          pageSize: params.pageSize,
+        },
+      })
+      const data = res.data.data
+      console.log(res)
       setList(
-        res.data.data.records.map(
+        data.records.map(
           (item: {
             id: React.Key
             title: String
@@ -48,6 +83,7 @@ const Announcement: React.FC = () => {
           }
         )
       )
+      setLoading(false)
     }
     loadList()
   }, [params])
@@ -109,14 +145,12 @@ const Announcement: React.FC = () => {
         onSearch={onSearch}
         style={{ width: 200 }}
       />
-
       {/* 新增公告 */}
       <Button
         type="primary"
         style={{ marginBottom: 16, float: 'right', marginRight: 150 }}>
         +新增公告
       </Button>
-
       <Table
         // components={}
         rowSelection={{
@@ -126,16 +160,26 @@ const Announcement: React.FC = () => {
         bordered
         dataSource={list}
         columns={defaultColumns}
-        pagination={{
-          pageSize: params.pageSize,
-          total: 50,
-          onChange: (page) => {
-            setParams({
-              ...params,
-              page,
-            })
-          },
+        pagination={false}
+        loading={loading}
+      />
+      {/*  分页 */}
+
+      <Pagination
+        style={{ float: 'right' }}
+        pageSize={params.pageSize}
+        showSizeChanger
+        pageSizeOptions={[5, 10, 15, 20]}
+        onChange={(page, pageSize) => {
+          setParams({
+            ...params,
+            page: page,
+            pageSize: pageSize,
+          })
         }}
+        total={params.total}
+        showQuickJumper
+        showTotal={(total) => `总共${params.total}条数据`}
       />
     </div>
   )

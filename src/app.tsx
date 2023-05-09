@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { NavigateFunction, RouterProvider, useNavigate } from 'react-router-dom'
 import { adminRouter, defaultRouter, roleToRouter } from 'components/router'
-import { message } from 'antd'
+import { ConfigProvider, message } from 'antd'
 import axios from 'tools/axios'
 import { MessageInstance } from 'antd/es/message/interface'
+import zhCN from 'antd/locale/zh_CN'
 
 export const GlobalContext = React.createContext<{
   setRouter: React.Dispatch<any>
@@ -48,8 +49,10 @@ export default function App(props: any) {
   return (
     <GlobalContext.Provider
       value={{ setRouter: setRouter, messageApi: messageApi }}>
-      {contextHolder}
-      <RouterProvider router={router} />
+      <ConfigProvider locale={zhCN}>
+        {contextHolder}
+        <RouterProvider router={router} />
+      </ConfigProvider>
     </GlobalContext.Provider>
   )
 }
