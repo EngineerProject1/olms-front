@@ -2,13 +2,13 @@ import { createBrowserRouter, redirect, useNavigate } from 'react-router-dom'
 import Main from 'pages/main'
 import { Login } from 'pages/login'
 import { adminMenu, teacherMenu, studentMenu } from './sidebarMenus'
-import Announcement from './admin/announcement/announcement'
+import Announcement from 'components/admin/announcement/announcement'
 import { useEffect } from 'react'
-import { Device } from '../admin/device'
 import {
   AnnouncementEditor,
   announcementLoader,
 } from './admin/announcement/announcementEditor'
+import { Device } from 'components/admin/device/device'
 
 export const defaultRouter = createBrowserRouter([
   {

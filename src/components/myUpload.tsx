@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import { message, Upload } from 'antd'
 import type { UploadChangeParam } from 'antd/es/upload'
@@ -22,7 +22,13 @@ const beforeUpload = (file: RcFile) => {
   return isJpgOrPng && isLt2M
 }
 
-const MyUpload = ({ setName }: { setName: (name: string) => void }) => {
+const MyUpload = ({
+  setName,
+  fileList,
+}: {
+  setName: (name: string) => void
+  fileList: string
+}) => {
   const [loading, setLoading] = useState(false)
   const [imageUrl, setImageUrl] = useState<string>()
 

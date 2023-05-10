@@ -23,6 +23,17 @@ import MyUpload from 'components/myUpload'
 const { RangePicker } = DatePicker
 const { TextArea } = Input
 
+// 数据类型
+interface DataType {
+  key: React.Key
+  name: string
+  images: string
+  belongLab: string
+  price: number
+  model: string
+  status: string
+}
+
 const normFile = (e: any) => {
   if (Array.isArray(e)) {
     return e
@@ -40,13 +51,16 @@ export function Device() {
   // 得到后端返回的文件名
   const [fileName, setFileName] = useState('')
 
+  // status
+  let defaultStatus = ['可用', '未被借用', '已被借用', '维修中', '损坏']
+
   // 设备信息列表
   const [list, setList] = useState<any>([])
 
   // 设备分页参数管理
   const [params, setParams] = useState({
     page: 1,
-    pageSize: 8,
+    pageSize: 5,
     total: 50,
     pages: 1,
   })
@@ -55,7 +69,7 @@ export function Device() {
   useEffect(() => {
     const loadPage = async () => {
       // 获取设备信息
-      const res = await axios.get('/notice', {
+      const res = await axios.get('/device', {
         params: {
           page: params.page,
           pageSize: params.pageSize,
@@ -76,7 +90,7 @@ export function Device() {
   // 拉取所有设备列表信息
   useEffect(() => {
     const loadList = async () => {
-      const res = await axios.get('/notice', {
+      const res = await axios.get('/device', {
         params: {
           page: params.page,
           pageSize: params.pageSize,
@@ -88,17 +102,21 @@ export function Device() {
         data.records.map(
           (item: {
             id: React.Key
-            title: String
-            name: String
-            level: Number
-            createTime: String
+            name: string
+            images: string
+            labName: string
+            price: number
+            model: string
+            status: number
           }) => {
             return {
               key: item.id,
-              title: item.title,
               name: item.name,
-              level: item.level,
-              createTime: item.createTime,
+              images: item.images,
+              belongLab: item.labName,
+              price: item.price,
+              model: item.model,
+              status: defaultStatus[item.status],
             }
           }
         )
@@ -107,17 +125,6 @@ export function Device() {
     }
     loadList()
   }, [params])
-
-  // 数据类型
-  interface DataType {
-    key: React.Key
-    name: string
-    images: string
-    belongLab: string
-    price: number
-    model: string
-    status: string
-  }
 
   // 列字段
   const columns: ColumnsType<DataType> = [
@@ -173,15 +180,6 @@ export function Device() {
   const defaultData: DataType[] = [
     {
       key: 1,
-      name: '加速器',
-      images: '99128c0c-a134-4d6a-ab8a-65469f0810f3.jpeg',
-      belongLab: 'D204',
-      price: 1231,
-      model: 'FBI-114',
-      status: '空闲',
-    },
-    {
-      key: 2,
       name: '加速器',
       images: '99128c0c-a134-4d6a-ab8a-65469f0810f3.jpeg',
       belongLab: 'D204',
@@ -253,11 +251,29 @@ export function Device() {
     setHiddenFlag(true)
   }
 
+  useEffect(() => {
+    form.setFieldsValue
+  })
+
   //新增 或 编辑 设备
+  const [fileList, setFileList] = useState<string>()
   const handleEdit = (id: React.Key) => {
+    const loadDetail = async () => {
+      const res = await axios.get(`/device/${id}`)
+      const data = res.data.data
+      data.images = '/api/img/download?name=' + data.images
+
+      // 表单数据回填
+      form.setFieldsValue(data)
+      // 回填upload
+      // const formatImgList = data.map((item) => item.images)
+      setFileList(data.images)
+    }
     setHiddenFlag(false)
     if (id === -1) {
+      form.resetFields()
     } else {
+      loadDetail()
     }
   }
 
@@ -265,26 +281,30 @@ export function Device() {
   // 文案适配  路由参数id 判断条件
   // const id = params.post('id')
   // 数据回填  id调用接口  1.表单回填 2.暂存列表 3.Upload组件fileList
+
   const [form] = Form.useForm()
-  useEffect(() => {
-    const loadDetail = async () => {
-      // const res = await axios.get(`/mp/articles/${id}`)
-      const data = defaultData
-      // 表单数据回填
-      form.setFieldsValue({ data })
-      // 回填upload
-      const formatImgList = data.map((item) => item.images)
-    }
-    const data = defaultData
-    // 表单数据回填
-    form.setFieldsValue({ data })
-    // 回填upload
-    const formatImgList = data.map((item) => item.images)
-    // 必须是编辑状态 才可以发送请求
-    // if (id) {
-    //   loadDetail()
-    // }
-  }, [form])
+
+  // useEffect(() => {
+  //   const loadDetail = async () => {
+  //     const res = await axios.get(`/device/${id}`)
+  //     const data = res
+  //     console.log(res)
+
+  //     // 表单数据回填
+  //     form.setFieldsValue({ data })
+  //     // 回填upload
+  //     // const formatImgList = data.map((item) => item.images)
+  //   }
+  //   const data = defaultData
+  //   // 表单数据回填
+  //   form.setFieldsValue({ data })
+  //   // 回填upload
+  //   const formatImgList = data.map((item) => item.images)
+  //   //必须是编辑状态 才可以发送请求
+  //   if (id) {
+  //     loadDetail()
+  //   }
+  // }, [id, form])
 
   // 删除操作
   const handleDelete = (id: React.Key) => {
@@ -320,7 +340,7 @@ export function Device() {
     },
   }
   return (
-    <div style={{ position: 'relative' }}>
+    <div>
       {/* 搜索框 */}
       <Search
         placeholder="input search text"
@@ -339,7 +359,7 @@ export function Device() {
           ...rowSelection,
         }}
         columns={columns}
-        dataSource={defaultData}
+        dataSource={list}
         bordered
         pagination={false}
         loading={loading}
@@ -368,12 +388,13 @@ export function Device() {
         disabled={false}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
+        form={form}
         style={{
           width: 400,
-          position: 'absolute',
           background: 'white',
-          top: '-25%',
-          left: '25%',
+          position: 'absolute',
+          top: '6%',
+          left: '37%',
           boxShadow: '1px 2px 9px #808080',
           margin: '4em',
           padding: '1em',
@@ -402,7 +423,7 @@ export function Device() {
           label="图片"
           valuePropName="fileList"
           getValueFromEvent={normFile}>
-          <MyUpload setName={setFileName} />
+          <MyUpload setName={setFileName} fileList={fileList as string} />
         </Form.Item>
 
         <Form.Item name="belongLab" label="实验室">
@@ -412,9 +433,10 @@ export function Device() {
         </Form.Item>
 
         <Form.Item
+          className="price"
           name="price"
           label="价格"
-          rules={[{ pattern: /^\d+[/.\d*]?$/, message: '请输入正确的数字' }]}>
+          rules={[{ pattern: /^\d+[/.\d*]?\d$/, message: '请输入正确的数字' }]}>
           <Input placeholder="请输入价格" />
         </Form.Item>
 

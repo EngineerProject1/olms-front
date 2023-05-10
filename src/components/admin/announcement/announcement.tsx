@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button, Input, Popconfirm, Table, Space, Pagination } from 'antd'
 import axios from 'tools/axios'
 import AddButton from './addButton'
+
 interface DataType {
   key: React.Key
   title: String
