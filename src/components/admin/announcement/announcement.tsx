@@ -1,14 +1,6 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  Button,
-  Input,
-  Popconfirm,
-  Table,
-  Space,
-  Pagination,
-  ConfigProvider,
-} from 'antd'
+import { Button, Input, Popconfirm, Table, Space, Pagination } from 'antd'
 import axios from 'tools/axios'
 import AddButton from './addButton'
 interface DataType {
@@ -33,7 +25,7 @@ const Announcement: React.FC = () => {
   const [params, setParams] = useState<any>({
     page: 1,
     pageSize: 5,
-    total: 50,
+    total: 0,
     pages: 1,
   })
 
@@ -89,13 +81,16 @@ const Announcement: React.FC = () => {
     }
     loadList()
   }, [params])
-
+  const editAnnouncement = (id: React.Key) => {
+    navigate(`/announcement/edit/${id}`)
+  }
   // 单条删除
   const delAnnouncement = async (id: React.Key) => {
     await axios.delete(`/auth/notice/${id}`)
     // 通过修改params刷新列表
     setParams({
       ...params,
+      total: params.total - 1,
     })
   }
   // 批量删除
@@ -107,15 +102,13 @@ const Announcement: React.FC = () => {
     })
     setParams({
       ...params,
+      total: params.total - selectedRowKeys.length,
     })
     setSelectedRowKeys([])
   }
 
   // 编辑
   const navigate = useNavigate()
-  const goEdit = () => {
-    navigate('/edit')
-  }
   const defaultColumns = [
     {
       title: '标题',
@@ -143,18 +136,23 @@ const Announcement: React.FC = () => {
       width: '20%',
       render: (_: any, record: { key: React.Key }) => (
         <Space>
-          <a>编辑</a>
+          <a
+            onClick={() => {
+              editAnnouncement(record.key)
+            }}>
+            编辑
+          </a>
           <Popconfirm
             title="是否该公告信息？"
-            onConfirm={() => delAnnouncement(record.key)}>
+            onConfirm={() => {
+              delAnnouncement(record.key)
+            }}>
             <a style={{ color: 'red' }}>删除</a>
           </Popconfirm>
         </Space>
       ),
     },
   ]
-
-  const data: DataType[] = list
 
   // 封装被选中项的key值
   const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
@@ -174,32 +172,38 @@ const Announcement: React.FC = () => {
   return (
     <>
       <div>
-        {/* 搜索框 */}
-        <Search
-          placeholder="input search text"
-          onSearch={onSearch}
-          style={{ width: 200 }}
-        />
-        {/* 新增公告 */}
-        <AddButton></AddButton>
-        {/* 批量删除 */}
-        <Popconfirm
-          title="是否删除所选公告信息？"
-          onConfirm={delBatch}
-          disabled={selectedRowKeys.length === 0}>
-          <Button
-            danger
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          {/* 搜索框 */}
+          <Search
+            placeholder="input search text"
+            onSearch={onSearch}
+            style={{ width: 200 }}
+          />
+          <div
             style={{
-              // backgroundColor: '#e96b6b',
-              marginBottom: 16,
-              float: 'right',
-              marginRight: 10,
-            }}
-            disabled={selectedRowKeys.length === 0}>
-            批量删除
-          </Button>
-        </Popconfirm>
-
+              width: 180,
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}>
+            {/* 批量删除 */}
+            <Popconfirm
+              title="是否删除所选公告信息？"
+              onConfirm={delBatch}
+              disabled={selectedRowKeys.length === 0}>
+              <Button danger disabled={selectedRowKeys.length === 0}>
+                删除选中
+              </Button>
+            </Popconfirm>
+            {/* 新增公告 */}
+            <Button
+              type="primary"
+              onClick={() => {
+                navigate('/announcement/edit/0')
+              }}>
+              新增公告
+            </Button>
+          </div>
+        </div>
         <Table
           // components={}
           rowSelection={{

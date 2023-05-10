@@ -1,10 +1,15 @@
-import { createBrowserRouter, useNavigate } from 'react-router-dom'
+import { createBrowserRouter, redirect, useNavigate } from 'react-router-dom'
 import Main from 'pages/main'
 import { Login } from 'pages/login'
 import { adminMenu, teacherMenu, studentMenu } from './sidebarMenus'
 import Announcement from './admin/announcement/announcement'
 import { useEffect } from 'react'
-import { Device} from '../admin/device'
+import { Device } from '../admin/device'
+import {
+  AnnouncementEditor,
+  announcementLoader,
+} from './admin/announcement/announcementEditor'
+
 export const defaultRouter = createBrowserRouter([
   {
     path: '/',
@@ -24,6 +29,7 @@ export const adminRouter = createBrowserRouter([
   {
     path: '/',
     element: <Main menu={adminMenu} />,
+    errorElement: <Redirect target="" />,
     children: [
       {
         index: true,
@@ -31,7 +37,14 @@ export const adminRouter = createBrowserRouter([
       },
       {
         path: 'announcement',
-        element: <Announcement />,
+        children: [
+          { index: true, element: <Announcement /> },
+          {
+            path: 'edit/:noticeId',
+            loader: announcementLoader as any,
+            element: <AnnouncementEditor />,
+          },
+        ],
       },
       {
         path: 'laboratory',
@@ -52,7 +65,11 @@ export const adminRouter = createBrowserRouter([
       },
       {
         path: 'device',
-        element: <><Device /></>,
+        element: (
+          <>
+            <Device />
+          </>
+        ),
       },
       {
         path: 'user',
@@ -154,6 +171,7 @@ export const roleToRouter = {
 
 function Redirect(props: { target: string }) {
   const navigate = useNavigate()
+  console.log('redirct from ', location.pathname, ' to ', props.target)
   useEffect(() => {
     navigate(props.target)
   }, [])

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   HomeOutlined,
   MenuFoldOutlined,
@@ -7,6 +7,7 @@ import {
 import { Avatar, Badge, Button, MenuProps, Typography } from 'antd'
 import { Breadcrumb, Layout, Menu, theme } from 'antd'
 import { Outlet, useNavigate } from 'react-router-dom'
+import { ItemType } from 'antd/es/breadcrumb/Breadcrumb'
 
 const { Header, Sider } = Layout
 const { Title, Text } = Typography
@@ -38,28 +39,43 @@ function MenuTrigger(props: {
 }
 
 export default function Main(props: { menu: MenuProps['items'] }) {
-  const urlSegement = location.pathname.split('/').filter((value) => value)
-  const defaultSelectedKey = [urlSegement[urlSegement.length - 1]]
-  let defaultOpenkeys: string[] = []
-  let breadCrumbItems = [{ title: <HomeOutlined /> }]
-  let item: string
-  let i = 0
-  let menu = props.menu!!
-  item = urlSegement[i]
-  while (item != undefined) {
-    item = urlSegement[i]
-    const result: any = menu.find((value) => value!!.key == item)
-    defaultOpenkeys.push(item)
-    breadCrumbItems.push({ title: result.label })
-    i++
-    item = urlSegement[i]
-    menu = result.children
-  }
-  defaultOpenkeys.pop()
-
   const [collapsed, setCollapsed] = useState(false)
-  const [openKeys, setOpenKeys] = useState(defaultOpenkeys)
+  const [menuConfig, setMenuConfig] = useState<{
+    openKeys: string[]
+    selectKeys: string[]
+    breadCrumbItems: ItemType[]
+  }>({
+    openKeys: [],
+    selectKeys: [],
+    breadCrumbItems: [],
+  })
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const urlSegement = location.pathname.split('/').filter((value) => value)
+    let defaultOpenkeys: string[] = []
+    let breadCrumbItems = [{ title: <HomeOutlined /> }]
+    let item: string
+    let i = 0
+    let menu = props.menu!!
+    item = urlSegement[i]
+    while (item != undefined) {
+      item = urlSegement[i]
+      const result: any = menu.find((value) => value!!.key == item)
+      defaultOpenkeys.push(item)
+      breadCrumbItems.push({ title: result.label })
+      i++
+      item = urlSegement[i]
+      menu = result.children
+    }
+    defaultOpenkeys.pop()
+    setMenuConfig({
+      openKeys: defaultOpenkeys,
+      selectKeys: [urlSegement[urlSegement.length - 1]],
+      breadCrumbItems: breadCrumbItems,
+    })
+  }, [])
+
   const {
     token: { colorBgContainer },
   } = theme.useToken()
@@ -68,7 +84,7 @@ export default function Main(props: { menu: MenuProps['items'] }) {
     setCollapsed(!collapsed)
   }
   const onOpenChange: MenuProps['onOpenChange'] = (keys) => {
-    setOpenKeys([keys[keys.length - 1]])
+    setMenuConfig({ ...menuConfig, openKeys: [keys[keys.length - 1]] })
   }
   const onSelect = (info: { keyPath: string[] }) => {
     let result = ''
@@ -76,6 +92,25 @@ export default function Main(props: { menu: MenuProps['items'] }) {
       result += `/${item}`
     }
     navigate(result)
+    const urlSegement = location.pathname.split('/').filter((value) => value)
+    let breadCrumbItems = [{ title: <HomeOutlined /> }]
+    let item: string
+    let i = 0
+    let menu = props.menu!!
+    item = urlSegement[i]
+    while (item != undefined) {
+      item = urlSegement[i]
+      const result: any = menu.find((value) => value!!.key == item)
+      breadCrumbItems.push({ title: result.label })
+      i++
+      item = urlSegement[i]
+      menu = result.children
+    }
+    setMenuConfig({
+      ...menuConfig,
+      selectKeys: [urlSegement[urlSegement.length - 1]],
+      breadCrumbItems: breadCrumbItems,
+    })
   }
 
   return (
@@ -122,11 +157,11 @@ export default function Main(props: { menu: MenuProps['items'] }) {
           }}>
           <Menu
             mode="inline"
-            selectedKeys={defaultSelectedKey}
+            selectedKeys={menuConfig.selectKeys}
             style={{ height: '100%', borderRight: 0 }}
             items={props.menu}
             inlineCollapsed={collapsed}
-            openKeys={openKeys}
+            openKeys={menuConfig.openKeys}
             onOpenChange={onOpenChange}
             onSelect={onSelect}
           />
@@ -137,7 +172,10 @@ export default function Main(props: { menu: MenuProps['items'] }) {
             overflowY: 'auto',
             overflowX: 'hidden',
           }}>
-          <Breadcrumb style={{ margin: '16px 0' }} items={breadCrumbItems} />
+          <Breadcrumb
+            style={{ margin: '16px 0' }}
+            items={menuConfig.breadCrumbItems}
+          />
           <div
             style={{
               padding: '24px 24px 0px 24px',

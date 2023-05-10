@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Button, Form, Input, Modal, Radio } from 'antd'
-import TextDemo from './textDemo'
 import Publish from './quillText'
 
 interface Values {
@@ -44,7 +43,6 @@ const AddButton: React.FC = () => {
   return (
     <div>
       <Button
-        style={{ marginBottom: 16, float: 'right', marginRight: 25 }}
         type="primary"
         onClick={() => {
           setOpen(true)
