@@ -4,7 +4,7 @@ import { Login } from 'pages/login'
 import { adminMenu, teacherMenu, studentMenu } from './sidebarMenus'
 import Announcement from './admin/announcement/announcement'
 import { useEffect } from 'react'
-
+import { Device} from '../admin/device'
 export const defaultRouter = createBrowserRouter([
   {
     path: '/',
@@ -52,7 +52,7 @@ export const adminRouter = createBrowserRouter([
       },
       {
         path: 'device',
-        element: <>device</>,
+        element: <><Device /></>,
       },
       {
         path: 'user',
