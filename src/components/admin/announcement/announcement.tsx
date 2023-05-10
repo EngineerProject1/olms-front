@@ -39,7 +39,7 @@ const Announcement: React.FC = () => {
 
   //加载分页page参数
   useEffect(() => {
-    const loadPage = async () => {
+    ;(async () => {
       const res = await axios.get('/notice', {
         params: {
           page: params.page,
@@ -53,8 +53,7 @@ const Announcement: React.FC = () => {
         total: data.total,
         pages: data.pages,
       })
-    }
-    loadPage()
+    })()
   }, [])
 
   // 拉取公告列表信息

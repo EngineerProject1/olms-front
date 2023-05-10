@@ -86,6 +86,7 @@ export function Login(props: any) {
       messageApi.success('成功登录')
       localStorage.setItem('token', data.data.token)
       const roles = data.data.roles
+      //当用户身份多于1个时,弹出选择对话框
       if (roles.length > 1) {
         characterButtons.current = roles.map(
           (item: string) => characterButtonItems[item as keyof {}]

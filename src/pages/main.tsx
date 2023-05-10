@@ -122,7 +122,7 @@ export default function Main(props: { menu: MenuProps['items'] }) {
           }}>
           <Menu
             mode="inline"
-            defaultSelectedKeys={defaultSelectedKey}
+            selectedKeys={defaultSelectedKey}
             style={{ height: '100%', borderRight: 0 }}
             items={props.menu}
             inlineCollapsed={collapsed}

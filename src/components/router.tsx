@@ -2,7 +2,7 @@ import { createBrowserRouter, useNavigate } from 'react-router-dom'
 import Main from 'pages/main'
 import { Login } from 'pages/login'
 import { adminMenu, teacherMenu, studentMenu } from './sidebarMenus'
-import Announcement from './admin/announcement'
+import Announcement from './admin/announcement/announcement'
 import { useEffect } from 'react'
 
 export const defaultRouter = createBrowserRouter([
