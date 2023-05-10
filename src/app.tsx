@@ -38,7 +38,7 @@ export default function App(props: any) {
     if (localStorage.getItem('token') != null) {
       axios.get('/token').then((response) => {
         const data = response.data
-        console.log(data)
+        //console.log(data)
       })
     }
     return () => {

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Button,
   Input,
@@ -9,7 +10,7 @@ import {
   ConfigProvider,
 } from 'antd'
 import axios from 'tools/axios'
-
+import AddButton from './addButton'
 interface DataType {
   key: React.Key
   title: String
@@ -18,12 +19,13 @@ interface DataType {
   createTime: String
 }
 // 搜索框
-const { Search } = Input
+const { Search, TextArea } = Input
 const onSearch = (value: string) => console.log(value)
 const Announcement: React.FC = () => {
   const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>(
     'checkbox'
   )
+  // 加载动态显示
   const [loading, setLoading] = useState(true)
   // 公告信息列表
   const [list, setList] = useState<any>([])
@@ -34,6 +36,7 @@ const Announcement: React.FC = () => {
     total: 50,
     pages: 1,
   })
+
   //加载分页page参数
   useEffect(() => {
     const loadPage = async () => {
@@ -53,6 +56,7 @@ const Announcement: React.FC = () => {
     }
     loadPage()
   }, [])
+
   // 拉取公告列表信息
   useEffect(() => {
     const loadList = async () => {
@@ -63,7 +67,6 @@ const Announcement: React.FC = () => {
         },
       })
       const data = res.data.data
-      console.log(res)
       setList(
         data.records.map(
           (item: {
@@ -88,6 +91,32 @@ const Announcement: React.FC = () => {
     loadList()
   }, [params])
 
+  // 单条删除
+  const delAnnouncement = async (id: React.Key) => {
+    await axios.delete(`/auth/notice/${id}`)
+    // 通过修改params刷新列表
+    setParams({
+      ...params,
+    })
+  }
+  // 批量删除
+  const delBatch = async () => {
+    await axios.delete('/auth/notice', {
+      data: {
+        ids: selectedRowKeys,
+      },
+    })
+    setParams({
+      ...params,
+    })
+    setSelectedRowKeys([])
+  }
+
+  // 编辑
+  const navigate = useNavigate()
+  const goEdit = () => {
+    navigate('/edit')
+  }
   const defaultColumns = [
     {
       title: '标题',
@@ -113,10 +142,12 @@ const Announcement: React.FC = () => {
       title: '操作',
       dataIndex: 'operation',
       width: '20%',
-      render: () => (
+      render: (_: any, record: { key: React.Key }) => (
         <Space>
           <a>编辑</a>
-          <Popconfirm title="确认删除该公告信息？">
+          <Popconfirm
+            title="是否该公告信息？"
+            onConfirm={() => delAnnouncement(record.key)}>
             <a style={{ color: 'red' }}>删除</a>
           </Popconfirm>
         </Space>
@@ -126,62 +157,83 @@ const Announcement: React.FC = () => {
 
   const data: DataType[] = list
 
+  // 封装被选中项的key值
+  const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
+
   // 可选框
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        'selectedRows: ',
-        selectedRows
-      )
+      // console.log(
+      //   `selectedRowKeys: ${selectedRowKeys}`,
+      //   'selectedRows: ',
+      //   selectedRows
+      // )
+      setSelectedRowKeys(selectedRowKeys)
     },
   }
 
   return (
-    <div>
-      {/* 搜索框 */}
-      <Search
-        placeholder="input search text"
-        onSearch={onSearch}
-        style={{ width: 200 }}
-      />
-      {/* 新增公告 */}
-      <Button
-        type="primary"
-        style={{ marginBottom: 16, float: 'right', marginRight: 150 }}>
-        +新增公告
-      </Button>
-      <Table
-        // components={}
-        rowSelection={{
-          type: selectionType,
-          ...rowSelection,
-        }}
-        bordered
-        dataSource={list}
-        columns={defaultColumns}
-        pagination={false}
-        loading={loading}
-      />
-      {/*  分页 */}
+    <>
+      <div>
+        {/* 搜索框 */}
+        <Search
+          placeholder="input search text"
+          onSearch={onSearch}
+          style={{ width: 200 }}
+        />
+        {/* 新增公告 */}
+        <AddButton></AddButton>
+        {/* 批量删除 */}
+        <Popconfirm
+          title="是否删除所选公告信息？"
+          onConfirm={delBatch}
+          disabled={selectedRowKeys.length === 0}>
+          <Button
+            danger
+            style={{
+              // backgroundColor: '#e96b6b',
+              marginBottom: 16,
+              float: 'right',
+              marginRight: 10,
+            }}
+            disabled={selectedRowKeys.length === 0}>
+            批量删除
+          </Button>
+        </Popconfirm>
 
-      <Pagination
-        style={{ float: 'right' }}
-        pageSize={params.pageSize}
-        showSizeChanger
-        pageSizeOptions={[5, 10, 15, 20]}
-        onChange={(page, pageSize) => {
-          setParams({
-            ...params,
-            page: page,
-            pageSize: pageSize,
-          })
-        }}
-        total={params.total}
-        showQuickJumper
-        showTotal={(total) => `总共${params.total}条数据`}
-      />
-    </div>
+        <Table
+          // components={}
+          rowSelection={{
+            preserveSelectedRowKeys: true,
+            type: selectionType,
+            ...rowSelection,
+          }}
+          bordered
+          dataSource={list}
+          columns={defaultColumns}
+          pagination={false}
+          loading={loading}
+        />
+        {/*  分页 */}
+
+        <Pagination
+          style={{ float: 'right' }}
+          pageSize={params.pageSize}
+          showSizeChanger
+          pageSizeOptions={[5, 10, 15, 20]}
+          onChange={(page, pageSize) => {
+            setParams({
+              ...params,
+              page: page,
+              pageSize: pageSize,
+            })
+          }}
+          total={params.total}
+          showQuickJumper
+          showTotal={(total) => `总共${params.total}条数据`}
+        />
+      </div>
+    </>
   )
 }
 
