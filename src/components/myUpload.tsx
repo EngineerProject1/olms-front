@@ -50,6 +50,12 @@ const MyUpload = ({
     }
   }
 
+  useEffect(()=>{
+      if (fileList && !imageUrl){
+          setImageUrl(fileList)
+      }
+  })
+
   const uploadButton = (
     <div>
       {loading ? <LoadingOutlined /> : <PlusOutlined />}

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { PlusOutlined, CloseOutlined, UploadOutlined } from '@ant-design/icons'
+import { CloseOutlined } from '@ant-design/icons'
 import axios from 'tools/axios'
 import {
   Button,
