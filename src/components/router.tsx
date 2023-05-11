@@ -1,8 +1,4 @@
 import Announcement from 'components/admin/announcement/announcement'
-import {
-  AnnouncementEditor,
-  announcementLoader,
-} from 'components/admin/announcement/announcementEditor'
 import { Device } from 'components/admin/device/device'
 import { adminMenu, studentMenu, teacherMenu } from 'components/sidebarMenus'
 import { Login } from 'pages/login'
@@ -37,14 +33,7 @@ export const adminRouter = createBrowserRouter([
       },
       {
         path: 'announcement',
-        children: [
-          { index: true, element: <Announcement /> },
-          {
-            path: 'edit/:noticeId',
-            loader: announcementLoader as any,
-            element: <AnnouncementEditor />,
-          },
-        ],
+        element: <Announcement />,
       },
       {
         path: 'laboratory',

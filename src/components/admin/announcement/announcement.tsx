@@ -1,8 +1,16 @@
-import { Button, Input, Pagination, Popconfirm, Space, Table } from 'antd'
+import {
+  Button,
+  Input,
+  Modal,
+  Pagination,
+  Popconfirm,
+  Space,
+  Table,
+} from 'antd'
 import { GlobalContext } from 'app'
 import React, { useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import axios from 'tools/axios'
+import { AnnouncementEditor } from './announcementEditor'
 interface DataType {
   key: React.Key
   title: String
@@ -17,6 +25,8 @@ const Announcement: React.FC = () => {
   const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>(
     'checkbox'
   )
+  const [modalOpen, setModalOpen] = useState(false)
+  const [noticeID, setNoticeID] = useState<React.Key>('')
   // 加载动态显示
   const [loading, setLoading] = useState(true)
   // 公告信息列表
@@ -51,6 +61,9 @@ const Announcement: React.FC = () => {
 
   // 拉取公告列表信息
   useEffect(() => {
+    if (modalOpen == true) {
+      return
+    }
     const loadList = async () => {
       const res = await axios.get('/notice', {
         params: {
@@ -81,9 +94,10 @@ const Announcement: React.FC = () => {
       setLoading(false)
     }
     loadList()
-  }, [params])
+  }, [params, modalOpen])
   const editAnnouncement = (id: React.Key) => {
-    navigate(`/announcement/edit/${id}`)
+    setNoticeID(id)
+    setModalOpen(true)
   }
   // 单条删除
   const delAnnouncement = async (id: React.Key) => {
@@ -111,7 +125,6 @@ const Announcement: React.FC = () => {
   }
 
   // 编辑
-  const navigate = useNavigate()
   const defaultColumns = [
     {
       title: '标题',
@@ -175,6 +188,16 @@ const Announcement: React.FC = () => {
   return (
     <>
       <div>
+        <Modal
+          centered
+          open={modalOpen}
+          footer={null}
+          width={1000}
+          onCancel={() => {
+            setModalOpen(false)
+          }}>
+          <AnnouncementEditor noticeId={noticeID} setModalOpen={setModalOpen} />
+        </Modal>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           {/* 搜索框 */}
           <Search
@@ -201,14 +224,14 @@ const Announcement: React.FC = () => {
             <Button
               type="primary"
               onClick={() => {
-                navigate('/announcement/edit/0')
+                setNoticeID(0)
+                setModalOpen(true)
               }}>
               新增公告
             </Button>
           </div>
         </div>
         <Table
-          // components={}
           rowSelection={{
             preserveSelectedRowKeys: true,
             type: selectionType,

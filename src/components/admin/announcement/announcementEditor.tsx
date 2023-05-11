@@ -1,36 +1,64 @@
-import { Button, Form, Input, InputNumber } from 'antd'
+import { Button, Form, Input, InputNumber, Spin } from 'antd'
 import { GlobalContext } from 'app'
-import { useContext, useRef } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { useLoaderData, useNavigate } from 'react-router-dom'
 import axios from 'tools/axios'
 
-export function AnnouncementEditor() {
-  const width = 800
-  const { data } = useLoaderData() as {
-    data: { content: string; title: string; id: number }
-  }
-  const navigate = useNavigate()
-  const { messageApi } = useContext(GlobalContext)
+interface data {
+  id: number
+  title: string
+  content: string
+  level: number | null
+}
 
+export function AnnouncementEditor(props: {
+  noticeId: React.Key
+  setModalOpen: React.Dispatch<any>
+}) {
+  const width = 800
+  const { messageApi } = useContext(GlobalContext)
   const quillRef = useRef<any>()
+  const [isLoading, setLoading] = useState(true)
+  const [form] = Form.useForm()
+
+  useEffect(() => {
+    setLoading(true)
+    ;(async () => {
+      form.setFieldsValue(await announcementLoader(props.noticeId as string))
+      setLoading(false)
+    })()
+  }, [props])
+
   const onFinish = async (values: any) => {
-    let response
-    if (data.id == 0) {
-      response = await axios.post('/auth/notice', { ...values, id: data.id })
+    if (props.noticeId == 0) {
+      await axios.post('/auth/notice', {
+        ...values,
+      })
     } else {
-      response = await axios.put('/auth/notice', { ...values, id: data.id })
+      await axios.put('/auth/notice', {
+        ...values,
+        id: props.noticeId,
+      })
     }
     messageApi.success('成功')
-    navigate('/announcement')
+    props.setModalOpen(false)
   }
-  return (
+  return isLoading ? (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+      <Spin />
+    </div>
+  ) : (
     <Form
+      form={form}
       labelCol={{ span: 2 }}
       wrapperCol={{ span: 13 }}
       // 注意：此处需要为富文本编辑表示的 content 文章内容设置默认值
-      initialValues={data}
       onFinish={onFinish}>
       <Form.Item
         label="标题"
@@ -46,11 +74,10 @@ export function AnnouncementEditor() {
           theme="snow"
           ref={quillRef}
           style={{
-            height: 500,
+            height: 300,
             width: width,
             marginBottom: 50,
           }}
-          // defaultValue={data.content}
         />
       </Form.Item>
       <Form.Item
@@ -68,14 +95,10 @@ export function AnnouncementEditor() {
   )
 }
 
-export async function announcementLoader({
-  params,
-}: {
-  params: { noticeId: string }
-}) {
-  if (Number.parseInt(params.noticeId) == 0) {
-    return { data: { id: 0 } }
+async function announcementLoader(noticeId: string): Promise<data> {
+  if (Number.parseInt(noticeId) == 0) {
+    return { id: 0, title: '', content: '', level: null }
   }
-  const response = await axios.get('/notice/' + params.noticeId)
-  return { data: response.data.data }
+  const response = await axios.get('/notice/' + noticeId)
+  return response.data.data
 }
