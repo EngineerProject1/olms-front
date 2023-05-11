@@ -14,8 +14,10 @@ import {
   Typography,
 } from 'antd'
 import { ItemType } from 'antd/es/breadcrumb/Breadcrumb'
+import User from 'mdoel/User'
 import React, { useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
+import axios from 'tools/axios'
 
 const { Header, Sider } = Layout
 const { Title, Text } = Typography
@@ -59,7 +61,26 @@ export default function Main(props: { menu: MenuProps['items'] }) {
   })
   const navigate = useNavigate()
 
+  // 用户信息
+  const [user, setUser] = useState<User>({
+    id: 1,
+    username: 'xxx',
+    passowrd: '',
+    salt: '',
+    realName: 'xxx',
+    sex: '男',
+    phone: '111',
+    email: '222',
+    avatar: '',
+    createTime: new Date(),
+    updateTime: new Date(),
+  })
+
   useEffect(() => {
+    // 获取当前登录的用户信息
+    axios.get('/token').then((resp) => {
+      setUser(resp.data.data)
+    })
     const urlSegement = location.pathname.split('/').filter((value) => value)
     let defaultOpenkeys: string[] = []
     let breadCrumbItems = [{ title: <HomeOutlined /> }]
@@ -144,8 +165,24 @@ export default function Main(props: { menu: MenuProps['items'] }) {
             <BellOutlined style={{ fontSize: 20, color: headerColor }} />
           </Badge> */}
           <div style={{ display: 'flex', alignItems: 'center', marginLeft: 8 }}>
-            <Avatar src="/avatar.png" size="small" style={{ marginRight: 2 }} />
-            <Text style={{ color: headerColor }}>9622</Text>
+            {user.avatar}
+            <Avatar
+              src={
+                user.avatar != ''
+                  ? `/api/img/download?name=${user.avatar}`
+                  : '/avatar.png'
+              }
+              size="large"
+              style={{ marginRight: 2 }}
+            />
+            <Text
+              style={{
+                color: headerColor,
+                fontSize: '18px',
+                marginLeft: '12px',
+              }}>
+              {user.realName}
+            </Text>
           </div>
         </div>
       </Header>
