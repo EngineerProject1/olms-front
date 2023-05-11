@@ -1,10 +1,10 @@
+import { Button, Form, Input, InputNumber } from 'antd'
+import { GlobalContext } from 'app'
+import { useContext, useRef } from 'react'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { Button, Form, Input, InputNumber } from 'antd'
-import axios from 'tools/axios'
 import { useLoaderData, useNavigate } from 'react-router-dom'
-import { RefObject, useContext, useRef } from 'react'
-import { GlobalContext } from 'app'
+import axios from 'tools/axios'
 
 export function AnnouncementEditor() {
   const width = 800

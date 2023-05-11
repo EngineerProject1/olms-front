@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { Button, Input, Pagination, Popconfirm, Space, Table } from 'antd'
+import { GlobalContext } from 'app'
+import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button, Input, Popconfirm, Table, Space, Pagination } from 'antd'
 import axios from 'tools/axios'
-import AddButton from './addButton'
-
 interface DataType {
   key: React.Key
   title: String
@@ -29,6 +28,7 @@ const Announcement: React.FC = () => {
     total: 0,
     pages: 1,
   })
+  const { messageApi } = useContext(GlobalContext)
 
   //加载分页page参数
   useEffect(() => {
@@ -88,6 +88,7 @@ const Announcement: React.FC = () => {
   // 单条删除
   const delAnnouncement = async (id: React.Key) => {
     await axios.delete(`/auth/notice/${id}`)
+    messageApi.success('成功删除')
     // 通过修改params刷新列表
     setParams({
       ...params,
@@ -101,6 +102,7 @@ const Announcement: React.FC = () => {
         ids: selectedRowKeys,
       },
     })
+    messageApi.success('成功删除')
     setParams({
       ...params,
       total: params.total - selectedRowKeys.length,

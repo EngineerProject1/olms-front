@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { NavigateFunction, RouterProvider, useNavigate } from 'react-router-dom'
-import { adminRouter, defaultRouter, roleToRouter } from 'components/router'
 import { ConfigProvider, message } from 'antd'
-import axios from 'tools/axios'
 import { MessageInstance } from 'antd/es/message/interface'
 import zhCN from 'antd/locale/zh_CN'
+import { defaultRouter, roleToRouter } from 'components/router'
+import React, { useEffect, useState } from 'react'
+import { RouterProvider } from 'react-router-dom'
+import axios from 'tools/axios'
 
 export const GlobalContext = React.createContext<{
   setRouter: React.Dispatch<any>

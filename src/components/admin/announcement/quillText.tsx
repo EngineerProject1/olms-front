@@ -1,6 +1,6 @@
+import { Form, Input } from 'antd'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { Form, Input } from 'antd'
 
 const Publish = () => {
   return (

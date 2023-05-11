@@ -1,6 +1,3 @@
-import React, { useContext, useRef, useState } from 'react'
-import { Avatar, Button, Form, Input, Layout, Modal } from 'antd'
-import { Footer } from 'antd/es/layout/layout'
 import {
   BookOutlined,
   CrownOutlined,
@@ -8,15 +5,17 @@ import {
   LockOutlined,
   UserOutlined,
 } from '@ant-design/icons'
-import { Typography } from 'antd'
-import axios from 'tools/axios'
+import { Avatar, Button, Form, Input, Layout, Modal, Typography } from 'antd'
+import { Footer } from 'antd/es/layout/layout'
 import { GlobalContext } from 'app'
 import {
   adminRouter,
-  teacherRouter,
-  studentRouter,
   roleToRouter,
+  studentRouter,
+  teacherRouter,
 } from 'components/router'
+import React, { useContext, useRef, useState } from 'react'
+import axios from 'tools/axios'
 
 const { Header, Content, Sider } = Layout
 const { Title, Text } = Typography

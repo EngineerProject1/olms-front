@@ -1,14 +1,14 @@
-import { createBrowserRouter, redirect, useNavigate } from 'react-router-dom'
-import Main from 'pages/main'
-import { Login } from 'pages/login'
-import { adminMenu, teacherMenu, studentMenu } from './sidebarMenus'
 import Announcement from 'components/admin/announcement/announcement'
-import { useEffect } from 'react'
 import {
   AnnouncementEditor,
   announcementLoader,
-} from './admin/announcement/announcementEditor'
+} from 'components/admin/announcement/announcementEditor'
 import { Device } from 'components/admin/device/device'
+import { adminMenu, studentMenu, teacherMenu } from 'components/sidebarMenus'
+import { Login } from 'pages/login'
+import Main from 'pages/main'
+import { useEffect } from 'react'
+import { createBrowserRouter, useNavigate } from 'react-router-dom'
 
 export const defaultRouter = createBrowserRouter([
   {
