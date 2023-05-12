@@ -8,6 +8,7 @@ import {
   Table,
 } from 'antd'
 import { GlobalContext } from 'app'
+import { AnnoucementModel } from 'mdoel/AnnouncementModel'
 import React, { useContext, useEffect, useState } from 'react'
 import axios from 'tools/axios'
 import { AnnouncementEditor } from './announcementEditor'
@@ -20,7 +21,6 @@ interface DataType {
 }
 // 搜索框
 const { Search, TextArea } = Input
-const onSearch = (value: string) => console.log(value)
 const Announcement: React.FC = () => {
   const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>(
     'checkbox'
@@ -32,23 +32,24 @@ const Announcement: React.FC = () => {
   // 公告信息列表
   const [list, setList] = useState<any>([])
   // 公告分页参数管理
-  const [params, setParams] = useState<any>({
+  const [params, setParams] = useState<AnnoucementModel>({
     page: 1,
     pageSize: 5,
     total: 0,
-    pages: 1,
+    title: '',
+    level: '',
+    createTime: '',
   })
   const { messageApi } = useContext(GlobalContext)
 
-  //加载分页page参数
+  // 拉取公告列表信息
   useEffect(() => {
-    ;(async () => {
-      const res = await axios.get('/notice', {
-        params: {
-          page: params.page,
-          pageSize: params.pageSize,
-        },
-      })
+    console.log(params)
+    if (modalOpen == true) {
+      return
+    }
+    const loadList = async () => {
+      const res = await axios.get('/notice', { params })
       const data = res.data.data
       setParams({
         ...params,
@@ -56,22 +57,6 @@ const Announcement: React.FC = () => {
         total: data.total,
         pages: data.pages,
       })
-    })()
-  }, [])
-
-  // 拉取公告列表信息
-  useEffect(() => {
-    if (modalOpen == true) {
-      return
-    }
-    const loadList = async () => {
-      const res = await axios.get('/notice', {
-        params: {
-          page: params.page,
-          pageSize: params.pageSize,
-        },
-      })
-      const data = res.data.data
       setList(
         data.records.map(
           (item: {
@@ -94,7 +79,14 @@ const Announcement: React.FC = () => {
       setLoading(false)
     }
     loadList()
-  }, [params, modalOpen])
+  }, [
+    params.page,
+    params.pageSize,
+    params.title,
+    params.createTime,
+    params.level,
+    modalOpen,
+  ])
   const editAnnouncement = (id: React.Key) => {
     setNoticeID(id)
     setModalOpen(true)
@@ -124,6 +116,25 @@ const Announcement: React.FC = () => {
     setSelectedRowKeys([])
   }
 
+  // 设置排序条件
+  const onChange = ({
+    pagination,
+    filter,
+    sorter,
+  }: {
+    pagination: any
+    filter: any
+    sorter: any
+  }) => {
+    const field = sorter.field
+    const order = sorter.order ? sorter.order.replace('end', '') : ''
+    if (field === 'level') {
+      setParams({ ...params, level: order, createTime: '' })
+    } else {
+      setParams({ ...params, createTime: order, level: '' })
+    }
+  }
+
   // 编辑
   const defaultColumns = [
     {
@@ -140,11 +151,15 @@ const Announcement: React.FC = () => {
       title: '排序等级',
       dataIndex: 'level',
       width: '20%',
+      sorter: true,
+      filterDropdownOpen: true,
     },
     {
       title: '发布时间',
       dataIndex: 'createTime',
       width: '20%',
+      sorter: true,
+      filterDropdownOpen: true,
     },
     {
       title: '操作',
@@ -176,11 +191,6 @@ const Announcement: React.FC = () => {
   // 可选框
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
-      // console.log(
-      //   `selectedRowKeys: ${selectedRowKeys}`,
-      //   'selectedRows: ',
-      //   selectedRows
-      // )
       setSelectedRowKeys(selectedRowKeys)
     },
   }
@@ -201,9 +211,12 @@ const Announcement: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           {/* 搜索框 */}
           <Search
-            placeholder="input search text"
-            onSearch={onSearch}
+            placeholder="标题"
+            onSearch={(e) => {
+              setParams({ ...params, title: e })
+            }}
             style={{ width: 200 }}
+            size="large"
           />
           <div
             style={{
@@ -239,6 +252,9 @@ const Announcement: React.FC = () => {
           }}
           bordered
           dataSource={list}
+          onChange={(pagination, filter, sorter) => {
+            onChange({ pagination, filter, sorter })
+          }}
           columns={defaultColumns}
           pagination={false}
           loading={loading}

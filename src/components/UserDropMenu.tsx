@@ -1,6 +1,6 @@
 import { Avatar, Button, Dropdown, MenuProps, Space } from 'antd'
 import { GlobalContext } from 'app'
-import User from 'mdoel/User'
+import { User } from 'mdoel/User'
 import { useContext, useEffect, useState } from 'react'
 import axios from 'tools/axios'
 

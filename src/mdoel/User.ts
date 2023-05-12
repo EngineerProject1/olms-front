@@ -1,4 +1,4 @@
-interface User {
+export interface User {
   id: number
   username: string
   passowrd: string
@@ -11,4 +11,3 @@ interface User {
   createTime: Date
   updateTime: Date
 }
-export default User
