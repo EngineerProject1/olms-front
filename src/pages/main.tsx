@@ -9,8 +9,8 @@ import {
   Layout,
   Menu,
   MenuProps,
-  Typography,
   theme,
+  Typography,
 } from 'antd'
 import { ItemType } from 'antd/es/breadcrumb/Breadcrumb'
 import UserDropMenu from 'components/UserDropMenu'
@@ -48,12 +48,11 @@ function MenuTrigger(props: {
 
 export default function Main(props: { menu: MenuProps['items'] }) {
   const [collapsed, setCollapsed] = useState(false)
+  const [openKeys, setOpenKeys] = useState<string[]>([])
   const [menuConfig, setMenuConfig] = useState<{
-    openKeys: string[]
     selectKeys: string[]
     breadCrumbItems: ItemType[]
   }>({
-    openKeys: [],
     selectKeys: [],
     breadCrumbItems: [],
   })
@@ -77,11 +76,12 @@ export default function Main(props: { menu: MenuProps['items'] }) {
       menu = result.children
     }
     defaultOpenkeys.pop()
+    setOpenKeys(defaultOpenkeys)
     setMenuConfig({
-      openKeys: defaultOpenkeys,
       selectKeys: [urlSegement[urlSegement.length - 1]],
       breadCrumbItems: breadCrumbItems,
     })
+    console.error('refresed')
   }, [])
 
   const {
@@ -92,7 +92,7 @@ export default function Main(props: { menu: MenuProps['items'] }) {
     setCollapsed(!collapsed)
   }
   const onOpenChange: MenuProps['onOpenChange'] = (keys) => {
-    setMenuConfig({ ...menuConfig, openKeys: [keys[keys.length - 1]] })
+    setOpenKeys([keys[keys.length - 1]])
   }
   const onSelect = (info: { keyPath: string[] }) => {
     let result = ''
@@ -167,8 +167,7 @@ export default function Main(props: { menu: MenuProps['items'] }) {
             selectedKeys={menuConfig.selectKeys}
             style={{ height: '100%', borderRight: 0 }}
             items={props.menu}
-            inlineCollapsed={collapsed}
-            openKeys={menuConfig.openKeys}
+            openKeys={openKeys}
             onOpenChange={onOpenChange}
             onSelect={onSelect}
           />
