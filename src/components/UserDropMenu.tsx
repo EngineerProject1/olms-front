@@ -1,9 +1,11 @@
 import { Avatar, Button, Dropdown, MenuProps, Space } from 'antd'
+import { GlobalContext } from 'app'
 import User from 'mdoel/User'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import axios from 'tools/axios'
 
 const UserDropMenu = () => {
+  const { messageApi } = useContext(GlobalContext)
   const personalCenter = () => {
     console.log('个人中心')
   }
@@ -12,9 +14,10 @@ const UserDropMenu = () => {
     axios.get('/auth/logout').then((resp) => {
       if (resp.data.code === 200) {
         localStorage.removeItem('token')
-        localStorage.removeItem('role')
-        setFlag(false)
-        location.href = '/login'
+        messageApi.success('成功退出登录')
+        setTimeout(() => {
+          location.href = '/login'
+        }, 800)
       }
     })
   }

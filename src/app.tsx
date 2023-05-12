@@ -13,9 +13,10 @@ export const GlobalContext = React.createContext<{
 
 export default function App(props: any) {
   let targetRouter = defaultRouter
-  const tmp = localStorage.getItem('role')
-  if (tmp != null) {
-    targetRouter = roleToRouter[tmp as keyof {}]
+  const token = localStorage.getItem('token')
+  if (token != null) {
+    const role = JSON.parse(atob(token.split('.')[1])).selectedRole
+    targetRouter = roleToRouter[role as keyof {}]
   }
 
   const [messageApi, contextHolder] = message.useMessage()
@@ -27,7 +28,6 @@ export default function App(props: any) {
         messageApi.error(data.msg)
         switch (data.code) {
           case 401: //token异常时将路由设置为默认路由
-            localStorage.removeItem('role')
             localStorage.removeItem('token')
             setRouter(defaultRouter)
             break

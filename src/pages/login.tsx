@@ -45,8 +45,17 @@ export function Login(props: any) {
           alignItems: 'center',
         }}
         onClick={() => {
-          localStorage.setItem('role', props.role)
-          setRouter(props.router)
+          axios
+            .post('/auth/roleToken', null, {
+              params: {
+                role: props.role,
+              },
+            })
+            .then((response) => {
+              const data = response.data
+              localStorage.setItem('token', data.data)
+              setRouter(props.router)
+            })
         }}>
         <props.Icon style={{ fontSize: 90 }} />
         <div>{props.name}</div>
@@ -94,8 +103,17 @@ export function Login(props: any) {
       } else {
         const role = roles[0]
         const router = roleToRouter[role as keyof {}]
-        localStorage.setItem('role', role)
-        setRouter(router)
+        axios
+          .post('/auth/roleToken', null, {
+            params: {
+              role: role,
+            },
+          })
+          .then((response) => {
+            const data = response.data
+            localStorage.setItem('token', data.data)
+            setRouter(router)
+          })
       }
     })
   }
