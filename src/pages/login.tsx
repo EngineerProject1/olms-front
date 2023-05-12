@@ -8,13 +8,13 @@ import {
 import { Avatar, Button, Form, Input, Layout, Modal, Typography } from 'antd'
 import { Footer } from 'antd/es/layout/layout'
 import { GlobalContext } from 'app'
+import React, { useContext, useRef, useState } from 'react'
 import {
   adminRouter,
   roleToRouter,
   studentRouter,
   teacherRouter,
-} from 'components/router'
-import React, { useContext, useRef, useState } from 'react'
+} from 'router/router'
 import axios from 'tools/axios'
 
 const { Header, Content, Sider } = Layout
