@@ -1,8 +1,6 @@
-import { CloseOutlined } from '@ant-design/icons'
 import type { UploadProps } from 'antd'
 import {
   Button,
-  DatePicker,
   Form,
   Image,
   Input,
@@ -12,22 +10,22 @@ import {
   Select,
   Space,
   Table,
+  Modal,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import type { TableRowSelection } from 'antd/es/table/interface'
+import { GlobalContext } from 'app'
 import MyUpload from 'components/myUpload'
-import React, { useEffect, useState } from 'react'
-import axios from 'tools/axios'
 
-const { RangePicker } = DatePicker
-const { TextArea } = Input
+import React, { useContext, useEffect, useState } from 'react'
+import axios from 'tools/axios'
 
 // 数据类型
 interface DataType {
   key: React.Key
   name: string
   images: string
-  belongLab: string
+  labName: string
   price: number
   model: string
   status: string
@@ -86,6 +84,7 @@ export function Device() {
   }, [])
 
   const [loading, setLoading] = useState(true)
+
   // 拉取所有设备列表信息
   useEffect(() => {
     const loadList = async () => {
@@ -112,7 +111,7 @@ export function Device() {
               key: item.id,
               name: item.name,
               images: item.images,
-              belongLab: item.labName,
+              labName: item.labName,
               price: item.price,
               model: item.model,
               status: defaultStatus[item.status],
@@ -140,7 +139,7 @@ export function Device() {
     },
     {
       title: '所属实验室',
-      dataIndex: 'belongLab',
+      dataIndex: 'labName',
     },
     {
       title: '价格',
@@ -159,12 +158,7 @@ export function Device() {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <a
-            onClick={() => {
-              handleEdit(record.key)
-            }}>
-            编辑
-          </a>
+          <a onClick={() => showModal(record.key)}>编辑</a>
           <Popconfirm
             title="确定删除?"
             onConfirm={() => handleDelete(record.key)}>
@@ -172,19 +166,6 @@ export function Device() {
           </Popconfirm>
         </Space>
       ),
-    },
-  ]
-
-  // 数据
-  const defaultData: DataType[] = [
-    {
-      key: 1,
-      name: '加速器',
-      images: '99128c0c-a134-4d6a-ab8a-65469f0810f3.jpeg',
-      belongLab: 'D204',
-      price: 1231,
-      model: 'FBI-114',
-      status: '空闲',
     },
   ]
 
@@ -245,14 +226,8 @@ export function Device() {
 
   const [hiddenFlag, setHiddenFlag] = useState(true)
 
-  // 关闭表单
-  const closeForm = () => {
-    setHiddenFlag(true)
-  }
-
-  useEffect(() => {
-    form.setFieldsValue
-  })
+  // 成功消息提示
+  const { messageApi } = useContext(GlobalContext)
 
   //新增 或 编辑 设备
   const [fileList, setFileList] = useState<string>()
@@ -260,50 +235,22 @@ export function Device() {
     const loadDetail = async () => {
       const res = await axios.get(`/device/${id}`)
       const data = res.data.data
+      setFileName(data.images)
       data.images = '/api/img/download?name=' + data.images
 
       // 表单数据回填
       form.setFieldsValue(data)
       // 回填upload
-      // const formatImgList = data.map((item) => item.images)
       setFileList(data.images)
     }
-    setHiddenFlag(false)
-    if (id === -1) {
-      form.resetFields()
-    } else {
+    setId(id)
+    form.resetFields()
+    if (id !== -1) {
       loadDetail()
     }
   }
 
-  // 编辑功能
-  // 文案适配  路由参数id 判断条件
-  // const id = params.post('id')
-  // 数据回填  id调用接口  1.表单回填 2.暂存列表 3.Upload组件fileList
-
   const [form] = Form.useForm()
-
-  // useEffect(() => {
-  //   const loadDetail = async () => {
-  //     const res = await axios.get(`/device/${id}`)
-  //     const data = res
-  //     console.log(res)
-
-  //     // 表单数据回填
-  //     form.setFieldsValue({ data })
-  //     // 回填upload
-  //     // const formatImgList = data.map((item) => item.images)
-  //   }
-  //   const data = defaultData
-  //   // 表单数据回填
-  //   form.setFieldsValue({ data })
-  //   // 回填upload
-  //   const formatImgList = data.map((item) => item.images)
-  //   //必须是编辑状态 才可以发送请求
-  //   if (id) {
-  //     loadDetail()
-  //   }
-  // }, [id, form])
 
   // 删除操作
   const handleDelete = (id: React.Key) => {
@@ -311,9 +258,32 @@ export function Device() {
     console.log(id)
   }
 
+  const [id, setId] = useState<React.Key>()
   // 表单提交
-  const onFinish = (values: any) => {
-    console.log({ ...values, images: fileName })
+  const onFinish = async (values: any) => {
+    values = {
+      ...values,
+      id,
+      images: fileName,
+    }
+    console.log(values)
+    if (id !== -1) {
+      //修改设备信息
+      const res = await axios.put('/auth/device', values)
+      const message = res.data.msg
+      messageApi.success(message)
+    } else {
+      //添加设备信息
+      const res = await axios.post('/auth/device', values)
+      const message = res.data.msg
+      messageApi.success(message)
+    }
+    setParams({
+      page: 1,
+      pageSize: 5,
+      total: 50,
+      pages: 1,
+    })
   }
 
   // 表单提交失败
@@ -338,6 +308,30 @@ export function Device() {
       }
     },
   }
+
+  //关于Modal部分
+  const [open, setOpen] = useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false)
+  const [modalText, setModalText] = useState('Content of the modal')
+
+  const showModal = (id: React.Key) => {
+    handleEdit(id)
+    setOpen(true)
+  }
+
+  const handleOk = () => {
+    setModalText('The modal will be closed after two seconds')
+    setConfirmLoading(true)
+    setTimeout(() => {
+      setOpen(false)
+      setConfirmLoading(false)
+    }, 2000)
+  }
+
+  const handleCancel = () => {
+    console.log('Clicked cancel button')
+    setOpen(false)
+  }
   return (
     <div>
       {/* 搜索框 */}
@@ -346,8 +340,10 @@ export function Device() {
         onSearch={onSearch}
         style={{ width: 200 }}
       />
+
+      {/* 新增设备 */}
       <Button
-        onClick={() => handleEdit(-1)}
+        onClick={() => showModal(-1)}
         type="primary"
         style={{ marginBottom: 16, marginRight: 105, float: 'right' }}>
         + 新增设备
@@ -379,87 +375,92 @@ export function Device() {
         showQuickJumper
         showTotal={(total) => `总共${params.total}条数据`}
       />
-      <Form
-        labelCol={{ span: 4 }}
-        wrapperCol={{ span: 14 }}
-        layout="horizontal"
-        hidden={hiddenFlag}
-        disabled={false}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        form={form}
-        style={{
-          width: 400,
-          background: 'white',
-          position: 'absolute',
-          top: '6%',
-          left: '37%',
-          boxShadow: '1px 2px 9px #808080',
-          margin: '4em',
-          padding: '1em',
+
+      <Modal
+        centered
+        open={open}
+        footer={null}
+        width={430}
+        onCancel={() => {
+          handleCancel()
         }}>
-        <CloseOutlined
-          style={{ float: 'right', marginTop: 5 }}
-          onClick={closeForm}
-        />
+        <Form
+          preserve={false}
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 15 }}
+          layout="horizontal"
+          disabled={false}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          style={{
+            width: 400,
+            background: 'white',
+            marginTop: 15,
+            padding: '1em',
+          }}
+          form={form}>
+          <Form.Item>新增设备</Form.Item>
+          <Form.Item
+            name="name"
+            label="名称"
+            rules={[
+              {
+                pattern: /^[\u4e00-\u9fa5\w]{1,20}$/,
+                message: '名称长度不得超过20个字符',
+              },
+            ]}>
+            <Input placeholder="请输入名称" />
+          </Form.Item>
 
-        <Form.Item>新增设备</Form.Item>
+          <Form.Item
+            name="images"
+            label="图片"
+            valuePropName="fileList"
+            getValueFromEvent={normFile}>
+            <MyUpload setName={setFileName} fileList={fileList as string} />
+          </Form.Item>
 
-        <Form.Item
-          name="name"
-          label="名称"
-          rules={[
-            {
-              pattern: /^[\u4e00-\u9fa5\w]{1,20}$/,
-              message: '名称长度不得超过20个字符',
-            },
-          ]}>
-          <Input placeholder="请输入名称" />
-        </Form.Item>
+          <Form.Item name="labName" label="实验室">
+            <Select>
+              <Select.Option value="D204">D204</Select.Option>
+            </Select>
+          </Form.Item>
 
-        <Form.Item
-          name="images"
-          label="图片"
-          valuePropName="fileList"
-          getValueFromEvent={normFile}>
-          <MyUpload setName={setFileName} fileList={fileList as string} />
-        </Form.Item>
+          <Form.Item
+            className="price"
+            name="price"
+            label="价格"
+            rules={[
+              { pattern: /^\d+[/.\d*]?\d$/, message: '请输入正确的数字' },
+            ]}>
+            <Input placeholder="请输入价格" />
+          </Form.Item>
 
-        <Form.Item name="belongLab" label="实验室">
-          <Select>
-            <Select.Option value="demo">Demo</Select.Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          className="price"
-          name="price"
-          label="价格"
-          rules={[{ pattern: /^\d+[/.\d*]?\d$/, message: '请输入正确的数字' }]}>
-          <Input placeholder="请输入价格" />
-        </Form.Item>
-
-        <Form.Item
-          name="model"
-          label="型号"
-          rules={[
-            {
-              pattern: /^[\u4e00-\u9fa5\w\s-]{1,30}$/,
-              message: '型号长度不得超过30个字符',
-            },
-          ]}>
-          <Input placeholder="请输入型号" />
-        </Form.Item>
-
-        <Form.Item>
-          <Button
-            htmlType="submit"
-            type="primary"
-            style={{ marginLeft: 310, marginBottom: 10 }}>
-            提交
-          </Button>
-        </Form.Item>
-      </Form>
+          <Form.Item
+            name="model"
+            label="型号"
+            rules={[
+              {
+                pattern: /^[\u4e00-\u9fa5\w\s-]{1,30}$/,
+                message: '型号长度不得超过30个字符',
+              },
+            ]}>
+            <Input placeholder="请输入型号" />
+          </Form.Item>
+          <br></br>
+          <Form.Item>
+            <Button
+              htmlType="submit"
+              type="primary"
+              onClick={() => {
+                handleCancel()
+              }}
+              style={{ marginLeft: 260, marginBottom: 0 }}>
+              提交
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   )
 }
