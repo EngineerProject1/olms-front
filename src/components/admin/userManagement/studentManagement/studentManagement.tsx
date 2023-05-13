@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 import { CloseOutlined } from '@ant-design/icons'
 import {
@@ -15,6 +15,7 @@ import {
   Switch,
   Table,
 } from 'antd'
+import { GlobalContext } from 'app'
 import axios from 'tools/axios'
 interface DataType {
   id: React.Key
@@ -27,11 +28,11 @@ interface DataType {
   class: Number
   role: Number
 }
-// const { messageApi } = useContext(GlobalContext)
 // 搜索框
 const { Search, TextArea } = Input
 const onSearch = (value: string) => console.log(value)
 const StudentManagement: React.FC = () => {
+  const { messageApi } = useContext(GlobalContext)
   const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>(
     'checkbox'
   )
@@ -129,12 +130,13 @@ const StudentManagement: React.FC = () => {
   // 加载分页page参数
   useEffect(() => {
     ;(async () => {
-      const res = await axios.get('/notice', {
+      const res = await axios.get('/student', {
         params: {
           page: params.page,
           pageSize: params.pageSize,
         },
       })
+      // console.log(res)
       const data = res.data.data
       setParams({
         ...params,
@@ -248,22 +250,18 @@ const StudentManagement: React.FC = () => {
     console.log(values)
     console.log(sex)
     console.log(isManager)
-    // await axios.post('/student', {
-    //   sid: values.sid,
-    //   studentName: values.name,
-    //   majorId: values.major,
-    //   grade: values.grade,
-    //   classNumber: values.class,
-    //   // username:values.sid,
-    //   sex: sex,
-    //   phone: values.tel,
-    //   email: values.email,
-    //   isSetManager: isManager === true ? 1 : 0,
-    // })
-
-    // await axios.post('/user',{
-    //   username: values.sid,
-    // })
+    await axios.post('/student', {
+      ...values,
+      username: values.sid,
+      realName: values.studentName,
+      sex: sex,
+      isSetManager: isManager === true ? 1 : 0,
+    })
+    // 关闭表单
+    closeForm()
+    // 关闭专业下拉框可选
+    setSelectFlag(true)
+    messageApi.success('添加学生信息成功！')
   }
 
   // 校验学号
@@ -369,7 +367,7 @@ const StudentManagement: React.FC = () => {
           }}
           total={params.total}
           showQuickJumper
-          showTotal={(total) => `总共${params.total}条数据`}
+          showTotal={(total) => `总共${total}条数据`}
         />
       </div>
       <Form
@@ -381,10 +379,11 @@ const StudentManagement: React.FC = () => {
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         style={{
+          height: 703,
           width: 400,
           position: 'absolute',
           background: 'white',
-          top: '2%',
+          top: '-7%',
           left: '37%',
           boxShadow: '1px 2px 9px #808080',
           margin: '4em',
@@ -432,7 +431,7 @@ const StudentManagement: React.FC = () => {
         </Form.Item>
 
         <Form.Item
-          name="name"
+          name="studentName"
           label="姓名"
           rules={[
             {
@@ -452,7 +451,7 @@ const StudentManagement: React.FC = () => {
         </Form.Item>
 
         <Form.Item
-          name="class"
+          name="classNumber"
           label="班级"
           rules={[
             {
@@ -478,7 +477,7 @@ const StudentManagement: React.FC = () => {
         </Form.Item>
 
         <Form.Item
-          name="college"
+          name="collegeId"
           label="学院"
           rules={[
             {
@@ -504,7 +503,7 @@ const StudentManagement: React.FC = () => {
           />
         </Form.Item>
         <Form.Item
-          name="major"
+          name="majorId"
           label="专业"
           rules={[
             {
@@ -530,7 +529,7 @@ const StudentManagement: React.FC = () => {
           />
         </Form.Item>
         <Form.Item
-          name="tel"
+          name="phone"
           label="电话"
           rules={[
             {
