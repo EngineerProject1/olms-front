@@ -1,9 +1,11 @@
 import Announcement from 'components/admin/announcement/announcement'
 import { Device } from 'components/admin/device/device'
 import StudentManagement from 'components/admin/userManagement/studentManagement/studentManagement'
+import { BasicInformation } from 'components/person/basicInformation'
 import { adminMenu, studentMenu, teacherMenu } from 'components/sidebarMenus'
 import { Login } from 'pages/login'
 import Main from 'pages/main'
+import Person from 'pages/person'
 import { useEffect } from 'react'
 import { createBrowserRouter, useNavigate } from 'react-router-dom'
 
@@ -144,6 +146,17 @@ export const studentRouter = createBrowserRouter([
       {
         path: 'deviceBorrow',
         element: <div>deviceBorrow</div>,
+      },
+      {
+        path: 'person',
+        element: <Person />,
+        children: [
+          { path: 'basicInformation', element: <BasicInformation /> },
+          {
+            path: 'changePassword',
+            element: 'change',
+          },
+        ],
       },
     ],
   },

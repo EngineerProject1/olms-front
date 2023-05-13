@@ -21,6 +21,7 @@ const { Header, Sider } = Layout
 const { Title, Text } = Typography
 const headerColor = '#ffffff'
 
+//收缩侧边栏
 function MenuTrigger(props: {
   collapsed: boolean
   toggleCollapsed: React.MouseEventHandler<HTMLAnchorElement> &
@@ -60,28 +61,36 @@ export default function Main(props: { menu: MenuProps['items'] }) {
 
   useEffect(() => {
     const urlSegement = location.pathname.split('/').filter((value) => value)
+    let defaultSelectKeys: string[] = []
     let defaultOpenkeys: string[] = []
     let breadCrumbItems = [{ title: <HomeOutlined /> }]
     let item: string
     let i = 0
     let menu = props.menu!!
     item = urlSegement[i]
-    while (item != undefined) {
-      item = urlSegement[i]
-      const result: any = menu.find((value) => value!!.key == item)
-      defaultOpenkeys.push(item)
-      breadCrumbItems.push({ title: result.label })
-      i++
-      item = urlSegement[i]
-      menu = result.children
+    try {
+      defaultSelectKeys = [urlSegement[urlSegement.length - 1]]
+      while (item != undefined) {
+        item = urlSegement[i]
+        const result: any = menu.find((value) => value!!.key == item)
+        defaultOpenkeys.push(item)
+        breadCrumbItems.push({ title: result.label })
+        i++
+        item = urlSegement[i]
+        menu = result.children
+      }
+      defaultOpenkeys.pop() //最后一项是菜单的选择项，因此一定不是需要打开的项
+    } catch (error) {
+      //如果要渲染的页面不在侧边栏中，则将侧边栏与面包屑置为空
+      defaultOpenkeys = []
+      breadCrumbItems = []
+      defaultSelectKeys = []
     }
-    defaultOpenkeys.pop()
     setOpenKeys(defaultOpenkeys)
     setMenuConfig({
-      selectKeys: [urlSegement[urlSegement.length - 1]],
+      selectKeys: defaultSelectKeys,
       breadCrumbItems: breadCrumbItems,
     })
-    console.error('refresed')
   }, [])
 
   const {
@@ -91,6 +100,7 @@ export default function Main(props: { menu: MenuProps['items'] }) {
   const toggleCollapsed = () => {
     setCollapsed(!collapsed)
   }
+  //当点开菜单后调用此方法
   const onOpenChange: MenuProps['onOpenChange'] = (keys) => {
     setOpenKeys([keys[keys.length - 1]])
   }
@@ -100,6 +110,7 @@ export default function Main(props: { menu: MenuProps['items'] }) {
       result += `/${item}`
     }
     navigate(result)
+    //导航完成后重新设置面包屑与侧边栏
     const urlSegement = location.pathname.split('/').filter((value) => value)
     let breadCrumbItems = [{ title: <HomeOutlined /> }]
     let item: string
@@ -115,7 +126,6 @@ export default function Main(props: { menu: MenuProps['items'] }) {
       menu = result.children
     }
     setMenuConfig({
-      ...menuConfig,
       selectKeys: [urlSegement[urlSegement.length - 1]],
       breadCrumbItems: breadCrumbItems,
     })

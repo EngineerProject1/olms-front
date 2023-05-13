@@ -1,13 +1,14 @@
 import { Avatar, Button, Dropdown, MenuProps, Space } from 'antd'
 import { GlobalContext } from 'app'
-import { User } from 'mdoel/User'
-import { useContext, useEffect, useState } from 'react'
+import { useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from 'tools/axios'
 
 const UserDropMenu = () => {
-  const { messageApi } = useContext(GlobalContext)
+  const { messageApi, user } = useContext(GlobalContext)
+  const navigate = useNavigate()
   const personalCenter = () => {
-    console.log('个人中心')
+    navigate('/person/basicInformation')
   }
 
   const logout = () => {
@@ -33,31 +34,6 @@ const UserDropMenu = () => {
       onClick: logout,
     },
   ]
-
-  const [flag, setFlag] = useState(true)
-  // 用户信息
-  const [user, setUser] = useState<User>({
-    id: 1,
-    username: 'xxx',
-    passowrd: '',
-    salt: '',
-    realName: 'xxx',
-    sex: '男',
-    phone: '111',
-    email: '222',
-    avatar: '',
-    createTime: new Date(),
-    updateTime: new Date(),
-  })
-
-  useEffect(() => {
-    if (flag) {
-      // 获取当前登录的用户信息
-      axios.get('/token').then((resp) => {
-        setUser(resp.data.data)
-      })
-    }
-  }, [])
 
   return (
     <Space wrap>

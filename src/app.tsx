@@ -1,6 +1,7 @@
 import { ConfigProvider, message } from 'antd'
 import { MessageInstance } from 'antd/es/message/interface'
 import zhCN from 'antd/locale/zh_CN'
+import { User } from 'mdoel/User'
 import React, { useEffect, useState } from 'react'
 import { RouterProvider } from 'react-router-dom'
 import { defaultRouter, roleToRouter } from 'router/router'
@@ -9,9 +10,11 @@ import axios from 'tools/axios'
 export const GlobalContext = React.createContext<{
   setRouter: React.Dispatch<any>
   messageApi: MessageInstance
+  user: User
 }>(null as any)
 
 export default function App(props: any) {
+  //通过token中的信息设置对应路由
   let targetRouter = defaultRouter
   const token = localStorage.getItem('token')
   if (token != null) {
@@ -21,7 +24,26 @@ export default function App(props: any) {
 
   const [messageApi, contextHolder] = message.useMessage()
   const [router, setRouter] = useState(targetRouter)
+  const [user, setUser] = useState<User>({
+    id: 0,
+    username: '',
+    passowrd: '',
+    salt: '',
+    realName: '',
+    sex: '',
+    phone: '',
+    email: '',
+    avatar: '',
+    createTime: new Date(),
+    updateTime: new Date(),
+  })
+
   useEffect(() => {
+    axios.get('/token').then((resp) => {
+      resp.data.data.grade = resp.data.data.grade + '级'
+      resp.data.data.classNumber = resp.data.data.classNumber + '班'
+      setUser(resp.data.data)
+    })
     axios.interceptors.response.use((response) => {
       let data = response.data
       if (data.code != 200) {
@@ -36,12 +58,6 @@ export default function App(props: any) {
       }
       return response
     })
-    if (localStorage.getItem('token') != null) {
-      axios.get('/token').then((response) => {
-        const data = response.data
-        //console.log(data)
-      })
-    }
     return () => {
       axios.interceptors.response.clear()
     }
@@ -49,7 +65,7 @@ export default function App(props: any) {
 
   return (
     <GlobalContext.Provider
-      value={{ setRouter: setRouter, messageApi: messageApi }}>
+      value={{ setRouter: setRouter, messageApi: messageApi, user: user }}>
       <ConfigProvider locale={zhCN}>
         {contextHolder}
         <RouterProvider router={router} />
