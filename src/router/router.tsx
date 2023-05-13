@@ -1,5 +1,6 @@
 import Announcement from 'components/admin/announcement/announcement'
 import { Device } from 'components/admin/device/device'
+import StudentManagement from 'components/admin/userManagement/studentManagement/studentManagement'
 import { adminMenu, studentMenu, teacherMenu } from 'components/sidebarMenus'
 import { Login } from 'pages/login'
 import Main from 'pages/main'
@@ -65,7 +66,7 @@ export const adminRouter = createBrowserRouter([
         children: [
           {
             path: 'studentUser',
-            element: <div>studentUser</div>,
+            element: <StudentManagement />,
           },
           {
             path: 'attendance',
