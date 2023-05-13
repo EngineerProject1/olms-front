@@ -70,6 +70,8 @@ const StudentManagement: React.FC = () => {
     console.log('Failed:', errorInfo)
   }
 
+  const [form] = Form.useForm()
+
   // 封装被选中项的key值
   const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
 
@@ -127,26 +129,6 @@ const StudentManagement: React.FC = () => {
       ),
     },
   ]
-  // 加载分页page参数
-  useEffect(() => {
-    ;(async () => {
-      const res = await axios.get('/student', {
-        params: {
-          page: params.page,
-          pageSize: params.pageSize,
-        },
-      })
-      // console.log(res)
-      const data = res.data.data
-      setParams({
-        ...params,
-        pageSize: data.size,
-        total: data.total,
-        pages: data.pages,
-      })
-    })()
-  }, [])
-
   // 是否是管理员
   // const getRoles = async () => {
   //   let res = await axios.get(`/student/role/2021000`)
@@ -157,6 +139,7 @@ const StudentManagement: React.FC = () => {
   const getRole = () => {
     return 1
   }
+
   // 拉取学生列表信息
   useEffect(() => {
     const loadList = async () => {
@@ -167,7 +150,12 @@ const StudentManagement: React.FC = () => {
         },
       })
       const data = res.data.data
-      console.log(data)
+      setParams({
+        ...params,
+        pageSize: data.size,
+        total: data.total,
+        pages: data.pages,
+      })
       setStudents(
         data.records.map(
           (item: {
@@ -192,7 +180,7 @@ const StudentManagement: React.FC = () => {
       setLoading(false)
     }
     loadList()
-  }, [params])
+  }, [params.page, params.pageSize, params.total])
 
   // 获取学院信息
   const getCollege = async () => {
@@ -210,8 +198,9 @@ const StudentManagement: React.FC = () => {
 
   // 获取专业信息
   const getMajor = async (id: Number) => {
+    // 每次选择完学院后，清空专业
+    form.setFieldValue('majorId', '')
     const mRes = await axios.get(`/student/major/${id}`)
-    console.log(mRes)
     let mData = mRes.data.data
 
     setMajor(
@@ -287,6 +276,7 @@ const StudentManagement: React.FC = () => {
 
   // 关闭表单
   const closeForm = () => {
+    form.resetFields()
     setHiddenFlag(true)
   }
 
@@ -308,9 +298,10 @@ const StudentManagement: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           {/* 搜索框 */}
           <Search
-            placeholder="input search text"
+            placeholder="姓名"
             onSearch={onSearch}
             style={{ width: 200 }}
+            size="large"
           />
           <div
             style={{
@@ -375,6 +366,7 @@ const StudentManagement: React.FC = () => {
         wrapperCol={{ span: 14 }}
         layout="horizontal"
         hidden={hiddenFlag}
+        form={form}
         disabled={false}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
