@@ -8,9 +8,10 @@ import { defaultRouter, roleToRouter } from 'router/router'
 import axios from 'tools/axios'
 
 export const GlobalContext = React.createContext<{
-  setRouter: React.Dispatch<any>
   messageApi: MessageInstance
   user: User
+  setRouter: React.Dispatch<React.SetStateAction<any>>
+  setUser: React.Dispatch<React.SetStateAction<User>>
 }>(null as any)
 
 export default function App(props: any) {
@@ -39,11 +40,17 @@ export default function App(props: any) {
   })
 
   useEffect(() => {
-    axios.get('/token').then((resp) => {
-      resp.data.data.grade = resp.data.data.grade + '级'
-      resp.data.data.classNumber = resp.data.data.classNumber + '班'
-      setUser(resp.data.data)
-    })
+    if (localStorage.getItem('token') != null) {
+      axios.get('/token').then((resp) => {
+        if (resp.data.data.grade) {
+          resp.data.data.grade = resp.data.data.grade + '级'
+        }
+        if (resp.data.data.classNumber) {
+          resp.data.data.classNumber = resp.data.data.classNumber + '班'
+        }
+        setUser(resp.data.data)
+      })
+    }
     axios.interceptors.response.use((response) => {
       let data = response.data
       if (data.code != 200) {
@@ -65,7 +72,12 @@ export default function App(props: any) {
 
   return (
     <GlobalContext.Provider
-      value={{ setRouter: setRouter, messageApi: messageApi, user: user }}>
+      value={{
+        setRouter: setRouter,
+        messageApi: messageApi,
+        user: user,
+        setUser: setUser,
+      }}>
       <ConfigProvider locale={zhCN}>
         {contextHolder}
         <RouterProvider router={router} />

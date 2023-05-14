@@ -1,13 +1,26 @@
 import { Avatar, Button, Dropdown, MenuProps, Space } from 'antd'
+import { ItemType } from 'antd/es/breadcrumb/Breadcrumb'
 import { GlobalContext } from 'app'
 import { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'tools/axios'
 
-const UserDropMenu = () => {
+const UserDropMenu = (props: {
+  setMenuconfig: React.Dispatch<
+    React.SetStateAction<{
+      selectKeys: string[]
+      breadCrumbItems: ItemType[]
+    }>
+  >
+}) => {
   const { messageApi, user } = useContext(GlobalContext)
   const navigate = useNavigate()
+
   const personalCenter = () => {
+    props.setMenuconfig({
+      selectKeys: [],
+      breadCrumbItems: [],
+    })
     navigate('/person/basicInformation')
   }
 

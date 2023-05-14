@@ -22,7 +22,7 @@ const { Title, Text } = Typography
 
 export function Login(props: any) {
   const marginX = 20
-  const { messageApi, setRouter } = useContext(GlobalContext)
+  const { messageApi, setRouter, setUser } = useContext(GlobalContext)
   const [modalOpen, setModalOpen] = useState(false)
   const characterButtons = useRef<React.ReactNode[]>([])
 
@@ -54,7 +54,16 @@ export function Login(props: any) {
             .then((response) => {
               const data = response.data
               localStorage.setItem('token', data.data)
-              setRouter(props.router)
+              axios.get('/token').then((resp) => {
+                if (resp.data.data.grade) {
+                  resp.data.data.grade = resp.data.data.grade + '级'
+                }
+                if (resp.data.data.classNumber) {
+                  resp.data.data.classNumber = resp.data.data.classNumber + '班'
+                }
+                setUser(resp.data.data)
+                setRouter(props.router)
+              })
             })
         }}>
         <props.Icon style={{ fontSize: 90 }} />
@@ -112,7 +121,16 @@ export function Login(props: any) {
           .then((response) => {
             const data = response.data
             localStorage.setItem('token', data.data)
-            setRouter(router)
+            axios.get('/token').then((resp) => {
+              if (resp.data.data.grade) {
+                resp.data.data.grade = resp.data.data.grade + '级'
+              }
+              if (resp.data.data.classNumber) {
+                resp.data.data.classNumber = resp.data.data.classNumber + '班'
+              }
+              setUser(resp.data.data)
+              setRouter(router)
+            })
           })
       }
     })

@@ -154,7 +154,7 @@ export default function Main(props: { menu: MenuProps['items'] }) {
             <BellOutlined style={{ fontSize: 20, color: headerColor }} />
           </Badge> */}
           <div style={{ display: 'flex', alignItems: 'center', marginLeft: 8 }}>
-            <UserDropMenu />
+            <UserDropMenu setMenuconfig={setMenuConfig} />
           </div>
         </div>
       </Header>

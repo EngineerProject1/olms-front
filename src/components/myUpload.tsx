@@ -13,13 +13,13 @@ const getBase64 = (img: RcFile, callback: (url: string) => void) => {
 const beforeUpload = (file: RcFile) => {
   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
   if (!isJpgOrPng) {
-    message.error('You can only upload JPG/PNG file!')
+    message.error('你只能上传JPG/PNG文件!')
   }
-  const isLt2M = file.size / 1024 / 1024 < 4
-  if (!isLt2M) {
-    message.error('Image must smaller than 4MB!')
+  const isLt4M = file.size / 1024 / 1024 < 4
+  if (!isLt4M) {
+    message.error('图片大小不能超过4M')
   }
-  return isJpgOrPng && isLt2M
+  return isJpgOrPng && isLt4M
 }
 
 const MyUpload = ({
@@ -27,7 +27,7 @@ const MyUpload = ({
   fileList,
 }: {
   setName: (name: string) => void
-  fileList: string
+  fileList?: string
 }) => {
   const [loading, setLoading] = useState(false)
   const [imageUrl, setImageUrl] = useState<string>()
@@ -59,7 +59,7 @@ const MyUpload = ({
   const uploadButton = (
     <div>
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>Upload</div>
+      <div style={{ marginTop: 8 }}>上传图片</div>
     </div>
   )
 

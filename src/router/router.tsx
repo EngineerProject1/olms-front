@@ -80,6 +80,17 @@ export const adminRouter = createBrowserRouter([
           },
         ],
       },
+      {
+        path: 'person',
+        element: <Person />,
+        children: [
+          { path: 'basicInformation', element: <BasicInformation /> },
+          {
+            path: 'changePassword',
+            element: 'change',
+          },
+        ],
+      },
     ],
   },
   {
@@ -117,6 +128,17 @@ export const teacherRouter = createBrowserRouter([
       {
         path: 'attendance',
         element: <div>attendance</div>,
+      },
+      {
+        path: 'person',
+        element: <Person />,
+        children: [
+          { path: 'basicInformation', element: <BasicInformation /> },
+          {
+            path: 'changePassword',
+            element: 'change',
+          },
+        ],
       },
     ],
   },
