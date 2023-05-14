@@ -32,9 +32,7 @@ const { Search } = Input
 const onSearch = (value: string) => console.log(value)
 const StudentManagement: React.FC = () => {
   const { messageApi } = useContext(GlobalContext)
-  const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>(
-    'checkbox'
-  )
+
   // 表单
   const [form] = Form.useForm()
 
@@ -135,7 +133,9 @@ const StudentManagement: React.FC = () => {
             }}>
             编辑
           </a>
-          <Popconfirm title="是否该学生信息？">
+          <Popconfirm
+            title="是否该学生信息？"
+            onConfirm={() => delStudent(record.id, record.key)}>
             <a style={{ color: 'red' }}>删除</a>
           </Popconfirm>
         </Space>
@@ -244,26 +244,37 @@ const StudentManagement: React.FC = () => {
     )
     setIsShowMajor(true)
   }
+
   // 单条删除
-  // const delAnnouncement = async (id: React.Key) => {
-  //   await axios.delete(`/auth/notice/${id}`)
-  //   // 通过修改params刷新列表
-  //   setParams({
-  //     ...params,
-  //   })
-  // }
+  const delStudent = async (userId: any, sid: any) => {
+    await axios.delete('/student', {
+      data: {
+        id: userId,
+        sid: sid,
+      },
+    })
+    messageApi.success('删除学生信息成功！')
+    setParams({
+      ...params,
+    })
+  }
   // 批量删除
-  // const delBatch = async () => {
-  //   await axios.delete('/auth/notice', {
-  //     data: {
-  //       ids: selectedRowKeys,
-  //     },
-  //   })
-  //   setParams({
-  //     ...params,
-  //   })
-  //   setSelectedRowKeys([])
-  // }
+  const delBatch = async () => {
+    // await axios.delete('/students', {
+    //   data: {
+    //     ids: selectedRowKeys.map((item: any) => {
+    //       return {
+    //         id: item.id,
+    //         sid: item.key,
+    //       }
+    //     }),
+    //   },
+    // })
+    // setParams({
+    //   ...params,
+    // })
+    setSelectedRowKeys([])
+  }
 
   // 提交数据
   const onFinish = async (values: any) => {
@@ -322,7 +333,8 @@ const StudentManagement: React.FC = () => {
   // 可选框
   const rowSelection = {
     onChange: (selectedRowKeys: any, selectedRows: any) => {
-      setSelectedRowKeys(selectedRowKeys)
+      setSelectedRowKeys(selectedRows)
+      console.log(selectedRows)
     },
   }
 
@@ -391,7 +403,7 @@ const StudentManagement: React.FC = () => {
           // components={}
           rowSelection={{
             preserveSelectedRowKeys: true,
-            type: selectionType,
+            type: 'checkbox',
             ...rowSelection,
           }}
           bordered
