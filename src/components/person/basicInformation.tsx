@@ -19,7 +19,6 @@ export function BasicInformation(props: any) {
       email: values.email,
       avatar: fileName,
     }
-    debugger
     axios.put('/auth/info', null, { params: requestData }).then(() => {
       messageApi.success('成功修改个人信息')
       setTimeout(() => {

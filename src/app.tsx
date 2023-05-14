@@ -41,7 +41,7 @@ export default function App(props: any) {
 
   useEffect(() => {
     if (localStorage.getItem('token') != null) {
-      axios.get('/token').then((resp) => {
+      axios.get('/auth/token').then((resp) => {
         if (resp.data.data.grade) {
           resp.data.data.grade = resp.data.data.grade + '级'
         }

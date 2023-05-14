@@ -44,7 +44,6 @@ const Announcement: React.FC = () => {
 
   // 拉取公告列表信息
   useEffect(() => {
-    console.log(params)
     if (modalOpen == true) {
       return
     }
@@ -80,6 +79,7 @@ const Announcement: React.FC = () => {
     }
     loadList()
   }, [
+    params.total,
     params.page,
     params.pageSize,
     params.title,

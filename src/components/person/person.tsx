@@ -3,6 +3,7 @@ import Sider from 'antd/es/layout/Sider'
 import { Outlet, useNavigate } from 'react-router-dom'
 
 export default function Person(props: any) {
+  const urlSegement = location.pathname.split('/').filter((value) => value)
   const {
     token: { colorBgContainer },
   } = theme.useToken()
@@ -14,7 +15,7 @@ export default function Person(props: any) {
     <Layout>
       <Sider>
         <Menu
-          defaultSelectedKeys={['basicInformation']}
+          defaultSelectedKeys={[urlSegement[urlSegement.length - 1]]}
           mode="inline"
           style={{ height: '100%', borderRight: 0 }}
           items={[

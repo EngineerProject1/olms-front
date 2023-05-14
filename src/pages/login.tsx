@@ -54,7 +54,7 @@ export function Login(props: any) {
             .then((response) => {
               const data = response.data
               localStorage.setItem('token', data.data)
-              axios.get('/token').then((resp) => {
+              axios.get('/auth/token').then((resp) => {
                 if (resp.data.data.grade) {
                   resp.data.data.grade = resp.data.data.grade + '级'
                 }
@@ -121,7 +121,7 @@ export function Login(props: any) {
           .then((response) => {
             const data = response.data
             localStorage.setItem('token', data.data)
-            axios.get('/token').then((resp) => {
+            axios.get('/auth/token').then((resp) => {
               if (resp.data.data.grade) {
                 resp.data.data.grade = resp.data.data.grade + '级'
               }
