@@ -9,7 +9,6 @@ import {
   Pagination,
   Popconfirm,
   Radio,
-  RadioChangeEvent,
   Select,
   Space,
   Switch,
@@ -29,13 +28,15 @@ interface DataType {
   role: Number
 }
 // 搜索框
-const { Search, TextArea } = Input
+const { Search } = Input
 const onSearch = (value: string) => console.log(value)
 const StudentManagement: React.FC = () => {
   const { messageApi } = useContext(GlobalContext)
   const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>(
     'checkbox'
   )
+  // 表单
+  const [form] = Form.useForm()
 
   // 加载动态显示
   const [loading, setLoading] = useState(false)
@@ -52,7 +53,7 @@ const StudentManagement: React.FC = () => {
   })
 
   // 隐藏表单标志
-  const [hiddenFlag, setHiddenFlag] = useState(true)
+  const [isHiddenForm, setIsHiddenForm] = useState(true)
 
   // 学院信息
   const [college, setCollege] = useState<any>([])
@@ -61,22 +62,30 @@ const StudentManagement: React.FC = () => {
   const [major, setMajor] = useState<any>([])
 
   // sid输入框是否弹出学号已经存在的状态
-  const [sidStatus, setSidStatus] = useState(false)
-  // 从sid的值
-  const [sidValue, setSidValue] = useState()
+  const [isRepeatSid, setIsRepeatSid] = useState(false)
 
   // 表单提交失败
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
   }
 
-  const [form] = Form.useForm()
-
   // 封装被选中项的key值
   const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
 
   // 专业下拉框可选标志
-  const [selectFlag, setSelectFlag] = useState(true)
+  const [isShowMajor, setIsShowMajor] = useState(false)
+
+  // 编辑时是否改变学院标志
+  const [isChangeCollege, setIsChangeCollege] = useState(false)
+
+  // 回填信息时封装学院专业id
+  const [collegeAndMajorId, setCollegeAndMajorId] = useState({
+    collegeId: 0,
+    majorId: 0,
+  })
+
+  // 编辑时存储数据项的id值
+  const [editId, setEditId] = useState(0)
 
   // 表格列名
   const defaultColumns = [
@@ -114,11 +123,15 @@ const StudentManagement: React.FC = () => {
       title: '操作',
       dataIndex: 'operation',
       width: '10%',
-      render: (_: any, record: { key: React.Key }) => (
+      render: (_: any, record: { key: React.Key; id: number }) => (
         <Space>
           <a
             onClick={() => {
-              setHiddenFlag(false)
+              loadFormValue(record.key)
+              setIsHiddenForm(false)
+              getCollege()
+              console.log(record.id)
+              setEditId(record.id)
             }}>
             编辑
           </a>
@@ -129,15 +142,31 @@ const StudentManagement: React.FC = () => {
       ),
     },
   ]
-  // 是否是管理员
-  // const getRoles = async () => {
-  //   let res = await axios.get(`/student/role/2021000`)
-  //   let role
-  //   return 1
-  // }
-
-  const getRole = () => {
-    return 1
+  const loadFormValue = async (sid: React.Key) => {
+    let res = await axios.get(`/student/${sid}`)
+    const data = res.data.data
+    console.log(data)
+    let value = {
+      sid: data.username,
+      studentName: data.realName,
+      sex: data.sex === '男' ? 1 : 0,
+      classNumber: data.classNumber,
+      grade: data.grade,
+      collegeId: data.collegeName,
+      majorId: data.majorName,
+      phone: data.phone,
+      email: data.email,
+      isManager: data.isSetManager === 1 ? true : false,
+    }
+    setEditorManager(value.isManager)
+    form.setFieldsValue(value)
+    // 存入学院专业id
+    setCollegeAndMajorId({
+      collegeId: data.collegeId,
+      majorId: data.majorId,
+    })
+    console.log(collegeAndMajorId)
+    console.log(form.getFieldValue('isManager'))
   }
 
   // 拉取学生列表信息
@@ -159,6 +188,7 @@ const StudentManagement: React.FC = () => {
       setStudents(
         data.records.map(
           (item: {
+            id: Number
             studentName: String
             sid: Number
             collegeName: String
@@ -167,6 +197,7 @@ const StudentManagement: React.FC = () => {
             classNumber: Number
           }) => {
             return {
+              id: item.id,
               key: item.sid,
               name: item.studentName,
               college: item.collegeName,
@@ -211,7 +242,7 @@ const StudentManagement: React.FC = () => {
         }
       })
     )
-    setSelectFlag(false)
+    setIsShowMajor(true)
   }
   // 单条删除
   // const delAnnouncement = async (id: React.Key) => {
@@ -236,40 +267,61 @@ const StudentManagement: React.FC = () => {
 
   // 提交数据
   const onFinish = async (values: any) => {
-    console.log(values)
-    console.log(sex)
-    console.log(isManager)
-    await axios.post('/student', {
+    let isManager = form.getFieldValue('isManager')
+    let sex = form.getFieldValue('sex')
+    let res = await axios.get(`/student/${values.sid}`)
+    let flag = res.data.data
+    let data = {
       ...values,
       username: values.sid,
       realName: values.studentName,
-      sex: sex,
-      isSetManager: isManager === true ? 1 : 0,
-    })
+      sex: (sex === undefined || sex === 1 ? 1 : 0) === 1 ? '男' : '女',
+      isSetManager:
+        (isManager === undefined || isManager === false ? false : true) === true
+          ? 1
+          : 0,
+    }
+    console.log(data)
+    // 增添学生信息
+    if (flag === null) {
+      await axios.post('/student', data)
+      messageApi.success('添加学生信息成功！')
+    }
+    // 修改学生信息
+    else {
+      // 如果没有修改学院专业信息，则将学院专业对应id赋值
+      if (isChangeCollege === false) {
+        await axios.put('/student', {
+          ...data,
+          collegeId: collegeAndMajorId.collegeId,
+          majorId: collegeAndMajorId.majorId,
+          id: editId,
+        })
+      } else {
+        await axios.put('/student', {
+          ...data,
+          id: editId,
+        })
+      }
+      messageApi.success('修改学生信息成功！')
+    }
+
     // 关闭表单
     closeForm()
-    // 关闭专业下拉框可选
-    setSelectFlag(true)
-    messageApi.success('添加学生信息成功！')
   }
 
   // 校验学号
   const checkSid = async () => {
-    let res = await axios.get(`/student/${sidValue}`)
-    console.log(res)
+    let sid = form.getFieldValue('sid')
+    let res = await axios.get(`/student/${sid}`)
     if (res.data.data === null) {
-      setSidStatus(false)
-    } else setSidStatus(true)
+      setIsRepeatSid(false)
+    } else setIsRepeatSid(true)
   }
 
-  // 获取输入学号Input框的value
-  const getSidValue = (event: any) => {
-    let value = event.target.value
-    setSidValue(value)
-  }
   // 可选框
   const rowSelection = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
+    onChange: (selectedRowKeys: any, selectedRows: any) => {
       setSelectedRowKeys(selectedRowKeys)
     },
   }
@@ -277,20 +329,26 @@ const StudentManagement: React.FC = () => {
   // 关闭表单
   const closeForm = () => {
     form.resetFields()
-    setHiddenFlag(true)
+    resetForm()
+    setIsHiddenForm(true)
   }
 
-  // 性别
-  const [sex, setSex] = useState(1)
-  const setSexValue = (e: RadioChangeEvent) => {
-    setSex(e.target.value)
+  // 重置表单
+  const resetForm = () => {
+    // 隐藏表单
+    setIsHiddenForm(true)
+    // 重置学号重复弹出框
+    setIsRepeatSid(false)
+    // 重置专业下拉框可选
+    setIsShowMajor(false)
+    // 重置管理员选项
+    setEditorManager(false)
+    // 重置userId
+    setEditId(0)
   }
 
-  // 是否设为管理员按钮
-  const [isManager, setIsManager] = useState(false)
-  const setManageButton = (checked: boolean) => {
-    setIsManager(checked)
-  }
+  // 编辑中的管理员
+  const [editorManager, setEditorManager] = useState(false)
 
   return (
     <>
@@ -322,7 +380,7 @@ const StudentManagement: React.FC = () => {
             <Button
               type="primary"
               onClick={() => {
-                setHiddenFlag(false)
+                setIsHiddenForm(false)
                 getCollege()
               }}>
               新增学生
@@ -365,7 +423,7 @@ const StudentManagement: React.FC = () => {
         labelCol={{ span: 4 }}
         wrapperCol={{ span: 14 }}
         layout="horizontal"
-        hidden={hiddenFlag}
+        hidden={isHiddenForm}
         form={form}
         disabled={false}
         onFinish={onFinish}
@@ -384,7 +442,7 @@ const StudentManagement: React.FC = () => {
         <CloseOutlined
           style={{ float: 'right', marginTop: 5 }}
           onClick={() => {
-            closeForm(), setSelectFlag(true)
+            closeForm()
           }}
         />
 
@@ -395,7 +453,7 @@ const StudentManagement: React.FC = () => {
           label="学号"
           validateTrigger="onChange"
           extra={
-            sidStatus === true ? (
+            isRepeatSid === true ? (
               <Alert
                 style={{}}
                 message="该学号已存在！"
@@ -415,8 +473,6 @@ const StudentManagement: React.FC = () => {
           ]}>
           <Input
             placeholder="请输入学号"
-            // 获取value
-            onChange={getSidValue}
             // 当失去焦点校验学号是否重复
             onBlur={checkSid}
           />
@@ -436,9 +492,10 @@ const StudentManagement: React.FC = () => {
         </Form.Item>
 
         <Form.Item name="sex" label="性别">
-          <Radio.Group onChange={setSexValue} value={sex} defaultValue={sex}>
+          {/* <Radio.Group onChange={setSexValue} value={sex} defaultValue={sex}> */}
+          <Radio.Group defaultValue={1}>
             <Radio value={1}>男</Radio>
-            <Radio value={2}>女</Radio>
+            <Radio value={0}>女</Radio>
           </Radio.Group>
         </Form.Item>
 
@@ -477,7 +534,10 @@ const StudentManagement: React.FC = () => {
             },
           ]}>
           <Select
-            onChange={() => setMajor([])}
+            onChange={() => {
+              setMajor([])
+              setIsChangeCollege(true)
+            }}
             onSelect={getMajor}
             showSearch
             style={{ width: 217 }}
@@ -503,7 +563,7 @@ const StudentManagement: React.FC = () => {
             },
           ]}>
           <Select
-            disabled={selectFlag}
+            disabled={!isShowMajor}
             // defaultValue
             showSearch
             style={{ width: 217 }}
@@ -544,7 +604,11 @@ const StudentManagement: React.FC = () => {
           <Input placeholder="请输入邮箱" />
         </Form.Item>
         <Form.Item name="isManager" label="管理员">
-          <Switch onClick={setManageButton} />
+          {/* <Switch onClick={setManageButton} /> */}
+          <Switch
+            checked={editorManager}
+            onChange={() => setEditorManager(!editorManager)}
+          />
         </Form.Item>
         <Form.Item>
           <div
@@ -554,8 +618,8 @@ const StudentManagement: React.FC = () => {
               justifyContent: 'space-between',
             }}>
             <Button
-              disabled={sidStatus}
-              onClick={() => setSelectFlag(true)}
+              disabled={isRepeatSid}
+              onClick={() => setIsShowMajor(false)}
               htmlType="submit"
               type="primary"
               style={{ marginLeft: 310, marginBottom: 10 }}>
