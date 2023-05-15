@@ -1,21 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react'
 
-import { CloseOutlined } from '@ant-design/icons'
 import {
-  Alert,
   Button,
   Form,
   Input,
+  Modal,
   Pagination,
   Popconfirm,
-  Radio,
-  Select,
   Space,
-  Switch,
   Table,
 } from 'antd'
 import { GlobalContext } from 'app'
 import axios from 'tools/axios'
+import { StudentEditor } from './studentEditor'
 interface DataType {
   id: React.Key
   // sid
@@ -27,14 +24,19 @@ interface DataType {
   class: Number
   role: Number
 }
-// 搜索框
-const { Search } = Input
+
 const onSearch = (value: string) => console.log(value)
 const StudentManagement: React.FC = () => {
   const { messageApi } = useContext(GlobalContext)
 
+  // 弹出表单标识
+  const [modalOpen, setModalOpen] = useState(false)
+
   // 表单
   const [form] = Form.useForm()
+
+  // 搜索框
+  const { Search } = Input
 
   // 加载动态显示
   const [loading, setLoading] = useState(false)
@@ -48,33 +50,20 @@ const StudentManagement: React.FC = () => {
     pageSize: 5,
     total: 50,
     pages: 1,
+    loader: true,
   })
 
-  // 隐藏表单标志
-  const [isHiddenForm, setIsHiddenForm] = useState(true)
-
-  // 学院信息
+  // 学院信息useState
   const [college, setCollege] = useState<any>([])
-
-  // 专业信息
-  const [major, setMajor] = useState<any>([])
 
   // sid输入框是否弹出学号已经存在的状态
   const [isRepeatSid, setIsRepeatSid] = useState(false)
-
-  // 表单提交失败
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo)
-  }
 
   // 封装被选中项的key值
   const [selectedRowKeys, setSelectedRowKeys] = useState<any>([])
 
   // 专业下拉框可选标志
   const [isShowMajor, setIsShowMajor] = useState(false)
-
-  // 编辑时是否改变学院标志
-  const [isChangeCollege, setIsChangeCollege] = useState(false)
 
   // 回填信息时封装学院专业id
   const [collegeAndMajorId, setCollegeAndMajorId] = useState({
@@ -126,13 +115,7 @@ const StudentManagement: React.FC = () => {
           <a
             onClick={() => {
               loadFormValue(record.key)
-              setIsHiddenForm(false)
-              getCollege()
               setEditId(record.id)
-              setResetPwd({
-                ...resetPwd,
-                isDisabled: false,
-              })
             }}>
             编辑
           </a>
@@ -146,6 +129,12 @@ const StudentManagement: React.FC = () => {
     },
   ]
   const loadFormValue = async (sid: React.Key) => {
+    setModalOpen(true)
+    setResetPwd({
+      ...resetPwd,
+      isDisabled: false,
+    })
+    getCollege()
     setLoading(true)
     let res = await axios.get(`/student/${sid}`)
     const data = res.data.data
@@ -171,11 +160,10 @@ const StudentManagement: React.FC = () => {
       majorId: data.majorId,
     })
     setLoading(false)
-    console.log(collegeAndMajorId)
-    console.log(form.getFieldValue('isManager'))
   }
 
   // 拉取学生列表信息
+
   useEffect(() => {
     const loadList = async () => {
       const res = await axios.get('/student', {
@@ -216,39 +204,22 @@ const StudentManagement: React.FC = () => {
       )
       setLoading(false)
     }
+    console.log('刷新页面')
     loadList()
-  }, [params.page, params.pageSize, params.total])
+  }, [params.page, params.pageSize, params.total, params.loader])
 
   // 获取学院信息
   const getCollege = async () => {
-    let cRes = await axios.get('/student/college')
-    let cData = cRes.data.data
+    let Res = await axios.get('/student/college')
+    let Data = Res.data.data
     setCollege(
-      cData.map((item: { id: React.Key; collegeName: String }) => {
+      Data.map((item: { id: React.Key; collegeName: String }) => {
         return {
           key: item.id,
           name: item.collegeName,
         }
       })
     )
-  }
-
-  // 获取专业信息
-  const getMajor = async (id: Number) => {
-    // 每次选择完学院后，清空专业
-    form.setFieldValue('majorId', '')
-    const mRes = await axios.get(`/student/major/${id}`)
-    let mData = mRes.data.data
-
-    setMajor(
-      mData.map((item: { id: React.Key; majorName: String }) => {
-        return {
-          key: item.id,
-          name: item.majorName,
-        }
-      })
-    )
-    setIsShowMajor(true)
   }
 
   // 单条删除
@@ -265,6 +236,7 @@ const StudentManagement: React.FC = () => {
       total: params.total - 1,
     })
   }
+
   // 批量删除
   const delBatch = async () => {
     console.log(selectedRowKeys)
@@ -281,61 +253,6 @@ const StudentManagement: React.FC = () => {
     setSelectedRowKeys([])
   }
 
-  // 提交数据
-  const onFinish = async (values: any) => {
-    let isManager = form.getFieldValue('isManager')
-    let sex = form.getFieldValue('sex')
-    let res = await axios.get(`/student/${values.sid}`)
-    let flag = res.data.data
-    let data = {
-      ...values,
-      username: values.sid,
-      realName: values.studentName,
-      sex: (sex === undefined || sex === 1 ? 1 : 0) === 1 ? '男' : '女',
-      isSetManager:
-        (isManager === undefined || isManager === false ? false : true) === true
-          ? 1
-          : 0,
-      isResetPwd: resetPwd.isReset === true ? 1 : 0,
-    }
-    console.log(data)
-    // 增添学生信息
-    if (flag === null) {
-      await axios.post('/student', data)
-      messageApi.success('添加学生信息成功！')
-    }
-    // 修改学生信息
-    else {
-      // 如果没有修改学院专业信息，则将学院专业对应id赋值
-      if (isChangeCollege === false) {
-        await axios.put('/student', {
-          ...data,
-          collegeId: collegeAndMajorId.collegeId,
-          majorId: collegeAndMajorId.majorId,
-          id: editId,
-        })
-      } else {
-        await axios.put('/student', {
-          ...data,
-          id: editId,
-        })
-      }
-      messageApi.success('修改学生信息成功！')
-    }
-
-    // 关闭表单
-    closeForm()
-  }
-
-  // 校验学号
-  const checkSid = async () => {
-    let sid = form.getFieldValue('sid')
-    let res = await axios.get(`/student/${sid}`)
-    if (res.data.data === null) {
-      setIsRepeatSid(false)
-    } else setIsRepeatSid(true)
-  }
-
   // 可选框
   const rowSelection = {
     onChange: (selectedRowKeys: any, selectedRows: any) => {
@@ -347,14 +264,8 @@ const StudentManagement: React.FC = () => {
   // 关闭表单
   const closeForm = () => {
     form.resetFields()
-    resetForm()
-    setIsHiddenForm(true)
-  }
-
-  // 重置表单
-  const resetForm = () => {
     // 隐藏表单
-    setIsHiddenForm(true)
+    setModalOpen(false)
     // 重置学号重复弹出框
     setIsRepeatSid(false)
     // 重置专业下拉框可选
@@ -368,10 +279,11 @@ const StudentManagement: React.FC = () => {
       isDisabled: true,
       isReset: false,
     })
+    setModalOpen(false)
   }
 
   // 编辑中的管理员
-  const [editorManager, setEditorManager] = useState(false)
+  const [editorManager, setEditorManager] = useState(false) // ##
 
   // 编辑中重置密码
   const [resetPwd, setResetPwd] = useState({
@@ -381,6 +293,33 @@ const StudentManagement: React.FC = () => {
 
   return (
     <>
+      <Modal
+        centered
+        open={modalOpen}
+        footer={null}
+        width={430}
+        onCancel={() => {
+          closeForm()
+        }}>
+        <StudentEditor
+          form={form}
+          setModalOpen={setModalOpen}
+          isShowMajor={isShowMajor}
+          setIsShowMajor={setIsShowMajor}
+          college={college}
+          isRepeatSid={isRepeatSid}
+          setIsRepeatSid={setIsRepeatSid}
+          collegeAndMajorId={collegeAndMajorId}
+          editId={editId}
+          editorManager={editorManager}
+          setEditorManager={setEditorManager}
+          resetPwd={resetPwd}
+          setResetPwd={setResetPwd}
+          closeForm={closeForm}
+          params={params}
+          setParams={setParams}
+        />
+      </Modal>
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           {/* 搜索框 */}
@@ -409,7 +348,7 @@ const StudentManagement: React.FC = () => {
             <Button
               type="primary"
               onClick={() => {
-                setIsHiddenForm(false)
+                setModalOpen(true)
                 getCollege()
                 setResetPwd({
                   ...resetPwd,
@@ -452,227 +391,6 @@ const StudentManagement: React.FC = () => {
           showTotal={(total) => `总共${total}条数据`}
         />
       </div>
-      <Form
-        labelCol={{ span: 4 }}
-        wrapperCol={{ span: 14 }}
-        layout="horizontal"
-        hidden={isHiddenForm}
-        form={form}
-        disabled={false}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        style={{
-          height: 757,
-          width: 400,
-          position: 'absolute',
-          background: 'white',
-          top: '-7%',
-          left: '37%',
-          boxShadow: '1px 2px 9px #808080',
-          margin: '4em',
-          padding: '1em',
-        }}>
-        <CloseOutlined
-          style={{ float: 'right', marginTop: 5 }}
-          onClick={() => {
-            closeForm()
-          }}
-        />
-
-        <Form.Item>新增学生</Form.Item>
-
-        <Form.Item
-          name="sid"
-          label="学号"
-          validateTrigger="onChange"
-          extra={
-            isRepeatSid === true ? (
-              <Alert
-                style={{}}
-                message="该学号已存在！"
-                type="error"
-                showIcon
-              />
-            ) : (
-              ''
-            )
-          }
-          rules={[
-            {
-              required: true,
-              pattern: /^\d{7}$/,
-              message: '学号为7位数字',
-            },
-          ]}>
-          <Input
-            placeholder="请输入学号"
-            // 当失去焦点校验学号是否重复
-            onBlur={checkSid}
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="studentName"
-          label="姓名"
-          rules={[
-            {
-              required: true,
-              pattern: /^[\u4e00-\u9fa5\w]{1,20}$/,
-              message: '姓名长度不得超过20个字符',
-            },
-          ]}>
-          <Input placeholder="请输入姓名" />
-        </Form.Item>
-
-        <Form.Item name="sex" label="性别">
-          {/* <Radio.Group onChange={setSexValue} value={sex} defaultValue={sex}> */}
-          <Radio.Group defaultValue={1}>
-            <Radio value={1}>男</Radio>
-            <Radio value={0}>女</Radio>
-          </Radio.Group>
-        </Form.Item>
-
-        <Form.Item
-          name="classNumber"
-          label="班级"
-          rules={[
-            {
-              required: true,
-              pattern: /^\d{1}$/,
-              message: '请输入班级对应数字',
-            },
-          ]}>
-          <Input placeholder="请输入班级对应数字" />
-        </Form.Item>
-
-        <Form.Item
-          name="grade"
-          label="年级"
-          rules={[
-            {
-              required: true,
-              pattern: /^\d{4}$/,
-              message: '请输入年级对应数字',
-            },
-          ]}>
-          <Input placeholder="请输入年级对应数字" />
-        </Form.Item>
-
-        <Form.Item
-          name="collegeId"
-          label="学院"
-          rules={[
-            {
-              required: true,
-            },
-          ]}>
-          <Select
-            onChange={() => {
-              setMajor([])
-              setIsChangeCollege(true)
-            }}
-            onSelect={getMajor}
-            showSearch
-            style={{ width: 217 }}
-            placeholder="点击搜索学院关键字"
-            optionFilterProp="children"
-            filterOption={(input, option) =>
-              ((option?.label ?? '') as any).includes(input)
-            }
-            options={college.map((item: { key: React.Key; name: String }) => {
-              return {
-                value: item.key,
-                label: item.name,
-              }
-            })}
-          />
-        </Form.Item>
-        <Form.Item
-          name="majorId"
-          label="专业"
-          rules={[
-            {
-              required: true,
-            },
-          ]}>
-          <Select
-            disabled={!isShowMajor}
-            // defaultValue
-            showSearch
-            style={{ width: 217 }}
-            placeholder="点击搜索专业关键字"
-            optionFilterProp="children"
-            filterOption={(input, option) =>
-              ((option?.label ?? '') as any).includes(input)
-            }
-            options={major.map((item: { key: React.Key; name: String }) => {
-              return {
-                value: item.key,
-                label: item.name,
-              }
-            })}
-          />
-        </Form.Item>
-        <Form.Item
-          name="phone"
-          label="电话"
-          rules={[
-            {
-              pattern: /^\d{11}$/,
-              message: '请输入正确的电话号码格式',
-            },
-          ]}>
-          <Input placeholder="请输入电话" />
-        </Form.Item>
-        <Form.Item
-          name="email"
-          label="邮箱"
-          rules={[
-            {
-              pattern:
-                /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/,
-              message: '请输入正确的邮箱格式',
-            },
-          ]}>
-          <Input placeholder="请输入邮箱" />
-        </Form.Item>
-        <Form.Item name="isManager" label="管理员">
-          <Switch
-            // disabled={true}
-            checked={editorManager}
-            onChange={() => setEditorManager(!editorManager)}
-          />
-        </Form.Item>
-        <Form.Item name="isResetPwd" label="重置密码">
-          <Switch
-            disabled={resetPwd.isDisabled}
-            checked={resetPwd.isReset}
-            onChange={() =>
-              setResetPwd({
-                ...resetPwd,
-                isReset: !resetPwd.isReset,
-              })
-            }
-          />
-        </Form.Item>
-        <Form.Item>
-          <div
-            style={{
-              width: 180,
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}>
-            <Button
-              disabled={isRepeatSid}
-              onClick={() => setIsShowMajor(false)}
-              htmlType="submit"
-              type="primary"
-              style={{ marginLeft: 310, marginBottom: 10 }}>
-              提交
-            </Button>
-          </div>
-        </Form.Item>
-      </Form>
     </>
   )
 }

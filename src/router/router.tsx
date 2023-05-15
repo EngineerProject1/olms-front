@@ -10,7 +10,6 @@ import { Login } from 'pages/login'
 import Main from 'pages/main'
 import { useEffect } from 'react'
 import { createBrowserRouter, useNavigate } from 'react-router-dom'
-
 export const defaultRouter = createBrowserRouter([
   {
     path: '/',
