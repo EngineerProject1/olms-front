@@ -39,12 +39,47 @@ const normFile = (e: any) => {
 }
 // 搜索框
 const { Search } = Input
-const onSearch = (value: string) => console.log(value)
 
 export function Device() {
   const [selectionType, setSelectionType] = useState<'checkbox' | 'radio'>(
     'checkbox'
   )
+  // 表单作用(修改设备信息 | 新增设备)
+  const [formName, setFormName] = useState('新增设备')
+
+  //搜索查询
+  const onSearch = async (values: any) => {
+    if (values.name && values.status) {
+      setParams({
+        ...params,
+        name: values.name,
+        status: values.status,
+      })
+    } else if (!values.name && values.status) {
+      setParams({
+        ...params,
+        name: '',
+        status: values.status,
+      })
+    } else if (values.name && !values.status) {
+      setParams({
+        ...params,
+        name: values.name,
+        status: 1,
+      })
+    }
+  }
+  //查出所有实验室
+  const [labNames, setLabNames] = useState<any>()
+  // useEffect(() => {
+  //   const getLabNames = async () => {
+  //     const res = await axios.get('lab')
+  //     console.log(res)
+  //     setLabNames(res)
+  //   }
+  //   getLabNames()
+  // }, [labNames])
+
   // 得到后端返回的文件名
   const [fileName, setFileName] = useState('')
 
@@ -60,16 +95,21 @@ export function Device() {
     pageSize: 5,
     total: 50,
     pages: 1,
+    name: '',
+    status: 1,
   })
 
-  //加载分页page参数
+  const [loading, setLoading] = useState(true)
+  // const [name, setName] = useState('')
+  // 拉取所有设备列表信息
   useEffect(() => {
-    const loadPage = async () => {
-      // 获取设备信息
-      const res = await axios.get('/device', {
+    const loadList = async () => {
+      const res = await axios.get(`/device`, {
         params: {
           page: params.page,
           pageSize: params.pageSize,
+          name: params.name,
+          status: params.status,
         },
       })
       const data = res.data.data
@@ -79,23 +119,6 @@ export function Device() {
         total: data.total,
         pages: data.pages,
       })
-    }
-    loadPage()
-  }, [])
-
-  const [loading, setLoading] = useState(true)
-
-  // 拉取所有设备列表信息
-  useEffect(() => {
-    const loadList = async () => {
-      const res = await axios.get('/device', {
-        params: {
-          page: params.page,
-          pageSize: params.pageSize,
-        },
-      })
-      const data = res.data.data
-      console.log(res)
       setList(
         data.records.map(
           (item: {
@@ -122,7 +145,7 @@ export function Device() {
       setLoading(false)
     }
     loadList()
-  }, [params])
+  }, [params.pageSize, params.total, params.page, params.name, params.status])
 
   // 列字段
   const columns: ColumnsType<DataType> = [
@@ -144,6 +167,10 @@ export function Device() {
     {
       title: '价格',
       dataIndex: 'price',
+      // sorter: {
+      //   compare: (a, b) => a.price - b.price,
+      //   multiple: 3,
+      // },
     },
     {
       title: '型号',
@@ -169,6 +196,7 @@ export function Device() {
     },
   ]
 
+  // 对多选框的操作
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
@@ -220,12 +248,6 @@ export function Device() {
     'default'
   )
 
-  const onFormLayoutChange = ({ size }: { size: SizeType }) => {
-    setComponentSize(size)
-  }
-
-  const [hiddenFlag, setHiddenFlag] = useState(true)
-
   // 成功消息提示
   const { messageApi } = useContext(GlobalContext)
 
@@ -247,15 +269,39 @@ export function Device() {
     form.resetFields()
     if (id !== -1) {
       loadDetail()
+      setFormName('修改设备信息')
+    } else {
+      setFormName('新增设备')
     }
   }
 
   const [form] = Form.useForm()
 
-  // 删除操作
-  const handleDelete = (id: React.Key) => {
+  // 单条删除
+  const handleDelete = async (id: React.Key) => {
     // 当前行索引
     console.log(id)
+    const res = await axios.delete(`/auth/device/${id}`)
+    messageApi.success(res.data.msg)
+    setParams({
+      ...params,
+      total: params.total - 1,
+    })
+  }
+
+  // 批量删除
+  const delBatch = async () => {
+    await axios.delete('/auth/device', {
+      data: {
+        ids: selectedRowKeys,
+      },
+    })
+    messageApi.success('成功删除')
+    setParams({
+      ...params,
+      total: params.total - selectedRowKeys.length,
+    })
+    setSelectedRowKeys([])
   }
 
   const [id, setId] = useState<React.Key>()
@@ -272,24 +318,27 @@ export function Device() {
       const res = await axios.put('/auth/device', values)
       const message = res.data.msg
       messageApi.success(message)
+      setParams({
+        ...params,
+      })
     } else {
       //添加设备信息
       const res = await axios.post('/auth/device', values)
       const message = res.data.msg
       messageApi.success(message)
+      setParams({
+        ...params,
+        total: params.total + 1,
+      })
     }
-    setParams({
-      page: 1,
-      pageSize: 5,
-      total: 50,
-      pages: 1,
-    })
+    handleCancel()
   }
 
   // 表单提交失败
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
   }
+
   const props: UploadProps = {
     name: 'file',
     action: '/api/img/upload',
@@ -311,21 +360,10 @@ export function Device() {
 
   //关于Modal部分
   const [open, setOpen] = useState(false)
-  const [confirmLoading, setConfirmLoading] = useState(false)
-  const [modalText, setModalText] = useState('Content of the modal')
 
   const showModal = (id: React.Key) => {
     handleEdit(id)
     setOpen(true)
-  }
-
-  const handleOk = () => {
-    setModalText('The modal will be closed after two seconds')
-    setConfirmLoading(true)
-    setTimeout(() => {
-      setOpen(false)
-      setConfirmLoading(false)
-    }, 2000)
   }
 
   const handleCancel = () => {
@@ -334,20 +372,74 @@ export function Device() {
   }
   return (
     <div>
-      {/* 搜索框 */}
-      <Search
-        placeholder="input search text"
-        onSearch={onSearch}
-        style={{ width: 200 }}
-      />
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        {/* 搜索框 */}
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          {/* <Search
+            placeholder="请输入设备名称"
+            onSearch={onSearch}
+            style={{ width: 200 }}
+          /> */}
+          <Form
+            style={{ display: 'flex', justifyContent: 'space-between' }}
+            onFinish={onSearch}>
+            <Form.Item
+              name="name"
+              label="名称"
+              rules={[
+                {
+                  pattern: /^[\u4e00-\u9fa5\w]{1,20}$/,
+                  message: '名称长度不得超过20个字符',
+                },
+              ]}>
+              <Input placeholder="请输入名称" />
+            </Form.Item>
+            <Form.Item name="status" label="状态" style={{ width: 200 }}>
+              <Select>
+                <Select.Option value="0">可用</Select.Option>
+                <Select.Option value="2">已被借用</Select.Option>
+                <Select.Option value="3">维修中</Select.Option>
+                <Select.Option value="4">损坏</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item>
+              <Button
+                htmlType="submit"
+                type="primary"
+                style={{ marginLeft: 10 }}>
+                查询
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
 
-      {/* 新增设备 */}
-      <Button
-        onClick={() => showModal(-1)}
-        type="primary"
-        style={{ marginBottom: 16, marginRight: 105, float: 'right' }}>
-        + 新增设备
-      </Button>
+        <div
+          style={{
+            width: 180,
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}>
+          {/* 批量删除 */}
+          <Popconfirm
+            title="是否删除所选设备信息？"
+            onConfirm={delBatch}
+            disabled={selectedRowKeys.length === 0}>
+            <Button danger disabled={selectedRowKeys.length === 0}>
+              删除选中
+            </Button>
+          </Popconfirm>
+
+          {/* 新增设备 */}
+          <Button
+            onClick={() => showModal(-1)}
+            type="primary"
+            style={{ marginBottom: 16, marginRight: 105, float: 'right' }}>
+            + 新增设备
+          </Button>
+        </div>
+      </div>
+
+      {/* 数据表格 */}
       <Table
         rowSelection={{
           type: selectionType,
@@ -359,6 +451,7 @@ export function Device() {
         pagination={false}
         loading={loading}
       />
+      {/* 分页 */}
       <Pagination
         style={{ float: 'right' }}
         pageSize={params.pageSize}
@@ -375,7 +468,6 @@ export function Device() {
         showQuickJumper
         showTotal={(total) => `总共${params.total}条数据`}
       />
-
       <Modal
         centered
         open={open}
@@ -399,7 +491,7 @@ export function Device() {
             padding: '1em',
           }}
           form={form}>
-          <Form.Item>新增设备</Form.Item>
+          <Form.Item>{formName}</Form.Item>
           <Form.Item
             name="name"
             label="名称"
@@ -407,6 +499,7 @@ export function Device() {
               {
                 pattern: /^[\u4e00-\u9fa5\w]{1,20}$/,
                 message: '名称长度不得超过20个字符',
+                required: true,
               },
             ]}>
             <Input placeholder="请输入名称" />
@@ -420,9 +513,9 @@ export function Device() {
             <MyUpload setName={setFileName} fileList={fileList as string} />
           </Form.Item>
 
-          <Form.Item name="labName" label="实验室">
+          <Form.Item name="labName" label="实验室" rules={[{ required: true }]}>
             <Select>
-              <Select.Option value="D204">D204</Select.Option>
+              <Select.Option value="计算机部">计算机部</Select.Option>
             </Select>
           </Form.Item>
 
@@ -431,7 +524,11 @@ export function Device() {
             name="price"
             label="价格"
             rules={[
-              { pattern: /^\d+[/.\d*]?\d$/, message: '请输入正确的数字' },
+              {
+                pattern: /^\d+[/.\d*]?\d$/,
+                message: '请输入正确的数字',
+                required: true,
+              },
             ]}>
             <Input placeholder="请输入价格" />
           </Form.Item>
@@ -443,6 +540,7 @@ export function Device() {
               {
                 pattern: /^[\u4e00-\u9fa5\w\s-]{1,30}$/,
                 message: '型号长度不得超过30个字符',
+                required: true,
               },
             ]}>
             <Input placeholder="请输入型号" />
@@ -452,9 +550,6 @@ export function Device() {
             <Button
               htmlType="submit"
               type="primary"
-              onClick={() => {
-                handleCancel()
-              }}
               style={{ marginLeft: 260, marginBottom: 0 }}>
               提交
             </Button>
