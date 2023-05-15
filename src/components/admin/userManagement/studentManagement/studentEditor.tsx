@@ -149,7 +149,7 @@ export function StudentEditor(props: {
         marginTop: 15,
         padding: '1em',
       }}>
-      <Form.Item>新增学生</Form.Item>
+      <Form.Item>{editId === 0 ? '新增' : '编辑'}学生</Form.Item>
 
       <Form.Item
         name="sid"

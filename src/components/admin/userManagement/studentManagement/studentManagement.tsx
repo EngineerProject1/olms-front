@@ -25,7 +25,6 @@ interface DataType {
   role: Number
 }
 
-const onSearch = (value: string) => console.log(value)
 const StudentManagement: React.FC = () => {
   const { messageApi } = useContext(GlobalContext)
 
@@ -50,8 +49,17 @@ const StudentManagement: React.FC = () => {
     pageSize: 5,
     total: 50,
     pages: 1,
+    name: '',
     loader: true,
   })
+
+  // 通过姓名进行搜索
+  const onSearch = (value: string) => {
+    setParams({
+      ...params,
+      name: value,
+    })
+  }
 
   // 学院信息useState
   const [college, setCollege] = useState<any>([])
@@ -170,6 +178,7 @@ const StudentManagement: React.FC = () => {
         params: {
           page: params.page,
           pageSize: params.pageSize,
+          name: params.name,
         },
       })
       const data = res.data.data
@@ -206,7 +215,7 @@ const StudentManagement: React.FC = () => {
     }
     console.log('刷新页面')
     loadList()
-  }, [params.page, params.pageSize, params.total, params.loader])
+  }, [params.page, params.pageSize, params.total, params.loader, params.name])
 
   // 获取学院信息
   const getCollege = async () => {
@@ -324,7 +333,7 @@ const StudentManagement: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           {/* 搜索框 */}
           <Search
-            placeholder="姓名"
+            placeholder="输入姓名搜索"
             onSearch={onSearch}
             style={{ width: 200 }}
             size="large"
