@@ -1,5 +1,6 @@
 import Announcement from 'components/admin/announcement/announcement'
 import { Device } from 'components/admin/device/device'
+import Lab from 'components/admin/lab/Lab'
 import StudentManagement from 'components/admin/userManagement/studentManagement/studentManagement'
 import { BasicInformation } from 'components/person/basicInformation'
 import { ChangePassword } from 'components/person/changePassword'
@@ -41,7 +42,11 @@ export const adminRouter = createBrowserRouter([
       },
       {
         path: 'laboratory',
-        element: <>laboratory</>,
+        element: (
+          <>
+            <Lab />
+          </>
+        ),
       },
       {
         path: 'appointment',
