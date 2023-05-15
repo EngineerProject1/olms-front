@@ -262,23 +262,22 @@ const StudentManagement: React.FC = () => {
     messageApi.success('删除学生信息成功！')
     setParams({
       ...params,
+      total: params.total - 1,
     })
   }
   // 批量删除
   const delBatch = async () => {
-    // await axios.delete('/students', {
-    //   data: {
-    //     ids: selectedRowKeys.map((item: any) => {
-    //       return {
-    //         id: item.id,
-    //         sid: item.key,
-    //       }
-    //     }),
-    //   },
-    // })
-    // setParams({
-    //   ...params,
-    // })
+    console.log(selectedRowKeys)
+    await axios.delete('/students', {
+      data: {
+        ids: selectedRowKeys,
+      },
+    })
+    messageApi.success('批量删除学生信息成功！')
+    setParams({
+      ...params,
+      total: params.total - selectedRowKeys.length,
+    })
     setSelectedRowKeys([])
   }
 
@@ -340,8 +339,8 @@ const StudentManagement: React.FC = () => {
   // 可选框
   const rowSelection = {
     onChange: (selectedRowKeys: any, selectedRows: any) => {
-      setSelectedRowKeys(selectedRows)
-      console.log(selectedRows)
+      setSelectedRowKeys(selectedRowKeys)
+      console.log(selectedRowKeys)
     },
   }
 
@@ -400,7 +399,7 @@ const StudentManagement: React.FC = () => {
             {/* 批量删除 */}
             <Popconfirm
               title="是否删除所选学生信息？"
-              // onConfirm={delBatch}
+              onConfirm={delBatch}
               disabled={selectedRowKeys.length === 0}>
               <Button danger disabled={selectedRowKeys.length === 0}>
                 批量删除
@@ -463,7 +462,7 @@ const StudentManagement: React.FC = () => {
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         style={{
-          height: 725,
+          height: 757,
           width: 400,
           position: 'absolute',
           background: 'white',
