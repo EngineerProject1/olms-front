@@ -128,8 +128,11 @@ const StudentManagement: React.FC = () => {
               loadFormValue(record.key)
               setIsHiddenForm(false)
               getCollege()
-              console.log(record.id)
               setEditId(record.id)
+              setResetPwd({
+                ...resetPwd,
+                isDisabled: false,
+              })
             }}>
             编辑
           </a>
@@ -143,6 +146,7 @@ const StudentManagement: React.FC = () => {
     },
   ]
   const loadFormValue = async (sid: React.Key) => {
+    setLoading(true)
     let res = await axios.get(`/student/${sid}`)
     const data = res.data.data
     console.log(data)
@@ -158,6 +162,7 @@ const StudentManagement: React.FC = () => {
       email: data.email,
       isManager: data.isSetManager === 1 ? true : false,
     }
+    // 是否开启管理员开关
     setEditorManager(value.isManager)
     form.setFieldsValue(value)
     // 存入学院专业id
@@ -165,6 +170,7 @@ const StudentManagement: React.FC = () => {
       collegeId: data.collegeId,
       majorId: data.majorId,
     })
+    setLoading(false)
     console.log(collegeAndMajorId)
     console.log(form.getFieldValue('isManager'))
   }
@@ -291,6 +297,7 @@ const StudentManagement: React.FC = () => {
         (isManager === undefined || isManager === false ? false : true) === true
           ? 1
           : 0,
+      isResetPwd: resetPwd.isReset === true ? 1 : 0,
     }
     console.log(data)
     // 增添学生信息
@@ -357,10 +364,21 @@ const StudentManagement: React.FC = () => {
     setEditorManager(false)
     // 重置userId
     setEditId(0)
+    // 重置 重置密码选项
+    setResetPwd({
+      isDisabled: true,
+      isReset: false,
+    })
   }
 
   // 编辑中的管理员
   const [editorManager, setEditorManager] = useState(false)
+
+  // 编辑中重置密码
+  const [resetPwd, setResetPwd] = useState({
+    isDisabled: true,
+    isReset: false,
+  })
 
   return (
     <>
@@ -394,6 +412,10 @@ const StudentManagement: React.FC = () => {
               onClick={() => {
                 setIsHiddenForm(false)
                 getCollege()
+                setResetPwd({
+                  ...resetPwd,
+                  isReset: true,
+                })
               }}>
               新增学生
             </Button>
@@ -441,7 +463,7 @@ const StudentManagement: React.FC = () => {
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         style={{
-          height: 703,
+          height: 725,
           width: 400,
           position: 'absolute',
           background: 'white',
@@ -616,10 +638,22 @@ const StudentManagement: React.FC = () => {
           <Input placeholder="请输入邮箱" />
         </Form.Item>
         <Form.Item name="isManager" label="管理员">
-          {/* <Switch onClick={setManageButton} /> */}
           <Switch
+            // disabled={true}
             checked={editorManager}
             onChange={() => setEditorManager(!editorManager)}
+          />
+        </Form.Item>
+        <Form.Item name="isResetPwd" label="重置密码">
+          <Switch
+            disabled={resetPwd.isDisabled}
+            checked={resetPwd.isReset}
+            onChange={() =>
+              setResetPwd({
+                ...resetPwd,
+                isReset: !resetPwd.isReset,
+              })
+            }
           />
         </Form.Item>
         <Form.Item>
