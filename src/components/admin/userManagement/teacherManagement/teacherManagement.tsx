@@ -8,11 +8,14 @@ import {
   Space,
   Table,
 } from 'antd'
-import { useEffect, useState } from 'react'
+import { GlobalContext } from 'app'
+import { useContext, useEffect, useState } from 'react'
 import axios from 'tools/axios'
 import { TeacherEditor } from './teacherEditor'
 
 const TeacherManagement: React.FC = () => {
+  const { messageApi } = useContext(GlobalContext)
+
   // 表单
   const [form] = Form.useForm()
 
@@ -47,13 +50,7 @@ const TeacherManagement: React.FC = () => {
   const [isChangeCollege, setIsChangeCollege] = useState(false)
 
   // 教师信息列表
-  const [teachers, setTeachers] = useState<any>([
-    {
-      name: '张三',
-      key: 2022222,
-      college: '软件工程',
-    },
-  ])
+  const [teachers, setTeachers] = useState<any>()
 
   // 学生分页参数管理
   const [params, setParams] = useState<any>({
@@ -118,9 +115,8 @@ const TeacherManagement: React.FC = () => {
             编辑
           </a>
           <Popconfirm
-            title="是否该学生信息？"
-            // onConfirm={() => delStudent(record.id, record.key)}
-          >
+            title="是否该教师信息？"
+            onConfirm={() => delTeacher(record.id, record.key)}>
             <a style={{ color: 'red' }}>删除</a>
           </Popconfirm>
         </Space>
@@ -232,6 +228,37 @@ const TeacherManagement: React.FC = () => {
     setLoading(false)
   }
 
+  // 单条删除
+  const delTeacher = async (userId: any, tid: any) => {
+    await axios.delete('/teacher', {
+      data: {
+        id: userId,
+        tid: tid,
+      },
+    })
+    messageApi.success('删除教师信息成功！')
+    setParams({
+      ...params,
+      total: params.total - 1,
+    })
+  }
+
+  // 批量删除
+  const delBatch = async () => {
+    console.log(selectedRowKeys)
+    await axios.delete('/teachers', {
+      data: {
+        ids: selectedRowKeys,
+      },
+    })
+    messageApi.success('批量删除教师信息成功！')
+    setParams({
+      ...params,
+      total: params.total - selectedRowKeys.length,
+    })
+    setSelectedRowKeys([])
+  }
+
   return (
     <>
       <Modal
@@ -279,13 +306,9 @@ const TeacherManagement: React.FC = () => {
             {/* 批量删除 */}
             <Popconfirm
               title="是否删除所选教师信息？"
-              // onConfirm={delBatch}
-              // disabled={selectedRowKeys.length === 0}
-            >
-              <Button
-                danger
-                // disabled={selectedRowKeys.length === 0}
-              >
+              onConfirm={delBatch}
+              disabled={selectedRowKeys.length === 0}>
+              <Button danger disabled={selectedRowKeys.length === 0}>
                 批量删除
               </Button>
             </Popconfirm>
