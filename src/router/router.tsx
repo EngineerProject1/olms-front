@@ -11,6 +11,7 @@ import { useEffect } from 'react'
 import { createBrowserRouter, useNavigate } from 'react-router-dom'
 
 import StudentManagement from 'components/admin/userManagement/studentManagement/studentManagement'
+import TeacherManagement from 'components/admin/userManagement/teacherManagement/teacherManagement'
 export const defaultRouter = createBrowserRouter([
   {
     path: '/',
@@ -77,12 +78,12 @@ export const adminRouter = createBrowserRouter([
             element: <StudentManagement />,
           },
           {
-            path: 'attendance',
-            element: <>attendance</>,
+            path: 'teacherUser',
+            element: <TeacherManagement />,
           },
           {
-            path: 'teacherUser',
-            element: <>teacherUser</>,
+            path: 'attendance',
+            element: <>attendance</>,
           },
         ],
       },

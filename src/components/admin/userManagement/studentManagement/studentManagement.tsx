@@ -46,7 +46,7 @@ const StudentManagement: React.FC = () => {
   // 学生分页参数管理
   const [params, setParams] = useState<any>({
     page: 1,
-    pageSize: 5,
+    pageSize: 10,
     total: 50,
     pages: 1,
     name: '',
@@ -171,7 +171,6 @@ const StudentManagement: React.FC = () => {
   }
 
   // 拉取学生列表信息
-
   useEffect(() => {
     const loadList = async () => {
       const res = await axios.get('/student', {
