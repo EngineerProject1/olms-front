@@ -291,7 +291,7 @@ const StudentManagement: React.FC = () => {
   }
 
   // 编辑中的管理员
-  const [editorManager, setEditorManager] = useState(false) // ##
+  const [editorManager, setEditorManager] = useState(false)
 
   // 编辑中重置密码
   const [resetPwd, setResetPwd] = useState({
@@ -386,7 +386,7 @@ const StudentManagement: React.FC = () => {
           style={{ float: 'right' }}
           pageSize={params.pageSize}
           showSizeChanger
-          pageSizeOptions={[5, 10, 15, 20]}
+          pageSizeOptions={[10, 15, 20]}
           onChange={(page, pageSize) => {
             setParams({
               ...params,
