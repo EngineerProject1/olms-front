@@ -100,6 +100,7 @@ export function StudentEditor(props: {
       ...params,
       loader: !params.loader,
     })
+    setIsChangeCollege(false)
   }
 
   // 表单提交失败
@@ -111,7 +112,8 @@ export function StudentEditor(props: {
   const checkSid = async () => {
     let sid = form.getFieldValue('sid')
     let res = await axios.get(`/student/${sid}`)
-    if (res.data.data === null) {
+    console.log(res)
+    if (res.data.msg === '未查询到该学生') {
       setIsRepeatSid(false)
     } else setIsRepeatSid(true)
   }

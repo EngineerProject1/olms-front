@@ -18,6 +18,9 @@ export function TeacherEditor(props: {
   closeForm: any
   params: any
   setParams: any
+  collegeId: any
+  isChangeCollege: any
+  setIsChangeCollege: any
 }) {
   const {
     form,
@@ -33,6 +36,9 @@ export function TeacherEditor(props: {
     closeForm,
     params,
     setParams,
+    collegeId,
+    isChangeCollege,
+    setIsChangeCollege,
   } = props
 
   const { messageApi } = useContext(GlobalContext)
@@ -41,47 +47,48 @@ export function TeacherEditor(props: {
   const onFinish = async (values: any) => {
     let isManager = form.getFieldValue('isManager')
     let sex = form.getFieldValue('sex')
-    // let res = await axios.get(`/teacher/${values.tid}`)
-    // let flag = res.data.data
-    // let data = {
-    //   ...values,
-    //   username: values.tid,
-    //   realName: values.teacherName,
-    //   sex: (sex === undefined || sex === 1 ? 1 : 0) === 1 ? '男' : '女',
-    //   isSetManager:
-    //     (isManager === undefined || isManager === false ? false : true) === true
-    //       ? 1
-    //       : 0,
-    //   isResetPwd: resetPwd.isReset === true ? 1 : 0,
-    // }
-    // console.log(data)
+    let res = await axios.get(`/teacher/${values.tid}`)
+    let flag = res.data.data
+    let data = {
+      ...values,
+      username: values.tid,
+      realName: values.teacherName,
+      sex: (sex === undefined || sex === 1 ? 1 : 0) === 1 ? '男' : '女',
+      isSetManager:
+        (isManager === undefined || isManager === false ? false : true) === true
+          ? 1
+          : 0,
+      isResetPwd: resetPwd.isReset === true ? 1 : 0,
+    }
+    console.log(data)
     // 增添教师信息
-    // if (flag === null) {
-    //   await axios.post('/teacher', data)
-    //   setParams({
-    //     ...params,
-    //     total: params.total + 1,
-    //   })
-    //   messageApi.success('添加学生信息成功！')
-    // }
+    if (flag === null) {
+      await axios.post('/teacher', data)
+      setParams({
+        ...params,
+        total: params.total + 1,
+      })
+      messageApi.success('添加教师信息成功！')
+    }
     // 修改教师信息
-    // else {
-    //   // 如果没有修改学院专业信息，则将学院专业对应id赋值
-    //   if (isChangeCollege === false) {
-    //     await axios.put('/student', {
-    //       ...data,
-    //       collegeId: collegeAndMajorId.collegeId,
-    //       majorId: collegeAndMajorId.majorId,
-    //       id: editId,
-    //     })
-    //   } else {
-    //     await axios.put('/student', {
-    //       ...data,
-    //       id: editId,
-    //     })
-    //   }
-    //   messageApi.success('修改学生信息成功！')
-    // }
+    else {
+      {
+        // 如果没有修改学院信息，则将学院对应id赋值
+        if (isChangeCollege === false) {
+          await axios.put('/teacher', {
+            ...data,
+            collegeId: collegeId,
+            id: editId,
+          })
+        } else {
+          await axios.put('/teacher', {
+            ...data,
+            id: editId,
+          })
+        }
+        messageApi.success('修改教师信息成功！')
+      }
+    }
     // 关闭表单
     closeForm()
     setParams({
@@ -100,7 +107,7 @@ export function TeacherEditor(props: {
     let tid = form.getFieldValue('tid')
     let res = await axios.get(`/teacher/${tid}`)
     console.log(res)
-    if (res.data.data === null) {
+    if (res.data.msg === '未查询到该教师') {
       setIsRepeatTid(false)
     } else setIsRepeatTid(true)
   }
@@ -183,10 +190,8 @@ export function TeacherEditor(props: {
         ]}>
         <Select
           onChange={() => {
-            // setMajor([])
-            // setIsChangeCollege(true)
+            setIsChangeCollege(true)
           }}
-          // onSelect={getMajor}
           showSearch
           style={{ width: 217 }}
           placeholder="点击搜索学院关键字"

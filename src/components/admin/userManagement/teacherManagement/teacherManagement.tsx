@@ -43,6 +43,9 @@ const TeacherManagement: React.FC = () => {
     isReset: false,
   })
 
+  // 编辑时是否改变学院标志
+  const [isChangeCollege, setIsChangeCollege] = useState(false)
+
   // 教师信息列表
   const [teachers, setTeachers] = useState<any>([
     {
@@ -81,6 +84,9 @@ const TeacherManagement: React.FC = () => {
     },
   }
 
+  // 回填信息时封装学院id
+  const [collegeId, setCollegeId] = useState(0)
+
   // 表格列名
   const defaultColumns = [
     {
@@ -106,8 +112,8 @@ const TeacherManagement: React.FC = () => {
         <Space>
           <a
             onClick={() => {
-              // loadFormValue(record.key)
-              // setEditId(record.id)
+              loadFormValue(record.key)
+              setEditId(record.id)
             }}>
             编辑
           </a>
@@ -179,8 +185,53 @@ const TeacherManagement: React.FC = () => {
       isDisabled: true,
       isReset: false,
     })
+    // 重置是否改变学院
+    setIsChangeCollege(false)
     setModalOpen(false)
   }
+
+  // 获取学院信息
+  const getCollege = async () => {
+    let res = await axios.get('/student/college')
+    let data = res.data.data
+    setCollege(
+      data.map((item: { id: React.Key; collegeName: String }) => {
+        return {
+          key: item.id,
+          name: item.collegeName,
+        }
+      })
+    )
+  }
+
+  const loadFormValue = async (tid: React.Key) => {
+    setModalOpen(true)
+    setResetPwd({
+      ...resetPwd,
+      isDisabled: false,
+    })
+    getCollege()
+    setLoading(true)
+    let res = await axios.get(`/teacher/${tid}`)
+    const data = res.data.data
+    console.log(data)
+    let value = {
+      tid: data.username,
+      teacherName: data.realName,
+      sex: data.sex === '男' ? 1 : 0,
+      collegeId: data.collegeName,
+      phone: data.phone,
+      email: data.email,
+      isManager: data.isSetManager === 1 ? true : false,
+    }
+    // 是否开启管理员开关
+    setEditorManager(value.isManager)
+    form.setFieldsValue(value)
+    // 存入学院id
+    setCollegeId(data.collegeId)
+    setLoading(false)
+  }
+
   return (
     <>
       <Modal
@@ -205,6 +256,9 @@ const TeacherManagement: React.FC = () => {
           closeForm={closeForm}
           params={params}
           setParams={setParams}
+          collegeId={collegeId}
+          isChangeCollege={isChangeCollege}
+          setIsChangeCollege={setIsChangeCollege}
         />
       </Modal>
       <div>
@@ -240,7 +294,7 @@ const TeacherManagement: React.FC = () => {
               type="primary"
               onClick={() => {
                 setModalOpen(true)
-                // getCollege()
+                getCollege()
                 setResetPwd({
                   ...resetPwd,
                   isReset: true,
