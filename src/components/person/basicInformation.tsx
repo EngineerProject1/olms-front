@@ -38,7 +38,7 @@ export function BasicInformation(props: any) {
       autoComplete="off">
       <div style={{ display: 'flex' }}>
         <div style={{ width: '70%' }}>
-          <Form.Item label="姓名" name="username" rules={[{ message: '' }]}>
+          <Form.Item label="姓名" name="realName" rules={[{ message: '' }]}>
             <Input placeholder="" disabled />
           </Form.Item>
           <Form.Item label="性别" name="sex" rules={[{ message: '' }]}>

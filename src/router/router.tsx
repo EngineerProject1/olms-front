@@ -5,6 +5,7 @@ import { BasicInformation } from 'components/person/basicInformation'
 import { ChangePassword } from 'components/person/changePassword'
 import Person from 'components/person/person'
 import { adminMenu, studentMenu, teacherMenu } from 'components/sidebarMenus'
+import LabAppointment from 'components/student/LabAppointment/labAppointment'
 import { Login } from 'pages/login'
 import Main from 'pages/main'
 import { useEffect } from 'react'
@@ -166,7 +167,7 @@ export const studentRouter = createBrowserRouter([
       },
       {
         path: 'labAppointment',
-        element: <div>labAppointment</div>,
+        element: <LabAppointment />,
       },
       {
         path: 'checkRecord',

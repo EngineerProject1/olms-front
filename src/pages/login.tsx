@@ -8,6 +8,7 @@ import {
 import { Avatar, Button, Form, Input, Layout, Modal, Typography } from 'antd'
 import { Footer } from 'antd/es/layout/layout'
 import { GlobalContext } from 'app'
+import { passwordRule } from 'components/person/changePassword'
 import React, { useContext, useRef, useState } from 'react'
 import {
   adminRouter,
@@ -216,7 +217,10 @@ export function Login(props: any) {
 
               <Form.Item
                 name="password"
-                rules={[{ required: true, message: '请输入密码' }]}>
+                rules={[
+                  { required: true, message: '请输入密码' },
+                  passwordRule,
+                ]}>
                 <Input.Password placeholder="密码" prefix={<LockOutlined />} />
               </Form.Item>
               <Form.Item>

@@ -20,7 +20,12 @@ export default function App(props: any) {
   const token = localStorage.getItem('token')
   if (token != null) {
     const role = JSON.parse(atob(token.split('.')[1])).selectedRole
-    targetRouter = roleToRouter[role as keyof {}]
+    //当获取角色信息失败时,清除token
+    if (role === undefined && location.pathname != '/login') {
+      localStorage.removeItem('token')
+    } else {
+      targetRouter = roleToRouter[role as keyof {}]
+    }
   }
 
   const [messageApi, contextHolder] = message.useMessage()
