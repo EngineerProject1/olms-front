@@ -13,7 +13,7 @@ import {
 import type { ColumnsType } from 'antd/es/table'
 import type { TableRowSelection } from 'antd/es/table/interface'
 import { GlobalContext } from 'app'
-
+import { nanoid } from 'nanoid'
 import React, { useContext, useEffect, useState } from 'react'
 import axios from 'tools/axios'
 
@@ -22,10 +22,9 @@ interface DataType {
   key: React.Key
   name: string
   images: string
-  labName: string
   price: number
   model: string
-  status: string
+  count: number
 }
 
 export function DeviceReturn() {
@@ -49,16 +48,10 @@ export function DeviceReturn() {
       })
     }
   }
-  //查出所有实验室
-  const [labNames, setLabNames] = useState<any>()
-  // useEffect(() => {
-  //   const getLabNames = async () => {
-  //     const res = await axios.get('lab')
-  //     console.log(res)
-  //     setLabNames(res)
-  //   }
-  //   getLabNames()
-  // }, [labNames])
+  //归还设备
+  const handleReturn = (records: any) => {
+    console.log(records)
+  }
 
   // 得到后端返回的文件名
   const [fileName, setFileName] = useState('')
@@ -82,7 +75,7 @@ export function DeviceReturn() {
   // 拉取所有设备列表信息
   useEffect(() => {
     const loadList = async () => {
-      const res = await axios.get(`/device`, {
+      const res = await axios.get(`/auth/deviceLend`, {
         params: {
           page: params.page,
           pageSize: params.pageSize,
@@ -99,20 +92,19 @@ export function DeviceReturn() {
       setList(
         data.records.map(
           (item: {
-            id: React.Key
             name: string
             images: string
-            labName: string
             price: number
             model: string
+            count: number
           }) => {
             return {
-              key: item.id,
+              key: nanoid(),
               name: item.name,
               images: item.images,
-              labName: item.labName,
               price: item.price,
               model: item.model,
+              count: item.count,
             }
           }
         )
@@ -145,7 +137,7 @@ export function DeviceReturn() {
     },
 
     {
-      title: '借用/可用数量',
+      title: '借用数量',
       dataIndex: 'count',
     },
     {
@@ -153,10 +145,8 @@ export function DeviceReturn() {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Popconfirm
-            title="确定借用?"
-            onConfirm={() => handleBorrow(record.key)}>
-            <a style={{ color: '#4169e1' }}>借用</a>
+          <Popconfirm title="确定借用?" onConfirm={() => handleReturn(record)}>
+            <a style={{ color: '#4169e1' }}>归还</a>
           </Popconfirm>
         </Space>
       ),
