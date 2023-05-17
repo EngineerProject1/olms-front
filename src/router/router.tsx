@@ -5,7 +5,12 @@ import { BasicInformation } from 'components/person/basicInformation'
 import { ChangePassword } from 'components/person/changePassword'
 import Person from 'components/person/person'
 import { adminMenu, studentMenu, teacherMenu } from 'components/sidebarMenus'
+
 import LabAppointment from 'components/student/LabAppointment/labAppointment'
+
+import { DeviceBorrow } from 'components/student/device/deviceBorrow'
+import { DeviceReturn } from 'components/student/device/deviceReturn'
+
 import { Login } from 'pages/login'
 import Main from 'pages/main'
 import { useEffect } from 'react'
@@ -130,8 +135,17 @@ export const teacherRouter = createBrowserRouter([
         ],
       },
       {
-        path: 'deviceBorrow',
-        element: <div>deviceBorrow</div>,
+        path: 'device',
+        children: [
+          {
+            path: 'deviceBorrow',
+            element: <DeviceBorrow />,
+          },
+          {
+            path: 'deviceReturn',
+            element: <DeviceReturn />,
+          },
+        ],
       },
       {
         path: 'attendance',

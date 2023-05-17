@@ -92,7 +92,7 @@ export function Device() {
   // 设备分页参数管理
   const [params, setParams] = useState({
     page: 1,
-    pageSize: 5,
+    pageSize: 10,
     total: 50,
     pages: 1,
     name: '',

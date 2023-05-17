@@ -54,7 +54,15 @@ const teacherMenuItems: MenuItem[] = [
       ['labAppointment', '预约实验室'],
     ],
   ],
-  ['deviceBorrow', ToolOutlined, '设备借用'],
+  [
+    'device',
+    ToolOutlined,
+    '设备',
+    [
+      ['deviceBorrow', '设备借用'],
+      ['deviceReturn', '设备归还'],
+    ],
+  ],
   ['attendance', SolutionOutlined, '考勤管理'],
 ]
 
