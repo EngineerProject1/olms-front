@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 
+import { DownloadOutlined } from '@ant-design/icons'
 import {
   Button,
   Form,
@@ -11,6 +12,7 @@ import {
   Table,
 } from 'antd'
 import { GlobalContext } from 'app'
+import rawAxios from 'axios'
 import axios from 'tools/axios'
 import { StudentEditor } from './studentEditor'
 interface DataType {
@@ -299,6 +301,22 @@ const StudentManagement: React.FC = () => {
     isReset: false,
   })
 
+  const excelExport = async () => {
+    rawAxios({
+      url: 'http://127.0.0.1:8090/api/export',
+      method: 'GET',
+      responseType: 'blob', // important
+    }).then((response) => {
+      const url = window.URL.createObjectURL(new Blob([response.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', 'student.xlsx')
+      document.body.appendChild(link)
+      link.click()
+    })
+    messageApi.success('导出学生信息成功')
+  }
+
   return (
     <>
       <Modal
@@ -330,13 +348,27 @@ const StudentManagement: React.FC = () => {
       </Modal>
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          {/* 搜索框 */}
-          <Search
-            placeholder="输入姓名搜索"
-            onSearch={onSearch}
-            style={{ width: 200 }}
-            size="large"
-          />
+          <div
+            style={{
+              width: 500,
+              display: 'flex',
+            }}>
+            {/* 搜索框 */}
+            <Search
+              placeholder="输入姓名搜索"
+              onSearch={onSearch}
+              style={{ width: 200 }}
+              size="large"
+            />
+            <Button
+              type="primary"
+              icon={<DownloadOutlined />}
+              size={'large'}
+              style={{ marginLeft: 20 }}
+              onClick={excelExport}>
+              导出Execl
+            </Button>
+          </div>
           <div
             style={{
               width: 180,
