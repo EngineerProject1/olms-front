@@ -38,6 +38,7 @@ const columns = [
     title: '容量',
     dataIndex: 'capacity',
     width: '12.5%',
+    sorter: true,
   },
   {
     title: '类型',
@@ -72,10 +73,27 @@ function Lab() {
   const [params, setParams] = useState<LabPageParams>({
     page: 1,
     pageSize: 10,
-    total: 0,
+    total: 1,
     name: '',
     capacity: '',
   })
+
+  // 设置排序条件
+  const onChange = ({
+    pagination,
+    filter,
+    sorter,
+  }: {
+    pagination: any
+    filter: any
+    sorter: any
+  }) => {
+    const field = sorter.field
+    const order = sorter.order ? sorter.order.replace('end', '') : ''
+    setParams({ ...params, capacity: order })
+  }
+
+  // 实验室数据
   const [data, setData] = useState<LabDateType[]>()
 
   // 封装被选中项的key值
@@ -102,6 +120,7 @@ function Lab() {
         pageSize: data.size,
       })
 
+      // 设置实验室数据
       setData(
         data.records.map((item: LabModel) => {
           return {
@@ -127,7 +146,7 @@ function Lab() {
         <Search
           placeholder="实验室名字"
           onSearch={(e) => {
-            console.log(1)
+            setParams({ ...params, name: e })
           }}
           style={{ width: 200 }}
           size="large"
@@ -140,17 +159,21 @@ function Lab() {
           + 新增实验室
         </Button>
       </div>
-
+      {/* 表格 */}
       <Table
         rowSelection={{
           ...rowSelection,
         }}
         columns={columns}
         dataSource={data}
+        onChange={(pagination, filter, sorter) => {
+          onChange({ pagination, filter, sorter })
+        }}
         bordered
         loading={loading}
         pagination={false}
       />
+      {/* 分页 */}
       <Pagination
         style={{ float: 'right' }}
         pageSize={params.pageSize}
