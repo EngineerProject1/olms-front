@@ -6,6 +6,9 @@ import 'scss/avatarUploader.scss'
 import axios from 'tools/axios'
 
 export function BasicInformation(props: any) {
+  const role = JSON.parse(
+    atob((localStorage.getItem('token') as string).split('.')[1])
+  ).selectedRole
   const { user, messageApi } = useContext(GlobalContext)
   const [form] = Form.useForm()
   const [fileName, setFileName] = useState(user.avatar)
@@ -50,15 +53,25 @@ export function BasicInformation(props: any) {
           <Form.Item label="学院" name="collegeName" rules={[{ message: '' }]}>
             <Input placeholder="" disabled />
           </Form.Item>
-          <Form.Item label="专业" name="majorName" rules={[{ message: '' }]}>
-            <Input placeholder="" disabled />
-          </Form.Item>
-          <Form.Item label="年级" name="grade" rules={[{ message: '' }]}>
-            <Input placeholder="" disabled />
-          </Form.Item>
-          <Form.Item label="班级" name="classNumber" rules={[{ message: '' }]}>
-            <Input placeholder="" disabled />
-          </Form.Item>
+          {role === 'student' ? (
+            <>
+              <Form.Item
+                label="专业"
+                name="majorName"
+                rules={[{ message: '' }]}>
+                <Input placeholder="" disabled />
+              </Form.Item>
+              <Form.Item label="年级" name="grade" rules={[{ message: '' }]}>
+                <Input placeholder="" disabled />
+              </Form.Item>
+              <Form.Item
+                label="班级"
+                name="classNumber"
+                rules={[{ message: '' }]}>
+                <Input placeholder="" disabled />
+              </Form.Item>
+            </>
+          ) : null}
           <Form.Item
             label="邮箱"
             name="email"

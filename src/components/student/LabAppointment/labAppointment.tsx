@@ -1,22 +1,18 @@
-import {
-  DatePicker,
-  Input,
-  Modal,
-  Pagination,
-  Select,
-  Space,
-  Table,
-} from 'antd'
+import { DatePicker, Input, Pagination, Select, Space, Table } from 'antd'
 import { RangePickerProps } from 'antd/es/date-picker'
 import dayjs from 'dayjs'
 import { useEffect, useRef, useState } from 'react'
 import axios from 'tools/axios'
 import { BookAppointmentForm } from './bookAppointmentForm'
 
-export interface BookInfo {
-  labId: React.Key
-  bookTime: Date
-  slot: number
+export interface AppointmentRequest {
+  classNumber?: number
+  experimentName: string
+  labId: number
+  offsetDay: number
+  purpose: string
+  timeSlotId: number
+  type?: string
 }
 interface TimeSlot {
   value: string
@@ -66,7 +62,11 @@ export default function LabAppointment() {
     })
   }, [])
   useEffect(() => {
-    if (pageParam.timeSlotId != 0 && pageParam.offSetDay != 0) {
+    if (
+      pageParam.timeSlotId != 0 &&
+      pageParam.offSetDay != 0 &&
+      modalOpen == false
+    ) {
       setLoading(true)
       axios
         .get('/auth/getTargetTypeAppointment', { params: pageParam })
@@ -84,15 +84,23 @@ export default function LabAppointment() {
           setTotal(data.total)
         })
     }
-  }, [pageParam])
+  }, [pageParam, modalOpen])
 
-  const bookInfo = useRef<BookInfo>({
-    labId: '',
-    bookTime: new Date(),
-    slot: 0,
+  const appointRequest = useRef<AppointmentRequest>({
+    labId: 0,
+    experimentName: '',
+    offsetDay: 0,
+    purpose: '',
+    timeSlotId: 0,
   })
   const bookLab = (key: React.Key) => {
-    throw new Error('Function not implemented.')
+    appointRequest.current = {
+      ...appointRequest.current,
+      labId: Number.parseInt(key as string),
+      offsetDay: pageParam.offSetDay,
+      timeSlotId: pageParam.timeSlotId,
+    }
+    setModalOpen(true)
   }
   const onTimeSlotSelect = (value: string) => {
     setPageParam({ ...pageParam, timeSlotId: Number.parseInt(value) })
@@ -160,19 +168,11 @@ export default function LabAppointment() {
   ]
   return (
     <>
-      <Modal
-        centered
-        open={modalOpen}
-        footer={null}
-        width={1000}
-        onCancel={() => {
-          setModalOpen(false)
-        }}>
-        <BookAppointmentForm
-          bookInfo={bookInfo.current}
-          setModalOpen={setModalOpen}
-        />
-      </Modal>
+      <BookAppointmentForm
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+        appointRequest={appointRequest.current}
+      />
       <div
         style={{
           display: 'flex',

@@ -130,7 +130,7 @@ export const teacherRouter = createBrowserRouter([
           },
           {
             path: 'labAppointment',
-            element: <div>labAppointment</div>,
+            element: <LabAppointment />,
           },
         ],
       },
