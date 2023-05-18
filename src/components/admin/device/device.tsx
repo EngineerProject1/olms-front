@@ -4,13 +4,13 @@ import {
   Form,
   Image,
   Input,
-  message,
+  Modal,
   Pagination,
   Popconfirm,
   Select,
   Space,
   Table,
-  Modal,
+  message,
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import type { TableRowSelection } from 'antd/es/table/interface'
@@ -71,14 +71,6 @@ export function Device() {
   }
   //查出所有实验室
   const [labNames, setLabNames] = useState<any>()
-  // useEffect(() => {
-  //   const getLabNames = async () => {
-  //     const res = await axios.get('lab')
-  //     console.log(res)
-  //     setLabNames(res)
-  //   }
-  //   getLabNames()
-  // }, [labNames])
 
   // 得到后端返回的文件名
   const [fileName, setFileName] = useState('')
@@ -100,7 +92,6 @@ export function Device() {
   })
 
   const [loading, setLoading] = useState(true)
-  // const [name, setName] = useState('')
   // 拉取所有设备列表信息
   useEffect(() => {
     const loadList = async () => {
@@ -113,6 +104,7 @@ export function Device() {
         },
       })
       const data = res.data.data
+      console.log(data)
       setParams({
         ...params,
         pageSize: data.size,
@@ -167,10 +159,6 @@ export function Device() {
     {
       title: '价格',
       dataIndex: 'price',
-      // sorter: {
-      //   compare: (a, b) => a.price - b.price,
-      //   multiple: 3,
-      // },
     },
     {
       title: '型号',
@@ -351,9 +339,9 @@ export function Device() {
         console.log(info.file, info.fileList)
       }
       if (info.file.status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully`)
+        message.success(`${info.file.name} 上传成功`)
       } else if (info.file.status === 'error') {
-        message.error(`${info.file.name} file upload failed.`)
+        message.error(`${info.file.name} 上传失败`)
       }
     },
   }
@@ -375,11 +363,6 @@ export function Device() {
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         {/* 搜索框 */}
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          {/* <Search
-            placeholder="请输入设备名称"
-            onSearch={onSearch}
-            style={{ width: 200 }}
-          /> */}
           <Form
             style={{ display: 'flex', justifyContent: 'space-between' }}
             onFinish={onSearch}>

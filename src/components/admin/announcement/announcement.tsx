@@ -35,7 +35,7 @@ const Announcement: React.FC = () => {
   const [params, setParams] = useState<AnnoucementModel>({
     page: 1,
     pageSize: 5,
-    total: 0,
+    total: 1,
     title: '',
     level: '',
     createTime: '',
