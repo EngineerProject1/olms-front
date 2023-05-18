@@ -1,4 +1,4 @@
-import { Image, Pagination, Popconfirm, Space } from 'antd'
+import { Image, Pagination, Popconfirm, Select, Space } from 'antd'
 import Search from 'antd/es/input/Search'
 import Table from 'antd/es/table'
 import Button from 'antd/lib/button'
@@ -12,12 +12,12 @@ function Lab() {
     {
       title: '实验室名称',
       dataIndex: 'name',
-      width: '12.5%',
+      width: '11.1%',
     },
     {
       title: '图片',
       dataIndex: 'images',
-      width: '12.5%',
+      width: '11.1%',
       render: (images: any) => (
         <Image width={60} src={`/api/img/download?name=${images}`}></Image>
       ),
@@ -25,33 +25,38 @@ function Lab() {
     {
       title: '负责人',
       dataIndex: 'master',
-      width: '12.5%',
+      width: '11.1%',
     },
     {
       title: '地址',
       dataIndex: 'location',
-      width: '12.5%',
+      width: '11.1%',
     },
     {
       title: '描述',
       dataIndex: 'description',
-      width: '12.5%',
+      width: '11.1%',
     },
     {
       title: '容量',
       dataIndex: 'capacity',
-      width: '12.5%',
+      width: '11.1%',
       sorter: true,
     },
     {
       title: '类型',
       dataIndex: 'type',
-      width: '12.5%',
+      width: '11.1%',
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      width: '11.1%',
     },
     {
       title: '操作',
       dataIndex: 'operation',
-      width: '12.5%',
+      width: '11.1%',
       render: (_: any, record: { key: React.Key }) => (
         <Space>
           <a
@@ -71,6 +76,9 @@ function Lab() {
       ),
     },
   ]
+
+  // 实验室状态
+  const labStatus = ['可用', '暂不可用', '维修中']
   const { messageApi } = useContext(GlobalContext)
   // 查询的条件
   const [params, setParams] = useState<LabPageParams>({
@@ -79,8 +87,8 @@ function Lab() {
     total: 1,
     name: '',
     capacity: '',
+    status: '',
   })
-
   // 实验室数据
   const [data, setData] = useState<LabDateType[]>()
 
@@ -119,13 +127,21 @@ function Lab() {
             description: item.description,
             capacity: item.capacity,
             type: item.type,
+            status: labStatus[item.status],
           }
         })
       )
 
       setLoading(false)
     })
-  }, [params.capacity, params.name, params.page, params.pageSize, params.total])
+  }, [
+    params.capacity,
+    params.name,
+    params.page,
+    params.pageSize,
+    params.total,
+    params.status,
+  ])
 
   // 设置排序条件
   const onChange = ({
@@ -181,14 +197,32 @@ function Lab() {
     <>
       {/* 搜索框 */}
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Search
-          placeholder="实验室名字"
-          onSearch={(e) => {
-            setParams({ ...params, name: e })
-          }}
-          style={{ width: 200 }}
-          size="large"
-        />
+        <Space>
+          <Search
+            allowClear={true}
+            placeholder="实验室名字"
+            onSearch={(e) => {
+              setParams({ ...params, name: e })
+            }}
+            style={{ width: 200 }}
+            size="large"
+          />
+          <Select
+            size="large"
+            placeholder="实验室状态"
+            style={{ width: 130 }}
+            allowClear={true}
+            onSelect={(e) => {
+              setParams({ ...params, status: e })
+            }}
+            onClear={() => {
+              setParams({ ...params, status: '' })
+            }}>
+            <Select.Option value="0">可用</Select.Option>
+            <Select.Option value="1">暂不可用</Select.Option>
+            <Select.Option value="2">维修中</Select.Option>
+          </Select>
+        </Space>
         <div
           style={{
             width: 180,

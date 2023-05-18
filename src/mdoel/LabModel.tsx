@@ -7,6 +7,7 @@ export interface LabDateType {
   master: string
   capacity: number
   type: string
+  status: string
 }
 
 export interface LabPageParams {
@@ -15,6 +16,7 @@ export interface LabPageParams {
   total: number
   name: string
   capacity: string
+  status: string
 }
 export interface LabModel {
   id: number
@@ -26,4 +28,5 @@ export interface LabModel {
   masterName: string
   capacity: number
   type: string
+  status: number
 }
