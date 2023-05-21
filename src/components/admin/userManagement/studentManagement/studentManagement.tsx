@@ -307,7 +307,7 @@ const StudentManagement: React.FC = () => {
 
   const excelExport = async () => {
     rawAxios({
-      url: 'http://127.0.0.1:8090/api/export',
+      url: 'http://127.0.0.1:8090/api/student/export',
       method: 'GET',
       responseType: 'blob', // important
     }).then((response) => {
