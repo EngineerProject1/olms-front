@@ -103,12 +103,13 @@ export default function LabAppointment() {
     setModalOpen(true)
   }
   const onTimeSlotSelect = (value: string) => {
+    setTargetDateTim({ ...targetDateTime, targetTime: value })
     setPageParam({ ...pageParam, timeSlotId: Number.parseInt(value) })
-    // setTargetDateTim({ ...targetDateTime, targetTime: value })
   }
   const onDateSelect = (date: any, dateString: string) => {
     const offsetDay = date.diff(dayjs().startOf('day'), 'day')
     currentDateString.current = dateString
+    setTargetDateTim({ ...targetDateTime, targetDate: date })
     setPageParam({ ...pageParam, offSetDay: offsetDay })
   }
   const disabledDate: RangePickerProps['disabledDate'] = (current) => {

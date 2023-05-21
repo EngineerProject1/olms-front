@@ -6,7 +6,7 @@ import { ChangePassword } from 'components/person/changePassword'
 import Person from 'components/person/person'
 import { adminMenu, studentMenu, teacherMenu } from 'components/sidebarMenus'
 
-import LabAppointment from 'components/student/LabAppointment/labAppointment'
+import LabAppointment from 'components/common/LabAppointment/labAppointment'
 
 import { DeviceBorrow } from 'components/student/device/deviceBorrow'
 import { DeviceReturn } from 'components/student/device/deviceReturn'
