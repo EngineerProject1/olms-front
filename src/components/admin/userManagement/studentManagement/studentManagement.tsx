@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 
-import { DownloadOutlined } from '@ant-design/icons'
+import { DownloadOutlined, UploadOutlined } from '@ant-design/icons'
 import {
   Button,
   Form,
@@ -15,6 +15,7 @@ import { GlobalContext } from 'app'
 import rawAxios from 'axios'
 import axios from 'tools/axios'
 import { StudentEditor } from './studentEditor'
+import { UploadExcel } from './uploadExcel'
 interface DataType {
   id: React.Key
   // sid
@@ -40,7 +41,7 @@ const StudentManagement: React.FC = () => {
   const { Search } = Input
 
   // 加载动态显示
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   // 学生信息列表
   const [students, setStudents] = useState<any>([])
@@ -83,6 +84,9 @@ const StudentManagement: React.FC = () => {
 
   // 编辑时存储数据项的id值
   const [editId, setEditId] = useState(0)
+
+  // 开启文件上传modal
+  const [openUpload, setOpenUpload] = useState(false)
 
   // 表格列名
   const defaultColumns = [
@@ -317,6 +321,27 @@ const StudentManagement: React.FC = () => {
     messageApi.success('导出学生信息成功')
   }
 
+  // 进度条
+  const [progress, setProgress] = useState(0)
+  const [pStatus, setPStatus] = useState(1)
+  // 是否显示校验中
+  const [isSpin, setIsSpin] = useState(false)
+  // 校验信息内容
+  const [checkInfo, setCheckInfo] = useState([])
+
+  // 关闭上传Excel
+  const closeUpload = () => {
+    setOpenUpload(false)
+    // 进度条
+    setProgress(0)
+    // 校验状态
+    setPStatus(1)
+    // 是否在校验中
+    setIsSpin(false)
+    // 校验信息内容
+    setCheckInfo([])
+  }
+
   return (
     <>
       <Modal
@@ -346,6 +371,23 @@ const StudentManagement: React.FC = () => {
           setParams={setParams}
         />
       </Modal>
+      <Modal
+        centered
+        open={openUpload}
+        footer={null}
+        width={850}
+        onCancel={closeUpload}>
+        <UploadExcel
+          progress={progress}
+          setProgress={setProgress}
+          pStatus={pStatus}
+          setPStatus={setPStatus}
+          isSpin={isSpin}
+          setIsSpin={setIsSpin}
+          checkInfo={checkInfo}
+          setCheckInfo={setCheckInfo}
+        />
+      </Modal>
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <div
@@ -363,10 +405,22 @@ const StudentManagement: React.FC = () => {
             <Button
               type="primary"
               icon={<DownloadOutlined />}
-              size={'large'}
-              style={{ marginLeft: 20 }}
+              size={'middle'}
+              style={{ marginLeft: 20, backgroundColor: '#3d597f' }}
               onClick={excelExport}>
-              导出Execl
+              导出Excel
+            </Button>
+            <Button
+              type="primary"
+              icon={<UploadOutlined />}
+              size={'middle'}
+              style={{
+                marginLeft: 20,
+                fontSize: 14,
+                backgroundColor: '#479192',
+              }}
+              onClick={() => setOpenUpload(true)}>
+              导入Excel
             </Button>
           </div>
           <div
