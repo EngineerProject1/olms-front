@@ -1,4 +1,4 @@
-import { DownloadOutlined } from '@ant-design/icons'
+import { DownloadOutlined, UploadOutlined } from '@ant-design/icons'
 import {
   Button,
   Form,
@@ -14,6 +14,7 @@ import rawAxios from 'axios'
 import { useContext, useEffect, useState } from 'react'
 import axios from 'tools/axios'
 import { TeacherEditor } from './teacherEditor'
+import { UploadExcel } from './uploadExcel'
 
 const TeacherManagement: React.FC = () => {
   const { messageApi } = useContext(GlobalContext)
@@ -261,6 +262,7 @@ const TeacherManagement: React.FC = () => {
     setSelectedRowKeys([])
   }
 
+  // 导出教师信息为excel
   const excelExport = async () => {
     rawAxios({
       url: 'http://127.0.0.1:8090/api/teacher/export',
@@ -275,6 +277,30 @@ const TeacherManagement: React.FC = () => {
       link.click()
     })
     messageApi.success('导出教师信息成功')
+  }
+
+  // 开启文件上传modal
+  const [openUpload, setOpenUpload] = useState(false)
+
+  // 进度条
+  const [progress, setProgress] = useState(0)
+  const [pStatus, setPStatus] = useState(1)
+  // 是否显示校验中
+  const [isSpin, setIsSpin] = useState(false)
+  // 校验信息内容
+  const [checkInfo, setCheckInfo] = useState([])
+
+  // 关闭上传Excel
+  const closeUpload = () => {
+    setOpenUpload(false)
+    // 进度条
+    setProgress(0)
+    // 校验状态
+    setPStatus(1)
+    // 是否在校验中
+    setIsSpin(false)
+    // 校验信息内容
+    setCheckInfo([])
   }
 
   return (
@@ -306,6 +332,23 @@ const TeacherManagement: React.FC = () => {
           setIsChangeCollege={setIsChangeCollege}
         />
       </Modal>
+      <Modal
+        centered
+        open={openUpload}
+        footer={null}
+        width={850}
+        onCancel={closeUpload}>
+        <UploadExcel
+          progress={progress}
+          setProgress={setProgress}
+          pStatus={pStatus}
+          setPStatus={setPStatus}
+          isSpin={isSpin}
+          setIsSpin={setIsSpin}
+          checkInfo={checkInfo}
+          setCheckInfo={setCheckInfo}
+        />
+      </Modal>
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <div
@@ -327,6 +370,18 @@ const TeacherManagement: React.FC = () => {
               style={{ marginLeft: 20, backgroundColor: '#3d597f' }}
               onClick={excelExport}>
               导出Excel
+            </Button>
+            <Button
+              type="primary"
+              icon={<UploadOutlined />}
+              size={'middle'}
+              style={{
+                marginLeft: 20,
+                fontSize: 14,
+                backgroundColor: '#479192',
+              }}
+              onClick={() => setOpenUpload(true)}>
+              导入Excel
             </Button>
           </div>
 

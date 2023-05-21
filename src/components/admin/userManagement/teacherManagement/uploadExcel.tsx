@@ -51,7 +51,7 @@ export function UploadExcel(props: {
     //转化为formData格式
     let formData = new FormData()
     formData.append('file', file)
-    let res = await axios.post('/student/import', formData)
+    let res = await axios.post('/teacher/import', formData)
     console.log(res)
     let msg = res.data.msg
 
@@ -108,11 +108,7 @@ export function UploadExcel(props: {
           </List.Item>
         )}
       />
-      <Upload
-        showUploadList={false}
-        customRequest={excelImport}
-        // beforeUpload={checkFile}
-        accept=".xlsx">
+      <Upload showUploadList={false} customRequest={excelImport} accept=".xlsx">
         <Button
           type="primary"
           size={'middle'}
