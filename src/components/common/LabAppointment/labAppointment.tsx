@@ -216,15 +216,10 @@ export default function LabAppointment() {
         bordered
         loading={loading}
         dataSource={list}
-        // onChange={(pagination, filter, sorter) => {
-        //   onChange({ pagination, filter, sorter })
-        // }}
         columns={columns}
         pagination={false}
-        //loading={loading}
       />
       {/*  分页 */}
-
       <Pagination
         style={{ float: 'right' }}
         pageSize={pageParam.pageSize}

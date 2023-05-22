@@ -1,23 +1,21 @@
 import Announcement from 'components/admin/announcement/announcement'
 import { Device } from 'components/admin/device/device'
 import Lab from 'components/admin/lab/Lab'
+import StudentManagement from 'components/admin/userManagement/studentManagement/studentManagement'
+import TeacherManagement from 'components/admin/userManagement/teacherManagement/teacherManagement'
+import LabAppointment from 'components/common/LabAppointment/labAppointment'
 import { BasicInformation } from 'components/person/basicInformation'
 import { ChangePassword } from 'components/person/changePassword'
 import Person from 'components/person/person'
 import { adminMenu, studentMenu, teacherMenu } from 'components/sidebarMenus'
-
-import LabAppointment from 'components/common/LabAppointment/labAppointment'
-
+import Attendance from 'components/student/attendance/attendance'
 import { DeviceBorrow } from 'components/student/device/deviceBorrow'
 import { DeviceReturn } from 'components/student/device/deviceReturn'
-
 import { Login } from 'pages/login'
 import Main from 'pages/main'
 import { useEffect } from 'react'
 import { createBrowserRouter, useNavigate } from 'react-router-dom'
 
-import StudentManagement from 'components/admin/userManagement/studentManagement/studentManagement'
-import TeacherManagement from 'components/admin/userManagement/teacherManagement/teacherManagement'
 export const defaultRouter = createBrowserRouter([
   {
     path: '/',
@@ -185,7 +183,7 @@ export const studentRouter = createBrowserRouter([
       },
       {
         path: 'checkRecord',
-        element: <div>checkRecord</div>,
+        element: <Attendance />,
       },
       {
         path: 'deviceBorrow',
