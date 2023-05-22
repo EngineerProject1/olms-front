@@ -2,6 +2,7 @@ import { Alert, Button, Form, Input, Modal, Select } from 'antd'
 import { useForm } from 'antd/es/form/Form'
 import { GlobalContext } from 'app'
 import MyUpload from 'components/myUpload'
+import { LabModel } from 'mdoel/LabModel'
 import { useContext, useEffect, useState } from 'react'
 import axios from 'tools/axios'
 
@@ -14,6 +15,7 @@ function LabForm({
   open: boolean
   setOpen: React.Dispatch<boolean>
 }) {
+  const [labData, setLabData] = useState<LabModel>()
   const { messageApi } = useContext(GlobalContext)
   // 图片名字
   const [images, setImages] = useState('')
@@ -29,9 +31,12 @@ function LabForm({
       setTeachers(data.data)
     })
     if (editId !== -1) {
+      // 回显数据
       axios.get(`/lab/${editId}`).then((resp) => {
-        const data = resp.data
-        console.log(data)
+        const data = resp.data.data
+        setLabData(data)
+        setImages(data.images)
+        form.setFieldsValue(data)
       })
     }
   }, [editId])
@@ -62,15 +67,27 @@ function LabForm({
 
   // 提交表单数据
   const onFinsh = (values: any) => {
-    axios.post('/auth/lab', { ...values, images: images }).then((resp) => {
-      const data = resp.data
-      console.log(data)
-      setOpen(false)
-      if (data.code === 200) {
-        messageApi.info(data.msg)
-        resetForm()
-      }
-    })
+    if (editId === -1) {
+      axios.post('/auth/lab', { ...values, images: images }).then((resp) => {
+        const data = resp.data
+        setOpen(false)
+        if (data.code === 200) {
+          messageApi.success(data.msg)
+          resetForm()
+        }
+      })
+    } else {
+      axios
+        .put('/auth/lab', { ...labData, ...values, images: images })
+        .then((resp) => {
+          const data = resp.data
+          setOpen(false)
+          if (data.code === 200) {
+            messageApi.success(data.msg)
+            resetForm()
+          }
+        })
+    }
   }
 
   return (
@@ -102,8 +119,8 @@ function LabForm({
             rules={[
               {
                 required: true,
-                pattern: /^\w{10,12}$/,
-                message: '实验室名称为10-12个字符',
+                pattern: /^[\u4e00-\u9fa5\w]{2,12}$/,
+                message: '实验室名称为2-12个字符',
               },
             ]}>
             <Input placeholder="请输入实验室名称" />
@@ -134,7 +151,7 @@ function LabForm({
               {
                 required: true,
                 pattern: /^[A-Z]\d{3}$/,
-                message: '实验室名称为10-12个字符',
+                message: '地址为一位字母和三位数字',
               },
             ]}
             extra={

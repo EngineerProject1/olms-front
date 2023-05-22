@@ -152,6 +152,7 @@ function Lab() {
     params.pageSize,
     params.total,
     params.status,
+    open,
   ])
 
   // 设置排序条件
