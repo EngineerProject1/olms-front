@@ -55,7 +55,12 @@ const MySearch = ({
   return (
     <>
       <div>
-        <Select onSelect={getList} style={{ width: 150 }} options={options} />
+        <Select
+          placeholder="选择实验室"
+          onSelect={getList}
+          style={{ width: 150 }}
+          options={options}
+        />
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Form

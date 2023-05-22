@@ -49,8 +49,18 @@ export function DeviceReturn() {
     }
   }
   //归还设备
-  const handleReturn = (records: any) => {
+  const handleReturn = async (records: any) => {
     console.log(records)
+    const res = await axios.put('/auth/deviceReturn', records)
+    setParams({
+      ...params,
+      total: params.total - 1,
+    })
+  }
+
+  //一键归还所有设备
+  const returnALL = () => {
+    console.log(list)
   }
 
   // 得到后端返回的文件名
@@ -145,7 +155,7 @@ export function DeviceReturn() {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Popconfirm title="确定借用?" onConfirm={() => handleReturn(record)}>
+          <Popconfirm title="确定归还?" onConfirm={() => handleReturn(record)}>
             <a style={{ color: '#4169e1' }}>归还</a>
           </Popconfirm>
         </Space>
@@ -254,6 +264,11 @@ export function DeviceReturn() {
             </Button>
           </Form.Item>
         </Form>
+        <div>
+          <Button htmlType="submit" type="primary" onClick={returnALL}>
+            一键归还
+          </Button>
+        </div>
       </div>
 
       {/* 数据表格 */}
