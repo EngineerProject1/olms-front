@@ -6,6 +6,7 @@ import { GlobalContext } from 'app'
 import { LabDateType, LabModel, LabPageParams } from 'mdoel/LabModel'
 import { useContext, useEffect, useState } from 'react'
 import axios from 'tools/axios'
+import LabForm from './LabForm'
 
 function Lab() {
   const columns = [
@@ -57,11 +58,12 @@ function Lab() {
       title: '操作',
       dataIndex: 'operation',
       width: '11.1%',
-      render: (_: any, record: { key: React.Key }) => (
+      render: (_: any, record: { key: React.Key; id: number }) => (
         <Space>
           <a
             onClick={() => {
-              console.log(1)
+              setEditId(record.id)
+              setOpen(true)
             }}>
             编辑
           </a>
@@ -98,12 +100,19 @@ function Lab() {
   // 页面加载
   const [loading, setLoading] = useState(true)
 
+  // 选择的key
   const rowSelection = {
     preserveSelectedRowKeys: true,
     onChange: (selectedRowKeys: React.Key[], selectedRows: LabDateType[]) => {
       setSelectedRowKeys(selectedRowKeys)
     },
   }
+
+  // 设置Modal是否打开
+  const [open, setOpen] = useState<boolean>(false)
+
+  // 编辑时存储数据的id
+  const [editId, setEditId] = useState(-1)
 
   useEffect(() => {
     // 获取lab数据
@@ -120,7 +129,9 @@ function Lab() {
       setData(
         data.records.map((item: LabModel) => {
           return {
+            id: item.id,
             key: item.id,
+            images: item.images,
             name: item.name,
             master: item.masterName,
             location: item.location,
@@ -244,13 +255,18 @@ function Lab() {
           </Popconfirm>
           {/* 新增实验室 */}
           <Button
-            onClick={() => console.log('新增设备')}
+            onClick={() => {
+              setOpen(true)
+              setEditId(-1)
+            }}
             type="primary"
             style={{ marginBottom: 16, marginRight: 105, float: 'right' }}>
             + 新增实验室
           </Button>
         </div>
       </div>
+
+      <LabForm editId={editId} open={open} setOpen={setOpen} />
       {/* 表格 */}
       <Table
         rowSelection={{

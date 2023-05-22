@@ -1,5 +1,5 @@
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
-import { message, Upload } from 'antd'
+import { Upload, message } from 'antd'
 import type { UploadChangeParam } from 'antd/es/upload'
 import type { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface'
 import { useEffect, useState } from 'react'
@@ -21,7 +21,12 @@ const beforeUpload = (file: RcFile) => {
   }
   return isJpgOrPng && isLt4M
 }
-
+/**
+ *
+ * @param setName 是一个useState的set方法用于设定名字使用
+ * @param fileList 用于回显图片
+ * @returns
+ */
 const MyUpload = ({
   setName,
   fileList,

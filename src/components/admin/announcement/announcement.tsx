@@ -34,7 +34,7 @@ const Announcement: React.FC = () => {
   // 公告分页参数管理
   const [params, setParams] = useState<AnnoucementModel>({
     page: 1,
-    pageSize: 5,
+    pageSize: 10,
     total: 1,
     title: '',
     level: '',

@@ -1,4 +1,5 @@
 export interface LabDateType {
+  id: number
   key: React.Key
   name: string
   images: string
@@ -25,7 +26,7 @@ export interface LabModel {
   images: string
   description: string
   location: string
-  masterName: string
+  masterName?: string
   capacity: number
   type: string
   status: number
