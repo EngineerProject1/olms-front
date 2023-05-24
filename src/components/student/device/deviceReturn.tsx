@@ -59,8 +59,14 @@ export function DeviceReturn() {
   }
 
   //一键归还所有设备
-  const returnALL = () => {
+  const returnALL = async () => {
     console.log(list)
+    const res = await axios.put('/auth/deviceReturnAll', list)
+    messageApi.success(res.data.msg)
+    setParams({
+      ...params,
+      total: 0,
+    })
   }
 
   // 得到后端返回的文件名
