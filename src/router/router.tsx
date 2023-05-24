@@ -4,6 +4,7 @@ import Lab from 'components/admin/lab/Lab'
 import StudentManagement from 'components/admin/userManagement/studentManagement/studentManagement'
 import TeacherManagement from 'components/admin/userManagement/teacherManagement/teacherManagement'
 import LabAppointment from 'components/common/LabAppointment/labAppointment'
+import Home from 'components/home/Home'
 import { BasicInformation } from 'components/person/basicInformation'
 import { ChangePassword } from 'components/person/changePassword'
 import Person from 'components/person/person'
@@ -19,7 +20,7 @@ import { createBrowserRouter, useNavigate } from 'react-router-dom'
 export const defaultRouter = createBrowserRouter([
   {
     path: '/',
-    element: <>None</>,
+    element: <Home />,
   },
   {
     path: '/login',

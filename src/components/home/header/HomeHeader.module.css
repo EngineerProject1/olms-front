@@ -1,0 +1,21 @@
+.LeftHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: aliceblue;
+  height: 100%;
+}
+
+.Item {
+  margin-left: 90px;
+  cursor: pointer;
+}
+
+.Login {
+  font-size: 16px;
+  margin-right: 70px;
+  color: aliceblue;
+}
+.Login :hover {
+  color: rgb(156, 213, 213);
+}
