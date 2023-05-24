@@ -12,6 +12,7 @@ import { adminMenu, studentMenu, teacherMenu } from 'components/sidebarMenus'
 import Attendance from 'components/student/attendance/attendance'
 import { DeviceBorrow } from 'components/student/device/deviceBorrow'
 import { DeviceReturn } from 'components/student/device/deviceReturn'
+import { AppointmentInfo } from 'components/teacher/appointmentInfo/appointmentInfo'
 import { Login } from 'pages/login'
 import Main from 'pages/main'
 import { useEffect } from 'react'
@@ -125,7 +126,7 @@ export const teacherRouter = createBrowserRouter([
         children: [
           {
             path: 'appointmentInfo',
-            element: <div>appointmentInfo</div>,
+            element: <AppointmentInfo />,
           },
           {
             path: 'labAppointment',

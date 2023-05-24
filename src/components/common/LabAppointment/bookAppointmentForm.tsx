@@ -24,8 +24,6 @@ export function BookAppointmentForm(props: {
     let requestBody: AppointmentRequest = {
       ...props.appointRequest,
       ...values,
-      isForClass: undefined,
-      type: undefined,
     }
     if (values.type != undefined) {
       if (values.type == true) {
@@ -87,7 +85,7 @@ export function BookAppointmentForm(props: {
             <Input.TextArea />
           </Form.Item>
           {role === 'teacher' ? (
-            <Form.Item name="type" label="是否为班级借用">
+            <Form.Item name="type" label="是否为班级借用" initialValue={false}>
               <Switch
                 onChange={(checked) => {
                   setIsForClass(checked)

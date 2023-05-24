@@ -20,26 +20,28 @@ export default function Attendance() {
   const [loading, setLoading] = useState(false)
   useEffect(() => {
     setLoading(true)
-    axios.get('/auth/attendance', { params: pageParam }).then((response) => {
-      const data = response.data.data
-      const resultList: Attendance[] = data.records
-      setList(
-        resultList.map((item: any) => {
-          const status = ['缺勤', '正常', '迟到', '早退']
-          return {
-            ...item,
-            key: item.id.toString(),
-            bookTime: `${item.bookTime} ${item.startTime.slice(
-              0,
-              -3
-            )}~${item.endTime.slice(0, -3)}`,
-            status: status[Number.parseInt(item.status)],
-          }
-        })
-      )
-      setLoading(false)
-      setTotal(data.total)
-    })
+    axios
+      .get('/auth/attendanceForPerson', { params: pageParam })
+      .then((response) => {
+        const data = response.data.data
+        const resultList: Attendance[] = data.records
+        setList(
+          resultList.map((item: any) => {
+            const status = ['缺勤', '正常', '迟到', '早退']
+            return {
+              ...item,
+              key: item.id.toString(),
+              bookTime: `${item.bookTime} ${item.startTime.slice(
+                0,
+                -3
+              )}~${item.endTime.slice(0, -3)}`,
+              status: status[Number.parseInt(item.status)],
+            }
+          })
+        )
+        setLoading(false)
+        setTotal(data.total)
+      })
   }, [pageParam, modalOpen])
 
   const columns = [
