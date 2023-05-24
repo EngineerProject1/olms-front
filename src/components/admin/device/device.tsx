@@ -70,8 +70,14 @@ export function Device() {
     }
   }
   //查出所有实验室
-  const [labNames, setLabNames] = useState<any>()
-
+  const [labNames, setLabNames] = useState<any>([])
+  const getAllLab = async () => {
+    const res = await axios.get('allLab')
+    setLabNames(res.data.data)
+  }
+  useEffect(() => {
+    getAllLab()
+  }, [])
   // 得到后端返回的文件名
   const [fileName, setFileName] = useState('')
 
@@ -496,10 +502,14 @@ export function Device() {
             <MyUpload setName={setFileName} fileList={fileList as string} />
           </Form.Item>
 
-          <Form.Item name="labName" label="实验室" rules={[{ required: true }]}>
-            <Select>
-              <Select.Option value="计算机部">计算机部</Select.Option>
-            </Select>
+          <Form.Item name="labId" label="实验室" rules={[{ required: true }]}>
+            <Select
+              options={labNames.map((item: any) => {
+                return {
+                  value: item.id,
+                  label: item.name,
+                }
+              })}></Select>
           </Form.Item>
 
           <Form.Item
