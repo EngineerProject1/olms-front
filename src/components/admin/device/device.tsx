@@ -132,7 +132,7 @@ export function Device() {
               key: item.id,
               name: item.name,
               images: item.images,
-              labName: item.labName,
+              labName: item.labName === null ? '未分配' : item.labName,
               price: item.price,
               model: item.model,
               status: defaultStatus[item.status],
