@@ -1,0 +1,16 @@
+.Image {
+  margin: 0;
+  height: 320px;
+  color: #fff;
+  width: 500px;
+  line-height: 320px;
+  text-align: center;
+  background: #364d79;
+  display: block;
+  margin: 0 auto;
+}
+
+.Carousel {
+  height: 100%;
+  background: #364d79;
+}
