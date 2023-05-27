@@ -55,7 +55,7 @@ const TeacherManagement: React.FC = () => {
   // 教师信息列表
   const [teachers, setTeachers] = useState<any>()
 
-  // 学生分页参数管理
+  // 教师分页参数管理
   const [params, setParams] = useState<any>({
     page: 1,
     pageSize: 10,
@@ -203,6 +203,7 @@ const TeacherManagement: React.FC = () => {
     )
   }
 
+  // 数据回显
   const loadFormValue = async (tid: React.Key) => {
     setModalOpen(true)
     setResetPwd({

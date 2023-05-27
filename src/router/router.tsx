@@ -13,6 +13,7 @@ import Attendance from 'components/student/attendance/attendance'
 import { DeviceBorrow } from 'components/student/device/deviceBorrow'
 import { DeviceReturn } from 'components/student/device/deviceReturn'
 import { AppointmentInfo } from 'components/teacher/appointmentInfo/appointmentInfo'
+import { AttendanceManagement } from 'components/teacher/attendanceManagement'
 import { Login } from 'pages/login'
 import Main from 'pages/main'
 import { useEffect } from 'react'
@@ -149,7 +150,7 @@ export const teacherRouter = createBrowserRouter([
       },
       {
         path: 'attendance',
-        element: <div>attendance</div>,
+        element: <AttendanceManagement />,
       },
       {
         path: 'person',

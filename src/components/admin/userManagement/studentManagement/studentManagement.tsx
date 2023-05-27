@@ -218,7 +218,6 @@ const StudentManagement: React.FC = () => {
       )
       setLoading(false)
     }
-    console.log('刷新页面')
     loadList()
   }, [params.page, params.pageSize, params.total, params.loader, params.name])
 
@@ -305,6 +304,7 @@ const StudentManagement: React.FC = () => {
     isReset: false,
   })
 
+  // 导出学生信息
   const excelExport = async () => {
     rawAxios({
       url: 'http://127.0.0.1:8090/api/student/export',
