@@ -3,13 +3,15 @@ import {
   Card,
   DatePicker,
   Input,
+  Modal,
   Pagination,
+  Radio,
   Select,
   Space,
   Table,
 } from 'antd'
 import dayjs from 'dayjs'
-import { useEffect, useState } from 'react'
+import { Key, useEffect, useState } from 'react'
 import axios from 'tools/axios'
 
 export function AttendanceManagement() {
@@ -18,22 +20,11 @@ export function AttendanceManagement() {
   // 多选框
   const [selectedRowKeys, setSelectedRowKeys] = useState([])
   // 预约信息
-  const [appointInfo, setAppointInfo] = useState([
-    {
-      name: '王五',
-      key: 2021001,
-      experientName: '牛顿力学',
-      status: '未考勤',
-    },
-    {
-      name: '王五',
-      key: 2021001,
-      experientName: '牛顿力学',
-      status: '未考勤',
-    },
-  ])
+  const [appointInfo, setAppointInfo] = useState()
   // 加载
   const [tableLoading, setTableLoading] = useState(false)
+  // 打开考勤面板
+  const [modalOpen, setModalOpen] = useState(false)
 
   // 考勤分页参数管理
   const [params, setParams] = useState<any>({
@@ -45,8 +36,15 @@ export function AttendanceManagement() {
     loader: true,
   })
 
+  // 正在考勤的key
+  const [editRecord, setEditRecord] = useState<any>({
+    key: 0,
+    status: '',
+    id: 0,
+  })
+
   // 所管理的实验室
-  const [labs, setLabs] = useState([])
+  const [labs, setLabs] = useState<any>([])
 
   // 表格列名
   const defaultColumns = [
@@ -57,12 +55,12 @@ export function AttendanceManagement() {
     },
     {
       title: '职工号/学号',
-      dataIndex: 'key',
+      dataIndex: 'id',
       width: '20%',
     },
     {
       title: '实验名称',
-      dataIndex: 'experientName',
+      dataIndex: 'experimentName',
       width: '20%',
     },
     {
@@ -74,12 +72,21 @@ export function AttendanceManagement() {
       title: '操作',
       dataIndex: 'operation',
       width: '20%',
-      render: (_: any, record: {}) => (
+      render: (
+        _: any,
+        record: { uid: Number; key: Key; status: String; id: Number }
+      ) => (
         <Space>
           <a
             onClick={() => {
-              // loadFormValue(record.key)
-              // setEditId(record.id)
+              setModalOpen(true)
+              console.log(record.key, record.status, record.id)
+              setEditRecord({
+                key: record.key,
+                status: record.status,
+                id: record.uid,
+              })
+              console.log(record)
             }}>
             考勤
           </a>
@@ -93,8 +100,23 @@ export function AttendanceManagement() {
 
   // 拉取考勤列表信息
   useEffect(() => {
-    const loadList = async () => {
-      const res = await axios.get('/auth/attendanceManager', {
+    // 加载所管理的实验室
+    const loadLabs = async () => {
+      let res = await axios.get('/auth/getLabs')
+      console.log(res)
+      let data = res.data.data
+      setLabs(
+        data.map((item: { id: React.Key; name: String }) => {
+          return {
+            key: item.id,
+            name: item.name,
+          }
+        })
+      )
+    }
+    // 加载用户信息
+    const loadUsers = async (id: Key) => {
+      const res = await axios.get(`/attendanceManager/${id}`, {
         params: {
           page: params.page,
           pageSize: params.pageSize,
@@ -109,43 +131,91 @@ export function AttendanceManagement() {
         total: data.total,
         pages: data.pages,
       })
-      // setAppointInfo(
-      //   data.records.map(
-      //     (item: {
-      //       id: Number
-      //       teacherName: String
-      //       tid: Number
-      //       collegeName: String
-      //     }) => {
-      //       return {
-      //         id: item.id,
-      //         key: item.tid,
-      //         name: item.teacherName,
-      //         college: item.collegeName,
-      //       }
-      //     }
-      //   )
-      // )
-      // setLoading(false)
-    }
-    const loadLabs = async () => {
-      let res = await axios.get('/auth/getLabs')
-      console.log(res)
-      let data = res.data.data
-      setLabs(
-        data.map((item: { id: React.Key; name: String }) => {
-          return {
-            key: item.id,
-            name: item.name,
+      setAppointInfo(
+        data.records.map(
+          (item: {
+            userId: Number
+            id: Key
+            userName: String
+            realName: String
+            experimentName: String
+            status: Number
+          }) => {
+            return {
+              uid: item.userId,
+              key: item.id,
+              id: item.userName,
+              name: item.realName,
+              experimentName: item.experimentName,
+              status: transFormStatus(item.status),
+            }
           }
-        })
+        )
       )
     }
-    console.log('刷新页面')
-    // loadList()
-    loadLabs()
+    if (labId !== 0) {
+      loadUsers(labId)
+    } else {
+      loadLabs()
+    }
   }, [params.page, params.pageSize, params.total, params.loader, params.name])
 
+  // 设置当前实验室id
+  const loadLabId = (id: Key) => {
+    setLabId(id)
+    setParams({
+      ...params,
+      loader: !params.loader,
+    })
+  }
+
+  // 转状态为字符串
+  const transFormStatus = (status: any) => {
+    let str = '未考勤'
+    if (status === 0) {
+      str = '缺勤'
+    } else if (status === 1) {
+      str = '正常'
+    } else if (status === 2) {
+      str = '迟到'
+    } else if (status === 3) {
+      str = '早退'
+    } else if (status === 4) {
+      str = '请假'
+    }
+    return str
+  }
+
+  //
+  const setStatus = async (e: any) => {
+    console.log(e.target.value)
+    let status = e.target.value
+    // 如果没有考勤过 添加考勤信息
+    if (editRecord.status === '未考勤') {
+      await axios.post('/attendanceManager', {
+        appointmentId: editRecord.key,
+        status: status,
+        userId: Number(editRecord.id),
+      })
+    }
+    // 如果考勤过了 修改考勤状态
+    else {
+      await axios.put('/attendanceManager', {
+        appointmentId: editRecord.key,
+        status: status,
+        userId: Number(editRecord.id),
+      })
+    }
+    // 刷新页面
+    setParams({
+      ...params,
+      loader: !params.loader,
+    })
+    // 重置record
+    setEditRecord([])
+    // 管理modal
+    setModalOpen(false)
+  }
   // 可选框
   const rowSelection = {
     onChange: (selectedRowKeys: any, selectedRows: any) => {
@@ -155,8 +225,26 @@ export function AttendanceManagement() {
   }
 
   const dateFormat = 'YYYY-MM-DD'
+  // 封装所选实验室id
+  const [labId, setLabId] = useState<Key>(0)
   return (
     <div>
+      <Modal
+        centered
+        open={modalOpen}
+        footer={null}
+        width={420}
+        onCancel={() => setModalOpen(false)}>
+        <span style={{ marginRight: 20 }}>考勤状态</span>
+        <Radio.Group size="large" style={{ height: 150 }} onChange={setStatus}>
+          <div style={{ marginTop: 50 }}>
+            <Radio.Button value="1">正常</Radio.Button>
+            <Radio.Button value="2">迟到</Radio.Button>
+            <Radio.Button value="3">早退</Radio.Button>
+            <Radio.Button value="4">请假</Radio.Button>
+          </div>
+        </Radio.Group>
+      </Modal>
       <div
         style={{
           display: 'flex',
@@ -165,6 +253,7 @@ export function AttendanceManagement() {
         }}>
         <Card title="实验室" style={{ width: 300 }}>
           <Select
+            onSelect={loadLabId}
             style={{ width: 217 }}
             placeholder="请选择考勤实验室"
             optionFilterProp="children"
@@ -223,6 +312,11 @@ export function AttendanceManagement() {
       </div>
       <div>
         <Table
+          onRow={(record) => {
+            return {
+              onClick: (event) => {}, // 点击行
+            }
+          }}
           // components={}
           rowSelection={{
             preserveSelectedRowKeys: true,
