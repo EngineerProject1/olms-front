@@ -10,15 +10,18 @@ import {
   Space,
   Table,
 } from 'antd'
+import { GlobalContext } from 'app'
 import dayjs from 'dayjs'
-import { Key, useEffect, useState } from 'react'
+import { Key, useContext, useEffect, useState } from 'react'
 import axios from 'tools/axios'
 
 export function AttendanceManagement() {
+  const { messageApi } = useContext(GlobalContext)
   // 搜索框
   const { Search } = Input
   // 多选框
   const [selectedRowKeys, setSelectedRowKeys] = useState([])
+  const [selectedRows, setSelectedRows] = useState<any>([])
   // 预约信息
   const [appointInfo, setAppointInfo] = useState()
   // 加载
@@ -186,26 +189,69 @@ export function AttendanceManagement() {
     return str
   }
 
+  // 新增考勤信息
+  const addAttendance = async (
+    appointmentId: Key,
+    status: String,
+    userId: Number
+  ) => {
+    await axios.post('/attendanceManager', {
+      appointmentId: appointmentId,
+      status: status,
+      userId: userId,
+    })
+  }
+
+  // 修改考勤信息
+  const updateAttendance = async (
+    appointmentId: Key,
+    status: String,
+    userId: Number
+  ) => {
+    await axios.put('/attendanceManager', {
+      appointmentId: appointmentId,
+      status: status,
+      userId: userId,
+    })
+  }
+
   //
   const setStatus = async (e: any) => {
     console.log(e.target.value)
     let status = e.target.value
-    // 如果没有考勤过 添加考勤信息
-    if (editRecord.status === '未考勤') {
-      await axios.post('/attendanceManager', {
-        appointmentId: editRecord.key,
-        status: status,
-        userId: Number(editRecord.id),
-      })
+
+    // 单个考勤
+    if (selectedRowKeys.length === 0) {
+      // 如果没有考勤过 添加考勤信息
+      if (editRecord.status === '未考勤') {
+        addAttendance(editRecord.key, status, Number(editRecord.id))
+      }
+      // 如果考勤过了 修改考勤状态
+      else {
+        updateAttendance(editRecord.key, status, Number(editRecord.id))
+      }
+      // 重置多选框
+      setSelectedRowKeys([])
     }
-    // 如果考勤过了 修改考勤状态
+    // 批量考勤
     else {
-      await axios.put('/attendanceManager', {
-        appointmentId: editRecord.key,
-        status: status,
-        userId: Number(editRecord.id),
-      })
+      for (let i = 0; i < selectedRows.length; i++) {
+        console.log(selectedRows[i])
+        let appointmentId = selectedRows[i].key
+        let userId = selectedRows[i].uid
+        let statusNow = selectedRows[i].status
+        // 如果没有考勤过 添加考勤信息
+        if (statusNow === '未考勤') {
+          addAttendance(appointmentId, status, userId)
+        }
+        // 如果考勤过了 修改考勤状态
+        else {
+          updateAttendance(appointmentId, status, userId)
+        }
+      }
+      setSelectedRows([])
     }
+    messageApi.success('考勤成功')
     // 刷新页面
     setParams({
       ...params,
@@ -218,9 +264,10 @@ export function AttendanceManagement() {
   }
   // 可选框
   const rowSelection = {
-    onChange: (selectedRowKeys: any, selectedRows: any) => {
+    onChange: (selectedRowKeys: any, selectedRows: Object[]) => {
       setSelectedRowKeys(selectedRowKeys)
-      console.log(selectedRowKeys)
+      setSelectedRows(selectedRows)
+      console.log(selectedRows)
     },
   }
 
@@ -308,7 +355,13 @@ export function AttendanceManagement() {
           size="large"
         />
 
-        <Button type="primary">批量考勤</Button>
+        <Button
+          type="primary"
+          disabled={selectedRowKeys.length === 0}
+          onClick={() => setModalOpen(true)}
+          style={{ marginRight: 50 }}>
+          批量考勤
+        </Button>
       </div>
       <div>
         <Table
