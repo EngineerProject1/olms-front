@@ -1,16 +1,39 @@
 .Image {
   margin: 0;
-  height: 320px;
+  height: 200px;
   color: #fff;
-  width: 500px;
+  width: 200px;
   line-height: 320px;
   text-align: center;
   background: #364d79;
   display: block;
   margin: 0 auto;
+  border-radius: 70%;
+  overflow: hidden;
 }
-
+.Name {
+  text-align: center;
+  color: #fff;
+}
 .Carousel {
   height: 100%;
-  background: #364d79;
+  /* background: #364d79; */
+}
+.BtnLeft {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  color: white;
+  font-size: 30px;
+  z-index: 10;
+  cursor: pointer;
+}
+.BtnRight {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  color: white;
+  font-size: 30px;
+  z-index: 10;
+  cursor: pointer;
 }

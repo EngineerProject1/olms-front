@@ -1,9 +1,10 @@
 import { Carousel } from 'antd'
 import { LabModel } from 'mdoel/LabModel'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import axios from 'tools/axios'
 import classes from './HomeImage.module.css'
 function HomeImage() {
+  const myRef = useRef(null)
   const [lab, setLabs] = useState<LabModel[]>([])
   const [images, setImages] = useState()
   // 数组乱序去前6个
@@ -31,9 +32,27 @@ function HomeImage() {
         labs.map((item: LabModel) => {
           return (
             <div>
-              <img
-                src={`/api/img/download?name=${item.images}`}
-                className={classes.Image}></img>
+              <div
+                className={classes.BtnLeft}
+                onClick={() => {
+                  myRef?.current?.prev?.()
+                }}>
+                &lt;
+              </div>
+              <div
+                className={classes.BtnRight}
+                onClick={() => {
+                  myRef?.current?.next?.()
+                }}>
+                &gt;
+              </div>
+              <div>
+                <img
+                  src={`/api/img/download?name=${item.images}`}
+                  className={classes.Image}></img>
+                <h3 className={classes.Name}>{item.name}</h3>
+                <p className={classes.Name}>{item.description}</p>
+              </div>
             </div>
           )
         })
@@ -41,7 +60,12 @@ function HomeImage() {
     })
   }, [])
   return (
-    <Carousel autoplay className={classes.Carousel}>
+    <Carousel
+      ref={myRef}
+      dots={false}
+      effect="fade"
+      autoplay
+      className={classes.Carousel}>
       {images}
     </Carousel>
   )
