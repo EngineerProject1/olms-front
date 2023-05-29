@@ -75,6 +75,8 @@ export function Device() {
     const res = await axios.get('allLab')
     setLabNames(res.data.data)
   }
+  //关于Modal部分
+  const [open, setOpen] = useState(false)
   useEffect(() => {
     getAllLab()
   }, [])
@@ -143,7 +145,14 @@ export function Device() {
       setLoading(false)
     }
     loadList()
-  }, [params.pageSize, params.total, params.page, params.name, params.status])
+  }, [
+    params.pageSize,
+    params.total,
+    params.page,
+    params.name,
+    params.status,
+    open,
+  ])
 
   // 列字段
   const columns: ColumnsType<DataType> = [
@@ -351,9 +360,6 @@ export function Device() {
       }
     },
   }
-
-  //关于Modal部分
-  const [open, setOpen] = useState(false)
 
   const showModal = (id: React.Key) => {
     handleEdit(id)

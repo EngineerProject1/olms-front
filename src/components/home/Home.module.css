@@ -20,6 +20,9 @@
   height: 100%;
 }
 
-.Image {
+.LabImage {
   height: 320px;
+}
+.DeviceImage {
+  width: 400px;
 }

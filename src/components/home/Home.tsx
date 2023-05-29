@@ -1,6 +1,8 @@
-import HomeHeader from './header/HomeHeader'
 import classes from './Home.module.css'
-import HomeImage from './image/HomeImage'
+import HomeHeader from './header/HomeHeader'
+import DeviceImage from './image/DeviceImage'
+import LabImage from './image/LabImage'
+import Notice from './notice/Notice'
 import stars from './stars.module.css'
 function Home() {
   return (
@@ -15,8 +17,18 @@ function Home() {
           <div className={classes.Header}>
             <HomeHeader />
           </div>
-          <div className={classes.Image}>
-            <HomeImage />
+          <div className={classes.LabImage}>
+            <LabImage />
+          </div>
+          <div style={{ display: 'flex' }}>
+            <div>
+              <Notice />
+            </div>
+            <div
+              style={{ marginLeft: '600px', alignItems: 'center' }}
+              className={classes.DeviceImage}>
+              <DeviceImage />
+            </div>
           </div>
         </div>
       </div>

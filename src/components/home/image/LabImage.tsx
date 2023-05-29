@@ -2,8 +2,8 @@ import { Carousel } from 'antd'
 import { LabModel } from 'mdoel/LabModel'
 import { useEffect, useRef, useState } from 'react'
 import axios from 'tools/axios'
-import classes from './HomeImage.module.css'
-function HomeImage() {
+import classes from './Image.module.css'
+function LabImage() {
   const myRef = useRef(null)
   const [lab, setLabs] = useState<LabModel[]>([])
   const [images, setImages] = useState()
@@ -31,7 +31,7 @@ function HomeImage() {
       setImages(
         labs.map((item: LabModel) => {
           return (
-            <div>
+            <div key={item.id}>
               <div
                 className={classes.BtnLeft}
                 onClick={() => {
@@ -70,4 +70,4 @@ function HomeImage() {
     </Carousel>
   )
 }
-export default HomeImage
+export default LabImage
