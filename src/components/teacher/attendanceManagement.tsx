@@ -84,27 +84,31 @@ export function AttendanceManagement() {
       width: '20%',
       render: (
         _: any,
-        record: { uid: Number; key: Key; status: String; id: Number }
-      ) => (
-        <Space>
-          <a
-            onClick={() => {
-              setModalOpen(true)
-              console.log(record.key, record.status, record.id)
-              setEditRecord({
-                key: record.key,
-                status: record.status,
-                id: record.uid,
-              })
-              console.log(record)
-            }}>
-            考勤
-          </a>
-          {/* <Popconfirm title="是否该教师信息？">
-            <a style={{ color: 'red' }}>删除</a>
-          </Popconfirm> */}
-        </Space>
-      ),
+        record: {
+          uid: Number
+          key: Key
+          status: String
+          id: string
+          type: number
+        }
+      ) => {
+        const flag = record.type === 1
+        return (
+          <Space>
+            <a
+              onClick={() => {
+                setModalOpen(true)
+                setEditRecord({
+                  key: flag ? record.uid : record.key,
+                  status: record.status,
+                  id: flag ? record.key : record.uid,
+                })
+              }}>
+              考勤
+            </a>
+          </Space>
+        )
+      },
     },
   ]
 
@@ -152,6 +156,7 @@ export function AttendanceManagement() {
             realName: String
             experimentName: String
             status: Number
+            type: number
           }) => {
             return {
               uid: item.userId,
@@ -160,6 +165,7 @@ export function AttendanceManagement() {
               name: item.realName,
               experimentName: item.experimentName,
               status: transFormStatus(item.status),
+              type: item.type,
             }
           }
         )
@@ -272,9 +278,12 @@ export function AttendanceManagement() {
     else {
       for (let i = 0; i < selectedRows.length; i++) {
         console.log(selectedRows[i])
-        let appointmentId = selectedRows[i].key
-        let userId = selectedRows[i].uid
-        let statusNow = selectedRows[i].status
+        debugger
+        const selectedRow = selectedRows[i]
+        const flag = selectedRow.type == 1
+        let appointmentId = flag ? selectedRow.uid : selectedRow.key
+        let userId = flag ? selectedRow.key : selectedRow.uid
+        let statusNow = selectedRow.status
         // 如果没有考勤过 添加考勤信息
         if (statusNow === '未考勤') {
           addAttendance(appointmentId, status, userId)

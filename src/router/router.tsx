@@ -120,7 +120,7 @@ export const teacherRouter = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Redirect target="appointment" />,
+        element: <Redirect target="appointment/appointmentInfo" />,
       },
       {
         path: 'appointment',
@@ -167,7 +167,7 @@ export const teacherRouter = createBrowserRouter([
   },
   {
     path: '*',
-    element: <Redirect target="appointment" />,
+    element: <Redirect target="appointment/appointmentInfo" />,
   },
 ])
 
