@@ -1,41 +1,59 @@
-import { Button } from 'antd'
+import { Menu } from 'antd'
+import { Header } from 'antd/es/layout/layout'
 import classes from './HomeHeader.module.css'
 function HomeHeader() {
   return (
     <>
-      <div className={classes.LeftHeader}>
-        <span
+      <Header
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginLeft: 28 }}>
+          <img
+            src="/logo.svg"
+            style={{ width: 35, height: 35, marginRight: 8 }}
+          />
+        </div>
+        <Menu
           className={classes.Item}
-          onClick={() => {
-            location.href = '/'
-          }}>
-          首页
-        </span>
-        <span
-          className={classes.Item}
-          onClick={() => {
-            location.href = '/login'
-          }}>
-          公告
-        </span>
-        <span
-          className={classes.Item}
-          onClick={() => {
-            location.href = '/login'
-          }}>
-          实验室预约
-        </span>
-      </div>
-      <div className={classes.LeftHeader}>
-        <Button
-          type="text"
-          className={classes.Login}
-          onClick={() => {
-            location.href = '/login'
-          }}>
-          登录
-        </Button>
-      </div>
+          theme="dark"
+          mode="horizontal"
+          selectable={false}
+          items={[
+            {
+              key: 'index',
+              label: '首页',
+              onClick: () => {
+                location.href = '/'
+              },
+            },
+            {
+              key: 'appointment',
+              label: '实验室预约',
+              onClick: () => {
+                location.href = '/login'
+              },
+            },
+            {
+              key: 'notice',
+              label: '公告',
+              onClick: () => {
+                location.href = '/1'
+              },
+            },
+
+            {
+              key: 'login',
+              label: '登录',
+              onClick: () => {
+                location.href = '/login'
+              },
+            },
+          ]}
+        />
+      </Header>
     </>
   )
 }

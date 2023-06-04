@@ -22,7 +22,7 @@ function Notice() {
   return (
     <>
       <List
-        style={{ backgroundColor: '#fff', width: '700px' }}
+        style={{ backgroundColor: '#fff', width: '600px' }}
         header={<h3>公告信息</h3>}
         footer={<div style={{ color: '#204d74', cursor: 'pointer' }}>更多</div>}
         bordered

@@ -6,7 +6,7 @@ import Notice from './notice/Notice'
 import stars from './stars.module.css'
 function Home() {
   return (
-    <div>
+    <div style={{ height: '100%', width: '100%' }}>
       <div>
         <div className={stars.stars}></div>
         <div className={stars.stars2}></div>
@@ -20,7 +20,12 @@ function Home() {
           <div className={classes.LabImage}>
             <LabImage />
           </div>
-          <div style={{ display: 'flex' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexDirection: 'row',
+            }}>
             <div>
               <Notice />
             </div>
