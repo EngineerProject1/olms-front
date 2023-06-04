@@ -37,6 +37,8 @@ export function AttendanceManagement() {
     pages: 1,
     name: '',
     loader: true,
+    time: '',
+    timeSlot: 0,
   })
 
   // 正在考勤的key
@@ -48,6 +50,11 @@ export function AttendanceManagement() {
 
   // 所管理的实验室
   const [labs, setLabs] = useState<any>([])
+
+  // 查询时的日期
+  const [day, setDay] = useState<string>()
+  // 查询时的时间段
+  const [slot, setSlot] = useState<number>()
 
   // 表格列名
   const defaultColumns = [
@@ -103,6 +110,8 @@ export function AttendanceManagement() {
 
   // 拉取考勤列表信息
   useEffect(() => {
+    // 获取当前时间
+    getNowFormatDate()
     // 加载所管理的实验室
     const loadLabs = async () => {
       let res = await axios.get('/auth/getLabs')
@@ -215,7 +224,33 @@ export function AttendanceManagement() {
     })
   }
 
-  //
+  // 获取当前时间年月日以及时间段
+  const getNowFormatDate = async () => {
+    let date = new Date()
+    let year = date.getFullYear() //获取完整的年份(4位)
+    let month: any = date.getMonth() + 1 //获取当前月份(0-11,0代表1月)
+    let strDate: any = date.getDate() // 获取当前日(1-31)
+    if (month < 10) month = `0${month}` // 如果月份是个位数，在前面补0
+    if (strDate < 10) strDate = `0${strDate}` // 如果日是个位数，在前面补0
+
+    let hour = date.getHours()
+    let slot = 0
+    console.log(hour)
+    if (hour >= 8 && hour < 10) {
+      slot = 1
+    } else if (hour >= 10 && hour < 12) {
+      slot = 2
+    } else if (hour >= 14 && hour < 16) {
+      slot = 3
+    } else if (hour >= 16 && hour < 18) {
+      slot = 4
+    }
+
+    setDay(`${year}-${month}-${strDate}`)
+    setSlot(slot)
+  }
+
+  // 为学生设置考勤状态
   const setStatus = async (e: any) => {
     console.log(e.target.value)
     let status = e.target.value
@@ -262,18 +297,27 @@ export function AttendanceManagement() {
     // 管理modal
     setModalOpen(false)
   }
+
   // 可选框
   const rowSelection = {
     onChange: (selectedRowKeys: any, selectedRows: Object[]) => {
       setSelectedRowKeys(selectedRowKeys)
       setSelectedRows(selectedRows)
-      console.log(selectedRows)
     },
   }
 
-  const dateFormat = 'YYYY-MM-DD'
+  // 按姓名搜索
+  const onSearch = (value: string) => {
+    console.log(day)
+    setParams({
+      ...params,
+      name: value,
+    })
+  }
+
   // 封装所选实验室id
   const [labId, setLabId] = useState<Key>(0)
+
   return (
     <div>
       <Modal
@@ -298,7 +342,7 @@ export function AttendanceManagement() {
           justifyContent: 'flex-start',
           marginBottom: 20,
         }}>
-        <Card title="实验室" style={{ width: 300 }}>
+        <Card title="当前实验室" style={{ width: 300 }}>
           <Select
             onSelect={loadLabId}
             style={{ width: 217 }}
@@ -315,21 +359,20 @@ export function AttendanceManagement() {
             })}
           />
         </Card>
-        <Card title="考勤时间" style={{ width: 300, marginLeft: 29 }}>
+        <Card title="当前考勤时间" style={{ width: 300, marginLeft: 29 }}>
           <DatePicker
             inputReadOnly
             allowClear={false}
             open={false}
             style={{ width: 160, height: 32, marginBottom: 2 }}
-            defaultValue={dayjs('2015-06-06', dateFormat)}
+            value={dayjs(day, 'YYYY-MM-DD')}
           />
         </Card>
-        <Card title="考勤时间段" style={{ width: 300, marginLeft: 29 }}>
+        <Card title="当前考勤时间段" style={{ width: 300, marginLeft: 29 }}>
           <Select
             open={false}
             disabled={false}
             allowClear={false}
-            placeholder="请选择时间段"
             style={{ width: 165, height: 35 }}
             options={[
               { value: 1, label: '08:00 ~ 10:00' },
@@ -337,7 +380,7 @@ export function AttendanceManagement() {
               { value: 3, label: '14:00 ~ 16:00' },
               { value: 4, label: '16:00 ~ 18:00' },
             ]}
-            value={2}
+            value={slot}
           />
         </Card>
       </div>
@@ -350,7 +393,7 @@ export function AttendanceManagement() {
         {/* 搜索框 */}
         <Search
           placeholder="输入姓名搜索"
-          // onSearch={onSearch}
+          onSearch={onSearch}
           style={{ width: 200 }}
           size="large"
         />

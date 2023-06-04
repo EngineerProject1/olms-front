@@ -159,7 +159,12 @@ export function StudentEditor(props: {
         validateTrigger="onChange"
         extra={
           isRepeatSid === true ? (
-            <Alert style={{}} message="该学号已存在！" type="error" showIcon />
+            <Alert
+              style={{ padding: 3 }}
+              message="该学号已存在！"
+              type="error"
+              showIcon
+            />
           ) : (
             ''
           )
