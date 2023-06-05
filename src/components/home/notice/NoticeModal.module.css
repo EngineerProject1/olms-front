@@ -1,0 +1,8 @@
+.AntModal {
+  top: 24px;
+}
+.AntModalBody {
+  height: calc(100vh - 55px - 53px);
+  overflow-y: auto;
+  border-radius: 0px;
+}

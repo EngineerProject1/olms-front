@@ -1,7 +1,13 @@
 import { Menu } from 'antd'
 import { Header } from 'antd/es/layout/layout'
 import classes from './HomeHeader.module.css'
-function HomeHeader() {
+function HomeHeader({
+  setOpen,
+  setNoticeId,
+}: {
+  setOpen: React.Dispatch<boolean>
+  setNoticeId: React.Dispatch<number>
+}) {
   return (
     <>
       <Header
@@ -40,7 +46,8 @@ function HomeHeader() {
               key: 'notice',
               label: '公告',
               onClick: () => {
-                location.href = '/1'
+                setNoticeId(-1)
+                setOpen(true)
               },
             },
 
