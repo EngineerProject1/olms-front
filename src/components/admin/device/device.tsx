@@ -112,7 +112,6 @@ export function Device() {
         },
       })
       const data = res.data.data
-      console.log(data)
       setParams({
         ...params,
         pageSize: data.size,
@@ -283,7 +282,7 @@ export function Device() {
   // 单条删除
   const handleDelete = async (id: React.Key) => {
     // 当前行索引
-    console.log(id)
+    // console.log(id)
     const res = await axios.delete(`/auth/device/${id}`)
     messageApi.success(res.data.msg)
     setParams({
@@ -315,7 +314,7 @@ export function Device() {
       id,
       images: fileName,
     }
-    console.log(values)
+    // console.log(values)
     if (id !== -1) {
       //修改设备信息
       const res = await axios.put('/auth/device', values)
@@ -338,9 +337,7 @@ export function Device() {
   }
 
   // 表单提交失败
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo)
-  }
+  const onFinishFailed = (errorInfo: any) => {}
 
   const props: UploadProps = {
     name: 'file',
@@ -367,7 +364,6 @@ export function Device() {
   }
 
   const handleCancel = () => {
-    console.log('Clicked cancel button')
     setOpen(false)
   }
   return (

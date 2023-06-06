@@ -33,7 +33,6 @@ export function DeviceBorrow() {
 
   //借用设备
   const handleBorrow = async (values: any) => {
-    console.log(values)
     const res = await axios.put('/auth/deviceLend', values)
     const { data } = res
     if (data.msg === '借用成功') {
@@ -43,7 +42,6 @@ export function DeviceBorrow() {
         total: params.total - 1,
       })
     }
-    console.log(res)
   }
 
   //查出所有实验室
@@ -65,7 +63,6 @@ export function DeviceBorrow() {
     id: 3,
     name: '',
   })
-  console.log(params)
   const [loading, setLoading] = useState(true)
   // const [name, setName] = useState('')
   // 拉取所有设备列表信息
@@ -80,7 +77,6 @@ export function DeviceBorrow() {
         },
       })
       const data = res.data.data
-      console.log(params.id)
       setParams({
         ...params,
         pageSize: data.size,

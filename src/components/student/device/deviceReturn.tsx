@@ -50,7 +50,6 @@ export function DeviceReturn() {
   }
   //归还设备
   const handleReturn = async (records: any) => {
-    console.log(records)
     const res = await axios.put('/auth/deviceReturn', records)
     setParams({
       ...params,
@@ -60,7 +59,6 @@ export function DeviceReturn() {
 
   //一键归还所有设备
   const returnALL = async () => {
-    console.log(list)
     const res = await axios.put('/auth/deviceReturnAll', list)
     messageApi.success(res.data.msg)
     setParams({
@@ -243,9 +241,6 @@ export function DeviceReturn() {
     },
   }
 
-  const handleCancel = () => {
-    console.log('Clicked cancel button')
-  }
   return (
     <div>
       {/* 搜索框 */}
