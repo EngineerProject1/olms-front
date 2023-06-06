@@ -17,7 +17,7 @@ const MySearch = ({
       const res = await axios.get('/auth/appointmentLab')
       const { data } = res
       setLabNames(data.data)
-      //   console.log(data.data)
+      // console.log(data.data)
     }
     getLabNames()
   }, [])

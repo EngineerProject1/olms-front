@@ -32,8 +32,18 @@ export function DeviceBorrow() {
   )
 
   //借用设备
-  const handleBorrow = (values: any) => {
+  const handleBorrow = async (values: any) => {
     console.log(values)
+    const res = await axios.put('/auth/deviceLend', values)
+    const { data } = res
+    if (data.msg === '借用成功') {
+      message.success(data.msg)
+      setParams({
+        ...params,
+        total: params.total - 1,
+      })
+    }
+    console.log(res)
   }
 
   //查出所有实验室
@@ -85,6 +95,7 @@ export function DeviceBorrow() {
             price: number
             model: string
             count: number
+            labId: number
           }) => {
             return {
               key: nanoid(),
@@ -93,6 +104,7 @@ export function DeviceBorrow() {
               price: item.price,
               model: item.model,
               count: item.count,
+              labId: item.labId,
             }
           }
         )
