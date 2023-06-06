@@ -18,8 +18,8 @@ function AppointRecord() {
     pageSize: 10,
     type: 0,
     labId: -1,
-    total: 1,
   })
+  const [total, setTotal] = useState(1)
   // 有预约记录的实验室
   const [labs, setLabs] = useState([])
   // 页面加载
@@ -37,12 +37,7 @@ function AppointRecord() {
 
     axios.get('/auth/appointment', { params }).then((resp) => {
       const data = resp.data.data
-      setParams({
-        ...params,
-        total: data.total,
-        page: data.current,
-        pageSize: data.size,
-      })
+      setTotal(data.total)
       // 个人预约记录
       if (params.type === 0) {
         setAppointPerson(
@@ -89,7 +84,7 @@ function AppointRecord() {
       }
       setLoading(false)
     })
-  }, [params.page, params.labId, params.pageSize, params.total, params.type])
+  }, [params.page, params.labId, params.pageSize, total, params.type])
   const switchChange = (checked: boolean) => {
     setLoading(true)
     if (checked) {
@@ -97,7 +92,6 @@ function AppointRecord() {
     } else {
       setParams({ ...params, type: 0 })
     }
-    console.log(params)
   }
   return (
     <>
@@ -164,9 +158,9 @@ function AppointRecord() {
             pageSize: pageSize,
           })
         }}
-        total={params.total}
+        total={total}
         showQuickJumper
-        showTotal={(total: number) => `总共${params.total}条数据`}
+        showTotal={(total: number) => `总共${total}条数据`}
       />
     </>
   )
