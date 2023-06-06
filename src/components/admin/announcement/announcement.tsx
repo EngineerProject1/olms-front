@@ -126,6 +126,7 @@ const Announcement: React.FC = () => {
     filter: any
     sorter: any
   }) => {
+    setLoading(true)
     const field = sorter.field
     const order = sorter.order ? sorter.order.replace('end', '') : ''
     if (field === 'level') {
@@ -211,8 +212,10 @@ const Announcement: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           {/* 搜索框 */}
           <Search
+            disabled={loading}
             placeholder="标题"
             onSearch={(e) => {
+              setLoading(true)
               setParams({ ...params, title: e })
             }}
             style={{ width: 200 }}
@@ -262,11 +265,13 @@ const Announcement: React.FC = () => {
         {/*  分页 */}
 
         <Pagination
+          disabled={loading}
           style={{ float: 'right' }}
           pageSize={params.pageSize}
           showSizeChanger
           pageSizeOptions={[5, 10, 15, 20]}
           onChange={(page, pageSize) => {
+            setLoading(true)
             setParams({
               ...params,
               page: page,

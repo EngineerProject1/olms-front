@@ -244,11 +244,13 @@ export function DeviceBorrow() {
       />
       {/* 分页 */}
       <Pagination
+        disabled={loading}
         style={{ float: 'right' }}
         pageSize={params.pageSize}
         showSizeChanger
         pageSizeOptions={[5, 10, 15, 20]}
         onChange={(page, pageSize) => {
+          setLoading(true)
           setParams({
             ...params,
             page: page,

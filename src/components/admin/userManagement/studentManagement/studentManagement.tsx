@@ -58,6 +58,7 @@ const StudentManagement: React.FC = () => {
 
   // 通过姓名进行搜索
   const onSearch = (value: string) => {
+    setLoading(true)
     setParams({
       ...params,
       name: value,
@@ -397,6 +398,7 @@ const StudentManagement: React.FC = () => {
             }}>
             {/* 搜索框 */}
             <Search
+              disabled={loading}
               placeholder="输入姓名搜索"
               onSearch={onSearch}
               style={{ width: 200 }}
@@ -471,9 +473,11 @@ const StudentManagement: React.FC = () => {
         <Pagination
           style={{ float: 'right' }}
           pageSize={params.pageSize}
+          disabled={loading}
           showSizeChanger
           pageSizeOptions={[10, 15, 20]}
           onChange={(page, pageSize) => {
+            setLoading(true)
             setParams({
               ...params,
               page: page,

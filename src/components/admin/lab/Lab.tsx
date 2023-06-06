@@ -165,6 +165,7 @@ function Lab() {
     filter: any
     sorter: any
   }) => {
+    setLoading(true)
     const field = sorter.field
     const order = sorter.order ? sorter.order.replace('end', '') : ''
     setParams({ ...params, capacity: order })
@@ -211,9 +212,11 @@ function Lab() {
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Space>
           <Search
+            disabled={loading}
             allowClear={true}
             placeholder="实验室名字"
             onSearch={(e) => {
+              setLoading(true)
               setParams({ ...params, name: e })
             }}
             style={{ width: 200 }}
@@ -221,13 +224,16 @@ function Lab() {
           />
           <Select
             size="large"
+            disabled={loading}
             placeholder="实验室状态"
             style={{ width: 130 }}
             allowClear={true}
             onSelect={(e) => {
+              setLoading(true)
               setParams({ ...params, status: e })
             }}
             onClear={() => {
+              setLoading(true)
               setParams({ ...params, status: '' })
             }}>
             <Select.Option value="0">可用</Select.Option>
@@ -287,8 +293,10 @@ function Lab() {
         style={{ float: 'right' }}
         pageSize={params.pageSize}
         showSizeChanger
+        disabled={loading}
         pageSizeOptions={[5, 10, 15, 20]}
         onChange={(page, pageSize) => {
+          setLoading(true)
           setParams({
             ...params,
             page: page,

@@ -288,9 +288,11 @@ export function DeviceReturn() {
       <Pagination
         style={{ float: 'right' }}
         pageSize={params.pageSize}
+        disabled={loading}
         showSizeChanger
         pageSizeOptions={[5, 10, 15, 20]}
         onChange={(page, pageSize) => {
+          setLoading(true)
           setParams({
             ...params,
             page: page,

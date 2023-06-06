@@ -116,8 +116,10 @@ export function AppointmentInfo() {
             style={{ float: 'right' }}
             pageSize={pageParam.pageSize}
             showSizeChanger
+            disabled={loading}
             pageSizeOptions={[5, 10, 15, 20]}
             onChange={(page, pageSize) => {
+              setLoading(true)
               setPageParam({
                 page: page,
                 pageSize: pageSize,

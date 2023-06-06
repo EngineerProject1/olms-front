@@ -76,11 +76,13 @@ export default function Attendance() {
         pagination={false}
       />
       <Pagination
+        disabled={loading}
         style={{ float: 'right' }}
         pageSize={pageParam.pageSize}
         showSizeChanger
         pageSizeOptions={[5, 10, 15, 20]}
         onChange={(page, pageSize) => {
+          setLoading(true)
           setPageParam({
             page: page,
             pageSize: pageSize,

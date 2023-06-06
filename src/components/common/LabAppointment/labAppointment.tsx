@@ -183,7 +183,9 @@ export default function LabAppointment() {
         {/* 搜索框 */}
         <Search
           placeholder="类型"
+          disabled={loading}
           onSearch={(e) => {
+            setLoading(true)
             setPageParam({ ...pageParam, type: e })
           }}
           style={{ width: 300 }}
@@ -203,6 +205,7 @@ export default function LabAppointment() {
             value={targetDateTime.targetDate}
           />
           <Select
+            disabled={loading}
             allowClear={false}
             placeholder="请选择时间段"
             style={{ width: 130 }}
@@ -221,11 +224,13 @@ export default function LabAppointment() {
       />
       {/*  分页 */}
       <Pagination
+        disabled={loading}
         style={{ float: 'right' }}
         pageSize={pageParam.pageSize}
         showSizeChanger
         pageSizeOptions={[5, 10, 15, 20]}
         onChange={(page, pageSize) => {
+          setLoading(true)
           setPageParam({
             ...pageParam,
             page: page,

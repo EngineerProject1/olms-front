@@ -445,10 +445,12 @@ export function Device() {
       {/* 分页 */}
       <Pagination
         style={{ float: 'right' }}
+        disabled={loading}
         pageSize={params.pageSize}
         showSizeChanger
         pageSizeOptions={[5, 10, 15, 20]}
         onChange={(page, pageSize) => {
+          setLoading(true)
           setParams({
             ...params,
             page: page,

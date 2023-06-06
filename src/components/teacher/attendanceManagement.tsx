@@ -25,7 +25,7 @@ export function AttendanceManagement() {
   // 预约信息
   const [appointInfo, setAppointInfo] = useState()
   // 加载
-  const [tableLoading, setTableLoading] = useState(false)
+  const [tableLoading, setTableLoading] = useState(true)
   // 打开考勤面板
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -33,7 +33,7 @@ export function AttendanceManagement() {
   const [params, setParams] = useState<any>({
     page: 1,
     pageSize: 10,
-    total: 50,
+    total: 0,
     pages: 1,
     name: '',
     loader: true,
@@ -119,7 +119,6 @@ export function AttendanceManagement() {
     // 加载所管理的实验室
     const loadLabs = async () => {
       let res = await axios.get('/auth/getLabs')
-      console.log(res)
       let data = res.data.data
       setLabs(
         data.map((item: { id: React.Key; name: String }) => {
@@ -139,8 +138,8 @@ export function AttendanceManagement() {
           name: params.name,
         },
       })
-      console.log(res)
       const data = res.data.data
+
       setParams({
         ...params,
         pageSize: data.size,
@@ -176,6 +175,7 @@ export function AttendanceManagement() {
     } else {
       loadLabs()
     }
+    setTableLoading(false)
   }, [params.page, params.pageSize, params.total, params.loader, params.name])
 
   // 设置当前实验室id
@@ -241,7 +241,6 @@ export function AttendanceManagement() {
 
     let hour = date.getHours()
     let slot = 0
-    console.log(hour)
     if (hour >= 8 && hour < 10) {
       slot = 1
     } else if (hour >= 10 && hour < 12) {
@@ -258,7 +257,6 @@ export function AttendanceManagement() {
 
   // 为学生设置考勤状态
   const setStatus = async (e: any) => {
-    console.log(e.target.value)
     let status = e.target.value
 
     // 单个考勤
@@ -275,7 +273,6 @@ export function AttendanceManagement() {
     // 批量考勤
     else {
       for (let i = 0; i < selectedRows.length; i++) {
-        console.log(selectedRows[i])
         debugger
         const selectedRow = selectedRows[i]
         const flag = selectedRow.type == 1
@@ -317,7 +314,6 @@ export function AttendanceManagement() {
 
   // 按姓名搜索
   const onSearch = (value: string) => {
-    console.log(day)
     setParams({
       ...params,
       name: value,
@@ -444,9 +440,11 @@ export function AttendanceManagement() {
         <Pagination
           style={{ float: 'right' }}
           pageSize={params.pageSize}
+          disabled={tableLoading}
           showSizeChanger
           pageSizeOptions={[10, 15, 20]}
           onChange={(page, pageSize) => {
+            setTableLoading(true)
             setParams({
               ...params,
               page: page,
