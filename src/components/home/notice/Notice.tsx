@@ -39,7 +39,7 @@ function Notice({
     <>
       <NoticeModal noticeId={noticeId} open={open} setOpen={setOpen} />
       <List
-        style={{ backgroundColor: '#fff', width: '600px' }}
+        style={{ backgroundColor: '#fff', width: '550px' }}
         header={<h3>公告信息</h3>}
         footer={
           <div

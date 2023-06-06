@@ -11,7 +11,7 @@ function Home() {
   // 显示的公告id
   const [noticeId, setNotceId] = useState<number>(-1)
   return (
-    <div style={{ height: '100%', width: '100%' }}>
+    <div>
       <div>
         <div className={stars.stars}></div>
         <div className={stars.stars2}></div>
@@ -22,27 +22,22 @@ function Home() {
           <div className={classes.Header}>
             <HomeHeader setOpen={setOpen} setNoticeId={setNotceId} />
           </div>
-          <div className={classes.LabImage}>
-            <LabImage />
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              flexDirection: 'row',
-            }}>
-            <div>
-              <Notice
-                open={open}
-                setOpen={setOpen}
-                noticeId={noticeId}
-                setNoticeId={setNotceId}
-              />
+          <div className={classes.Content}>
+            <div className={classes.LabImage}>
+              <LabImage />
             </div>
-            <div
-              style={{ marginLeft: '600px', alignItems: 'center' }}
-              className={classes.DeviceImage}>
-              <DeviceImage />
+            <div className={classes.NoticeAndDeviceImage}>
+              <div className={classes.Notice}>
+                <Notice
+                  open={open}
+                  setOpen={setOpen}
+                  noticeId={noticeId}
+                  setNoticeId={setNotceId}
+                />
+              </div>
+              <div className={classes.DeviceImage}>
+                <DeviceImage />
+              </div>
             </div>
           </div>
         </div>

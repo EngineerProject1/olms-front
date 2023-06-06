@@ -4,12 +4,16 @@
   cursor: pointer;
   margin-left: 70px;
 }
-
 .Login {
-  margin-left: auto;
   font-size: 18px;
+  background-color: #001529;
   color: aliceblue;
 }
 .Login :hover {
   color: rgb(156, 213, 213);
+}
+.Header {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
 }
