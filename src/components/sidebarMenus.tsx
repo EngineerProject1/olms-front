@@ -69,7 +69,15 @@ const teacherMenuItems: MenuItem[] = [
 const studentMenuItems: MenuItem[] = [
   ['labAppointment', SaveOutlined, '预约实验室'],
   ['checkRecord', TableOutlined, '查看考勤记录'],
-  ['deviceBorrow', ToolOutlined, '设备借用'],
+  [
+    'device',
+    ToolOutlined,
+    '设备',
+    [
+      ['deviceBorrow', '设备借用'],
+      ['deviceReturn', '设备归还'],
+    ],
+  ],
 ]
 
 function MenuItemsToMenuProps(menuItems: MenuItem[]): MenuProps['items'] {

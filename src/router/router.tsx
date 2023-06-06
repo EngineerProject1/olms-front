@@ -190,8 +190,17 @@ export const studentRouter = createBrowserRouter([
         element: <Attendance />,
       },
       {
-        path: 'deviceBorrow',
-        element: <div>deviceBorrow</div>,
+        path: 'device',
+        children: [
+          {
+            path: 'deviceBorrow',
+            element: <DeviceBorrow />,
+          },
+          {
+            path: 'deviceReturn',
+            element: <DeviceReturn />,
+          },
+        ],
       },
       {
         path: 'person',
