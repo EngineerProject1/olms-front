@@ -39,7 +39,6 @@ const adminMenuItems: MenuItem[] = [
     [
       ['studentUser', '学生管理'],
       ['teacherUser', '教师管理'],
-      ['attendance', '考勤管理'],
     ],
   ],
 ]

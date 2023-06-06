@@ -10,6 +10,7 @@ import { Footer } from 'antd/es/layout/layout'
 import { GlobalContext } from 'app'
 import { passwordRule } from 'components/person/changePassword'
 import React, { useContext, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   adminRouter,
   roleToRouter,
@@ -26,6 +27,7 @@ export function Login(props: any) {
   const { messageApi, setRouter, setUser } = useContext(GlobalContext)
   const [modalOpen, setModalOpen] = useState(false)
   const characterButtons = useRef<React.ReactNode[]>([])
+  const navigate = useNavigate()
 
   function CharacterButton(props: {
     role: string
@@ -192,10 +194,14 @@ export function Login(props: any) {
             }}>
             <div
               style={{
+                cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 marginRight: 13,
                 marginBottom: 40,
+              }}
+              onClick={() => {
+                navigate('/')
               }}>
               <Avatar src={'/logo.svg'} />
               <Title level={2} style={{ marginBottom: 3, marginLeft: 8 }}>

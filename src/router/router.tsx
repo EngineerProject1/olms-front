@@ -89,10 +89,6 @@ export const adminRouter = createBrowserRouter([
             path: 'teacherUser',
             element: <TeacherManagement />,
           },
-          {
-            path: 'attendance',
-            element: <>attendance</>,
-          },
         ],
       },
       {

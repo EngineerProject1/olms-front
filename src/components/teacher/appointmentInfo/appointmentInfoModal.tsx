@@ -85,7 +85,6 @@ export function AppointmentInfoModal(props: {
         columns={columns}
         pagination={false}
       />
-      {/*  分页 */}
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Pagination
           style={{ display: 'inline-block' }}
