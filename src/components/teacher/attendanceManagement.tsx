@@ -271,8 +271,6 @@ export function AttendanceManagement() {
       else {
         updateAttendance(editRecord.key, status, Number(editRecord.id))
       }
-      // 重置多选框
-      setSelectedRowKeys([])
     }
     // 批量考勤
     else {
@@ -293,8 +291,9 @@ export function AttendanceManagement() {
           updateAttendance(appointmentId, status, userId)
         }
       }
-      setSelectedRows([])
     }
+    // 重置多选框
+    setSelectedRowKeys([])
     messageApi.success('考勤成功')
     // 刷新页面
     setParams({
@@ -309,7 +308,8 @@ export function AttendanceManagement() {
 
   // 可选框
   const rowSelection = {
-    onChange: (selectedRowKeys: any, selectedRows: Object[]) => {
+    selectedRowKeys,
+    onChange: (selectedRowKeys: any, selectedRows: any) => {
       setSelectedRowKeys(selectedRowKeys)
       setSelectedRows(selectedRows)
     },
@@ -336,7 +336,11 @@ export function AttendanceManagement() {
         width={420}
         onCancel={() => setModalOpen(false)}>
         <span style={{ marginRight: 20 }}>考勤状态</span>
-        <Radio.Group size="large" style={{ height: 150 }} onChange={setStatus}>
+        <Radio.Group
+          size="large"
+          style={{ height: 150 }}
+          onChange={setStatus}
+          value={0}>
           <div style={{ marginTop: 50 }}>
             <Radio.Button value="1">正常</Radio.Button>
             <Radio.Button value="2">迟到</Radio.Button>
@@ -384,6 +388,7 @@ export function AttendanceManagement() {
             allowClear={false}
             style={{ width: 165, height: 35 }}
             options={[
+              { value: 0, label: '当前不在实验时间' },
               { value: 1, label: '08:00 ~ 10:00' },
               { value: 2, label: '10:00 ~ 12:00' },
               { value: 3, label: '14:00 ~ 16:00' },
