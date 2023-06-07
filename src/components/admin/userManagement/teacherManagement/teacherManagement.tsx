@@ -29,7 +29,7 @@ const TeacherManagement: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false)
 
   // 加载动态显示
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   // 学院信息
   const [college, setCollege] = useState<any>([])
@@ -131,6 +131,7 @@ const TeacherManagement: React.FC = () => {
   // 拉取教师列表信息
   useEffect(() => {
     const loadList = async () => {
+      setLoading(true)
       const res = await axios.get('/teacher', {
         params: {
           page: params.page,

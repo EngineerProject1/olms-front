@@ -180,6 +180,7 @@ const StudentManagement: React.FC = () => {
   // 拉取学生列表信息
   useEffect(() => {
     const loadList = async () => {
+      setLoading(true)
       const res = await axios.get('/student', {
         params: {
           page: params.page,
