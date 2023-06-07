@@ -24,6 +24,7 @@ export function BasicInformation(props: any) {
     }
     axios.put('/auth/info', null, { params: requestData }).then(() => {
       messageApi.success('成功修改个人信息')
+      //成功修改后延时刷新页面
       setTimeout(() => {
         location.reload()
       }, 800)
@@ -37,7 +38,6 @@ export function BasicInformation(props: any) {
       style={{ maxWidth: 620, width: '100%' }}
       onFinish={onFinish}
       layout="vertical"
-      //onFinishFailed={onFinishFailed}
       autoComplete="off">
       <div style={{ display: 'flex' }}>
         <div style={{ width: '70%' }}>

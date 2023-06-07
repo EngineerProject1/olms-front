@@ -58,7 +58,6 @@ export function AnnouncementEditor(props: {
       form={form}
       labelCol={{ span: 2 }}
       wrapperCol={{ span: 13 }}
-      // 注意：此处需要为富文本编辑表示的 content 文章内容设置默认值
       onFinish={onFinish}>
       <Form.Item
         label="标题"
@@ -95,6 +94,7 @@ export function AnnouncementEditor(props: {
   )
 }
 
+//获取待编辑的公告内容
 async function announcementLoader(noticeId: string): Promise<data> {
   if (Number.parseInt(noticeId) == 0) {
     return { id: 0, title: '', content: '', level: null }

@@ -1,5 +1,6 @@
 import Announcement from 'components/admin/announcement/announcement'
 import AppointRecord from 'components/admin/appointment/appointmentRecord/AppointRecord'
+import AuditAppointment from 'components/admin/appointment/auditAppointment/AuditAppointment'
 import { Device } from 'components/admin/device/device'
 import Lab from 'components/admin/lab/Lab'
 import StudentManagement from 'components/admin/userManagement/studentManagement/studentManagement'
@@ -62,7 +63,7 @@ export const adminRouter = createBrowserRouter([
         children: [
           {
             path: 'auditAppointment',
-            element: <div>auditAppointment</div>,
+            element: <AuditAppointment />,
           },
           {
             path: 'appointmentRecord',

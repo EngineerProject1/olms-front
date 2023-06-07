@@ -25,6 +25,7 @@ export function BookAppointmentForm(props: {
   >([])
   const [grade, setGrade] = useState(0)
   const [form] = Form.useForm()
+  //清空表单
   const resetForm = () => {
     form.resetFields()
     props.setModalOpen(false)
@@ -32,6 +33,7 @@ export function BookAppointmentForm(props: {
     setMajor([])
     setGradeAndClass([])
   }
+  //表单提交
   const onFinish = (values: any) => {
     let requestBody: AppointmentRequest = {
       ...props.appointRequest,

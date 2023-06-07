@@ -4,13 +4,14 @@ import { useContext } from 'react'
 import 'scss/avatarUploader.scss'
 import axios from 'tools/axios'
 
+//密码的正则表达式
 export const passwordRule = {
   pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d.]{6,16}$/,
   message: '密码必须为6~16位且只包含字母数字和小数点,至少有一位字母和数字',
 }
 
 export function ChangePassword() {
-  const { user, messageApi } = useContext(GlobalContext)
+  const { messageApi } = useContext(GlobalContext)
   const [form] = Form.useForm()
 
   const onFinish = (values: any) => {
@@ -31,7 +32,6 @@ export function ChangePassword() {
       style={{ maxWidth: 400, width: '100%' }}
       onFinish={onFinish}
       layout="vertical"
-      //onFinishFailed={onFinishFailed}
       autoComplete="off">
       <Form.Item
         label="旧密码"

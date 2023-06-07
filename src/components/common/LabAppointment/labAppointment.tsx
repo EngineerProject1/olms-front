@@ -62,6 +62,7 @@ export default function LabAppointment() {
     })
   }, [])
   useEffect(() => {
+    //只有当日期选择器和时间段选择器有值时，才请求
     if (
       pageParam.timeSlotId != 0 &&
       pageParam.offSetDay != 0 &&

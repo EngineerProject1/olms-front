@@ -5,6 +5,7 @@ export interface AppointRecordsSelectParams {
   pageSize: number
   type: number
   labId: number
+  only?: number
 }
 export interface AppointRecords {
   appointUsername: string

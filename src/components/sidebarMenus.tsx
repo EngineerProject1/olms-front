@@ -19,6 +19,7 @@ type MenuItem = [
   string,
   [string, String][]?
 ]
+//管理员菜单
 const adminMenuItems: MenuItem[] = [
   ['announcement', DashboardOutlined, '公告管理'],
   ['laboratory', BarsOutlined, '实验室管理'],
@@ -42,7 +43,7 @@ const adminMenuItems: MenuItem[] = [
     ],
   ],
 ]
-
+//老师菜单
 const teacherMenuItems: MenuItem[] = [
   [
     'appointment',
@@ -64,7 +65,7 @@ const teacherMenuItems: MenuItem[] = [
   ],
   ['attendance', SolutionOutlined, '考勤管理'],
 ]
-
+//学生菜单
 const studentMenuItems: MenuItem[] = [
   ['labAppointment', SaveOutlined, '预约实验室'],
   ['checkRecord', TableOutlined, '查看考勤记录'],
@@ -78,7 +79,7 @@ const studentMenuItems: MenuItem[] = [
     ],
   ],
 ]
-
+//将菜单转换为Ant格式
 function MenuItemsToMenuProps(menuItems: MenuItem[]): MenuProps['items'] {
   let result: MenuProps['items'] = []
   for (let menuItem of menuItems) {
