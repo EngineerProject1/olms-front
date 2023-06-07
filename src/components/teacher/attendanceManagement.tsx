@@ -56,6 +56,8 @@ export function AttendanceManagement() {
   // 查询时的时间段
   const [slot, setSlot] = useState<number>()
 
+  // 页面加载
+
   // 表格列名
   const defaultColumns = [
     {
@@ -111,15 +113,28 @@ export function AttendanceManagement() {
       },
     },
   ]
+  // 封装所选实验室id
+  const [labId, setLabId] = useState<any>({
+    id: 0,
+    name: '无考勤实验室',
+  })
 
   // 拉取考勤列表信息
   useEffect(() => {
     // 获取当前时间
     getNowFormatDate()
+
     // 加载所管理的实验室
     const loadLabs = async () => {
       let res = await axios.get('/auth/getLabs')
       let data = res.data.data
+      // 默认显示第一个实验室考勤信息
+      if (labId.id === 0) {
+        setLabId({
+          id: data[0].id,
+          name: data[0].name,
+        })
+      }
       setLabs(
         data.map((item: { id: React.Key; name: String }) => {
           return {
@@ -131,6 +146,7 @@ export function AttendanceManagement() {
     }
     // 加载用户信息
     const loadUsers = async (id: Key) => {
+      setTableLoading(true)
       const res = await axios.get(`/attendanceManager/${id}`, {
         params: {
           page: params.page,
@@ -169,18 +185,29 @@ export function AttendanceManagement() {
           }
         )
       )
+      setTableLoading(false)
     }
-    if (labId !== 0) {
-      loadUsers(labId)
+    if (labId.id !== 0) {
+      loadUsers(labId.id)
     } else {
       loadLabs()
     }
-    setTableLoading(false)
-  }, [params.page, params.pageSize, params.total, params.loader, params.name])
+  }, [
+    params.page,
+    params.pageSize,
+    params.total,
+    params.loader,
+    params.name,
+    labId.id,
+  ])
 
   // 设置当前实验室id
-  const loadLabId = (id: Key) => {
-    setLabId(id)
+  const loadLabId = (id: Key, name: any) => {
+    setLabId({
+      ...labId,
+      id: id,
+      name: name,
+    })
     setParams({
       ...params,
       loader: !params.loader,
@@ -257,6 +284,7 @@ export function AttendanceManagement() {
 
   // 为学生设置考勤状态
   const setStatus = async (e: any) => {
+    setTableLoading(true)
     let status = e.target.value
 
     // 单个考勤
@@ -301,6 +329,7 @@ export function AttendanceManagement() {
     setEditRecord([])
     // 管理modal
     setModalOpen(false)
+    setTableLoading(false)
   }
 
   // 可选框
@@ -319,9 +348,6 @@ export function AttendanceManagement() {
       name: value,
     })
   }
-
-  // 封装所选实验室id
-  const [labId, setLabId] = useState<Key>(0)
 
   return (
     <div>
@@ -356,7 +382,9 @@ export function AttendanceManagement() {
             onSelect={loadLabId}
             style={{ width: 217 }}
             placeholder="请选择考勤实验室"
+            notFoundContent="当前账号无管理的实验室"
             optionFilterProp="children"
+            value={labId.name}
             filterOption={(input, option) =>
               ((option?.label ?? '') as any).includes(input)
             }
