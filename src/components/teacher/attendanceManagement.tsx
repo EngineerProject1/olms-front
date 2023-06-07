@@ -9,6 +9,7 @@ import {
   Select,
   Space,
   Table,
+  Tag,
 } from 'antd'
 import { GlobalContext } from 'app'
 import dayjs from 'dayjs'
@@ -79,6 +80,9 @@ export function AttendanceManagement() {
       title: '考勤状态',
       dataIndex: 'status',
       width: '20%',
+      render: (status: string) => (
+        <span>{<Tag color={statusStyle(status)}>{status}</Tag>}</span>
+      ),
     },
     {
       title: '操作',
@@ -229,6 +233,32 @@ export function AttendanceManagement() {
       str = '请假'
     }
     return str
+  }
+
+  // 设置状态样式
+  const statusStyle = (status: string) => {
+    let style = ''
+    switch (status) {
+      case '正常':
+        style = 'success'
+        break
+      case '迟到':
+        style = 'orange'
+        break
+      case '早退':
+        style = 'warning'
+        break
+      case '请假':
+        style = 'processing'
+        break
+      case '缺勤':
+        style = 'error'
+        break
+      default:
+        style = 'default'
+        break
+    }
+    return style
   }
 
   // 新增考勤信息
