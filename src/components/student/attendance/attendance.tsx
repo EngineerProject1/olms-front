@@ -27,7 +27,10 @@ export default function Attendance() {
         const resultList: Attendance[] = data.records
         setList(
           resultList.map((item: any) => {
-            const status = ['缺勤', '正常', '迟到', '早退']
+            const status = ['缺勤', '正常', '迟到', '早退', '未考勤']
+            if (item.status == null) {
+              item.status = 4
+            }
             return {
               ...item,
               key: item.id.toString(),
