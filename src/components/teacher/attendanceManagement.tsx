@@ -346,10 +346,11 @@ export function AttendanceManagement() {
           updateAttendance(appointmentId, status, userId)
         }
       }
+      // 重置多选框
+      setSelectedRowKeys([])
+      setSelectedRows([])
     }
-    // 重置多选框
-    setSelectedRowKeys([])
-    setSelectedRows([])
+
     messageApi.success('考勤成功')
     // 刷新页面
     setParams({
