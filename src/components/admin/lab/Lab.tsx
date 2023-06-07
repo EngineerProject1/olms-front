@@ -1,4 +1,4 @@
-import { Image, Pagination, Popconfirm, Select, Space } from 'antd'
+import { Image, Pagination, Popconfirm, Select, Space, Tag } from 'antd'
 import Search from 'antd/es/input/Search'
 import Table from 'antd/es/table'
 import Button from 'antd/lib/button'
@@ -42,6 +42,35 @@ function Lab() {
       title: '开放时间',
       dataIndex: 'weekdays',
       width: '16%',
+      render: (weekdays: number[]) => (
+        <span>
+          {weekdays.map((item: number) => {
+            const resultChar = [
+              '周日',
+              '周一',
+              '周二',
+              '周三',
+              '周四',
+              '周五',
+              '周六',
+            ]
+            const resultColor = [
+              'magenta',
+              'red',
+              'volcano',
+              'orange',
+              'geekblue',
+              'purple',
+              'cyan',
+            ]
+            return (
+              <Tag color={resultColor[item - 1]} key={item - 1}>
+                {resultChar[item - 1]}
+              </Tag>
+            )
+          })}
+        </span>
+      ),
     },
     {
       title: '容量',
@@ -129,40 +158,17 @@ function Lab() {
         page: data.current,
         pageSize: data.size,
       })
-      console.log(data)
 
       // 设置实验室数据
       setData(
         data.records.map((item: LabModel) => {
-          let openTime = ''
-          for (const weekday of item.weekdays) {
-            switch (weekday) {
-              case 2:
-                openTime += '周一,'
-                break
-              case 3:
-                openTime += '周二,'
-                break
-              case 4:
-                openTime += '周三,'
-                break
-              case 5:
-                openTime += '周四,'
-                break
-              case 6:
-                openTime += '周五,'
-                break
-              case 7:
-                openTime += '周六,'
-                break
-              case 1:
-                openTime += '周日,'
-                break
-              default:
-                break
-            }
+          // 处理weekdays使其按照周一到周日排序
+          let weekdays = item.weekdays.sort()
+          if (weekdays[0] === 1) {
+            weekdays.push(weekdays[0])
+            weekdays.shift()
           }
-          openTime = openTime.substring(0, openTime.length - 1)
+          const resultWeekdays = weekdays
           return {
             id: item.id,
             key: item.id,
@@ -174,7 +180,7 @@ function Lab() {
             capacity: item.capacity,
             type: item.type,
             status: labStatus[item.status],
-            weekdays: openTime,
+            weekdays: resultWeekdays,
           }
         })
       )
