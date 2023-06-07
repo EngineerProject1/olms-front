@@ -1,4 +1,4 @@
-import { Alert, Button, Form, Input, Modal, Select } from 'antd'
+import { Alert, Button, Checkbox, Form, Input, Modal, Select } from 'antd'
 import { useForm } from 'antd/es/form/Form'
 import { GlobalContext } from 'app'
 import MyUpload from 'components/myUpload'
@@ -15,8 +15,25 @@ function LabForm({
   open: boolean
   setOpen: React.Dispatch<boolean>
 }) {
+  // 实验室数据
   const [labData, setLabData] = useState<LabModel>()
+  // 开放时间
+  const openSchedule = [
+    { label: '周一', value: 2 },
+    { label: '周二', value: 3 },
+    { label: '周三', value: 4 },
+    { label: '周四', value: 5 },
+    { label: '周五', value: 6 },
+    { label: '周六', value: 7 },
+    { label: '周日', value: 1 },
+  ]
   const { messageApi } = useContext(GlobalContext)
+  // 实验室状态
+  const labStatus = [
+    { label: '可用', value: 0 },
+    { label: '暂不可用', value: 1 },
+    { label: '维修中', value: 2 },
+  ]
   // 图片名字
   const [images, setImages] = useState('')
   // 教师姓名
@@ -166,6 +183,13 @@ function LabForm({
           <Form.Item name="description" label="描述">
             <Input placeholder="描述" />
           </Form.Item>
+          <Form.Item name="weekdays" label="开放时间:">
+            <Checkbox.Group
+              options={openSchedule}
+              defaultValue={labData?.weekdays}
+              style={{ flexWrap: 'wrap', justifyContent: 'right' }}
+            />
+          </Form.Item>
           <Form.Item
             name="capacity"
             label="容量"
@@ -192,11 +216,7 @@ function LabForm({
           </Form.Item>
           {/* 实验室状态(0:可用,1:暂不可用,2:维修中) */}
           <Form.Item name="status" label="状态" rules={[{ required: true }]}>
-            <Select placeholder="状态">
-              <Select.Option value="0">可用</Select.Option>
-              <Select.Option value="1">暂不可用</Select.Option>
-              <Select.Option value="2">维修中</Select.Option>
-            </Select>
+            <Select placeholder="状态" options={labStatus} />
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">

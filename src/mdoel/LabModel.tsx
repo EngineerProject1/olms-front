@@ -9,7 +9,7 @@ export interface LabDateType {
   capacity: number
   type: string
   status: string
-  weekdays: any
+  weekdays: number[]
 }
 
 export interface LabPageParams {
@@ -31,5 +31,5 @@ export interface LabModel {
   capacity: number
   type: string
   status: number
-  weekdays: any
+  weekdays: number[]
 }
