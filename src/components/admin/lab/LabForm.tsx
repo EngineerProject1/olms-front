@@ -30,7 +30,7 @@ function LabForm({
       const data = resp.data
       setTeachers(data.data)
     })
-    if (editId !== -1) {
+    if (editId !== -1 && open) {
       // 回显数据
       axios.get(`/lab/${editId}`).then((resp) => {
         const data = resp.data.data
@@ -39,7 +39,7 @@ function LabForm({
         form.setFieldsValue(data)
       })
     }
-  }, [editId])
+  }, [open])
 
   // 关闭modal清除表单
   const resetForm = () => {

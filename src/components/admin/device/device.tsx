@@ -522,7 +522,7 @@ export function Device() {
             label="价格"
             rules={[
               {
-                pattern: /^\d+[/.\d*]?\d$/,
+                pattern: /^\d+([/.\d*]?\d+)$/,
                 message: '请输入正确的数字',
                 required: true,
               },
