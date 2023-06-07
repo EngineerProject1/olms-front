@@ -13,7 +13,7 @@ function Lab() {
     {
       title: '实验室名称',
       dataIndex: 'name',
-      width: '11.1%',
+      width: '10%',
     },
     {
       title: '图片',
@@ -26,38 +26,43 @@ function Lab() {
     {
       title: '负责人',
       dataIndex: 'master',
-      width: '11.1%',
+      width: '10%',
     },
     {
       title: '地址',
       dataIndex: 'location',
-      width: '11.1%',
+      width: '8%',
     },
     {
       title: '描述',
       dataIndex: 'description',
-      width: '11.1%',
+      width: '10%',
+    },
+    {
+      title: '开放时间',
+      dataIndex: 'weekdays',
+      width: '16%',
     },
     {
       title: '容量',
       dataIndex: 'capacity',
-      width: '11.1%',
+      width: '6%',
       sorter: true,
     },
     {
       title: '类型',
       dataIndex: 'type',
-      width: '11.1%',
+      width: '10%',
     },
     {
       title: '状态',
       dataIndex: 'status',
-      width: '11.1%',
+      width: '10%',
     },
     {
       title: '操作',
       dataIndex: 'operation',
-      width: '11.1%',
+      width: '10%',
       render: (_: any, record: { key: React.Key; id: number }) => (
         <Space>
           <a
@@ -68,7 +73,7 @@ function Lab() {
             编辑
           </a>
           <Popconfirm
-            title="是否删除该公告信息？"
+            title="是否删除该信息？"
             onConfirm={() => {
               delLab(record.key)
             }}>
@@ -124,10 +129,40 @@ function Lab() {
         page: data.current,
         pageSize: data.size,
       })
+      console.log(data)
 
       // 设置实验室数据
       setData(
         data.records.map((item: LabModel) => {
+          let openTime = ''
+          for (const weekday of item.weekdays) {
+            switch (weekday) {
+              case 2:
+                openTime += '周一,'
+                break
+              case 3:
+                openTime += '周二,'
+                break
+              case 4:
+                openTime += '周三,'
+                break
+              case 5:
+                openTime += '周四,'
+                break
+              case 6:
+                openTime += '周五,'
+                break
+              case 7:
+                openTime += '周六,'
+                break
+              case 1:
+                openTime += '周日,'
+                break
+              default:
+                break
+            }
+          }
+          openTime = openTime.substring(0, openTime.length - 1)
           return {
             id: item.id,
             key: item.id,
@@ -139,6 +174,7 @@ function Lab() {
             capacity: item.capacity,
             type: item.type,
             status: labStatus[item.status],
+            weekdays: openTime,
           }
         })
       )
@@ -250,7 +286,7 @@ function Lab() {
           }}>
           {/* 批量删除 */}
           <Popconfirm
-            title="是否删除所选公告信息？"
+            title="是否删除所选信息？"
             onConfirm={delBatch}
             disabled={selectedRowKeys.length === 0}>
             <Button
