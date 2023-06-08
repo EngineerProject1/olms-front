@@ -41,6 +41,8 @@ export function DeviceBorrow() {
         ...params,
         total: params.total - 1,
       })
+    } else {
+      message.error('借用失败，当前可能未在实验进行时间段内')
     }
   }
 
