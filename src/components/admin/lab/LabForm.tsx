@@ -42,6 +42,8 @@ function LabForm({
   const [isLocation, setIsLocation] = useState<boolean>(false)
   // form表单
   const [form] = useForm()
+  // 修改时第一次不占用
+  const [editLoaction, setEditLocation] = useState()
   useEffect(() => {
     axios.get('/teacher/names').then((resp) => {
       const data = resp.data
@@ -53,6 +55,7 @@ function LabForm({
         const data = resp.data.data
         setLabData(data)
         setImages(data.images)
+        setEditLocation(data.location)
         form.setFieldsValue(data)
       })
     }
@@ -67,6 +70,9 @@ function LabForm({
 
   const checkAddress = () => {
     const location = form.getFieldValue('location')
+    if (location === editLoaction) {
+      return
+    }
     axios
       .get('/lab/location', {
         params: {
