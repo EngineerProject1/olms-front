@@ -258,8 +258,10 @@ function Lab() {
             allowClear={true}
             placeholder="实验室名字"
             onSearch={(e) => {
-              setLoading(true)
-              setParams({ ...params, name: e })
+              if (e !== '') {
+                setLoading(true)
+                setParams({ ...params, name: e })
+              }
             }}
             style={{ width: 200 }}
             size="large"
