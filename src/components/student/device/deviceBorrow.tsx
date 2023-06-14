@@ -21,7 +21,7 @@ interface DataType {
   key: React.Key
   name: string
   images: string
-  count: number
+  // count: number
   price: number
   model: string
 }
@@ -33,7 +33,12 @@ export function DeviceBorrow() {
 
   //借用设备
   const handleBorrow = async (values: any) => {
-    const res = await axios.put('/auth/deviceLend', values)
+    console.log(values)
+
+    const res = await axios.put(`/auth/deviceLend`, {
+      ...values,
+      id: values.key,
+    })
     const { data } = res
     if (data.msg === '借用成功') {
       message.success(data.msg)
@@ -92,16 +97,16 @@ export function DeviceBorrow() {
             images: string
             price: number
             model: string
-            count: number
+            id: number
             labId: number
           }) => {
             return {
-              key: nanoid(),
+              key: item.id,
               name: item.name,
               images: item.images,
               price: item.price,
               model: item.model,
-              count: item.count,
+              // count: item.count,
               labId: item.labId,
             }
           }
@@ -134,10 +139,6 @@ export function DeviceBorrow() {
       dataIndex: 'price',
     },
 
-    {
-      title: '剩余数量',
-      dataIndex: 'count',
-    },
     {
       title: '操作',
       key: 'action',

@@ -20,6 +20,7 @@ import axios from 'tools/axios'
 // 数据类型
 interface DataType {
   key: React.Key
+  id: number
   name: string
   images: string
   price: number
@@ -50,21 +51,26 @@ export function DeviceReturn() {
   }
   //归还设备
   const handleReturn = async (records: any) => {
-    const res = await axios.put('/auth/deviceReturn', records)
+    const res = await axios.put(`/auth/deviceReturn/${records.key}`)
+    // console.log({ ...records, id: records.key })
+
     setParams({
       ...params,
       total: params.total - 1,
     })
+    message.success('归还成功')
   }
 
   //一键归还所有设备
   const returnALL = async () => {
-    const res = await axios.put('/auth/deviceReturnAll', list)
-    messageApi.success(res.data.msg)
+    const res = await axios.put('/auth/deviceReturnAll')
+
+    // messageApi.success(res.data.msg)
     setParams({
       ...params,
       total: 0,
     })
+    message.success('归还成功')
   }
 
   // 得到后端返回的文件名
@@ -110,15 +116,16 @@ export function DeviceReturn() {
             images: string
             price: number
             model: string
-            count: number
+            id: number
+            // count: number
           }) => {
             return {
-              key: nanoid(),
+              key: item.id,
               name: item.name,
               images: item.images,
               price: item.price,
               model: item.model,
-              count: item.count,
+              // count: item.count,
             }
           }
         )
@@ -148,11 +155,6 @@ export function DeviceReturn() {
     {
       title: '价格',
       dataIndex: 'price',
-    },
-
-    {
-      title: '借用数量',
-      dataIndex: 'count',
     },
     {
       title: '操作',
