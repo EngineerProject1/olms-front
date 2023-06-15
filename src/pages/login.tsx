@@ -8,6 +8,7 @@ import {
 import { Avatar, Button, Form, Input, Layout, Modal, Typography } from 'antd'
 import { Footer } from 'antd/es/layout/layout'
 import { GlobalContext } from 'app'
+import CFTurnstile from 'components/common/CFTurnstile'
 import { passwordRule } from 'components/person/changePassword'
 import React, { useContext, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -138,9 +139,6 @@ export function Login(props: any) {
       }
     })
   }
-  const onFinishFailed = (errorInfo: any) => {
-    messageApi.error(`Failed:${errorInfo}`)
-  }
   function openGithub() {
     window.open('https://github.com/EngineerProject1/olms-front')
   }
@@ -210,17 +208,15 @@ export function Login(props: any) {
             </div>
             <Form
               name="basic"
-              style={{ maxWidth: 600, width: '100%' }}
+              style={{ width: 300 }}
               onFinish={onFinish}
               layout="vertical"
-              onFinishFailed={onFinishFailed}
               autoComplete="off">
               <Form.Item
                 name="username"
                 rules={[{ required: true, message: '请输入学号/教职工号' }]}>
                 <Input placeholder="学号/教职工号" prefix={<UserOutlined />} />
               </Form.Item>
-
               <Form.Item
                 name="password"
                 rules={[
@@ -228,6 +224,11 @@ export function Login(props: any) {
                   passwordRule,
                 ]}>
                 <Input.Password placeholder="密码" prefix={<LockOutlined />} />
+              </Form.Item>
+              <Form.Item
+                name="token"
+                rules={[{ required: true, message: '未通过人机验证' }]}>
+                <CFTurnstile />
               </Form.Item>
               <Form.Item>
                 <Button
