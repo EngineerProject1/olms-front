@@ -59,11 +59,17 @@ export default function App(props: any) {
     axios.interceptors.response.use((response) => {
       let data = response.data
       if (data.code != 200) {
-        messageApi.error(data.msg)
         switch (data.code) {
           case 401: //token异常时将路由设置为默认路由
+            //只显示一次token异常
+            if (localStorage.getItem('token')) {
+              messageApi.error(data.msg)
+            }
             localStorage.removeItem('token')
             setRouter(defaultRouter)
+            break
+          default:
+            messageApi.error(data.msg)
             break
         }
         return Promise.reject(response)
